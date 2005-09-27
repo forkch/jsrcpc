@@ -6,7 +6,7 @@ package de.dermoba.srcp.client;
 
 public class FB {
 
-	public FB(Session pSession) {
-		// like GA
-	}
+    public FB(Session pSession) {
+        // like GA
+    }
 }

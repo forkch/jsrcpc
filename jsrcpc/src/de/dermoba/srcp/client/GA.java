@@ -5,8 +5,8 @@
 package de.dermoba.srcp.client;
 
 public class GA {
-	
-	public GA(Session pSession) {
-		// like GL
-	}
+
+    public GA(Session pSession) {
+        // like GL
+    }
 }
