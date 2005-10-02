@@ -4,8 +4,6 @@
  */
 package de.dermoba.srcp.client;
 
-
-
 public class Session {
 
     private String serverName = null;
@@ -23,8 +21,8 @@ public class Session {
     public Session(String pServerName, int pServerPort) throws SRCPException {
         serverName = pServerName;
         serverPort = pServerPort;
-        commandChannel = new CommandChannel(serverName, serverPort);
         infoChannel = new InfoChannel(serverName, serverPort);
+        commandChannel = new CommandChannel(serverName, serverPort);
     }
 
     public CommandChannel getCommandChannel() {

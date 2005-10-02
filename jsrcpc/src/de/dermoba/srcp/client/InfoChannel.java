@@ -4,6 +4,9 @@
  */
 package de.dermoba.srcp.client;
 
+import de.dermoba.srcp.common.SocketReader;
+import de.dermoba.srcp.common.SocketWriter;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -15,8 +18,8 @@ import java.util.ArrayList;
 public class InfoChannel implements Runnable {
 
     private Socket socket = null;
-    private PrintStream out = null;
-    private BufferedReader in = null;
+    private SocketWriter out = null;
+    private SocketReader in = null;
 
     private ArrayList<InfoDataListener> listeners = null;
 
@@ -31,8 +34,9 @@ public class InfoChannel implements Runnable {
     public InfoChannel(String pServerName, int pServerPort) throws SRCPException {
         try {
             socket = new Socket(pServerName, pServerPort);
-            out = new PrintStream(socket.getOutputStream());
-            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            out = new SocketWriter(socket);
+            in = new SocketReader(socket);
+
             new Thread(this).start();
         } catch (UnknownHostException e) {
             throw new SRCPException("Unknown host");
@@ -44,12 +48,12 @@ public class InfoChannel implements Runnable {
 
     public void run() {
         try {
-            String s = in.readLine();
-            out.print("SET CONNECTIONMODE SRCP INFO\n");
-            s = in.readLine();
-            out.print("GO\n");
+            String s = in.read();
+            out.write("SET CONNECTIONMODE SRCP INFO\n");
+            s = in.read();
+            out.write("GO\n");
             for (;;) {
-                s = in.readLine();
+                s = in.read();
                 if (s == null) break;
                 informListener(s);
             }

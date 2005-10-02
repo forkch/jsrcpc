@@ -21,7 +21,8 @@ public class GL {
         bus = pBus;
         address = pAddress;
         protocol = pProtocol;
-        session.getCommandChannel().send("INIT " + bus + " GL " + address + protocol);
+        session.getCommandChannel().send("INIT " + bus + " GL " + address 
+            + " " + protocol);
     }
 
     /** SRCP syntax SET <bus> GL <addr> <drivemode> <V> <V_max> <f1> .. <fn> */
