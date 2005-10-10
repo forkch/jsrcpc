@@ -15,16 +15,16 @@ public class SocketWriter {
     protected OutputStreamWriter outputWriter = null;
 
     public SocketWriter(Socket communicationSocket) throws IOException {
-		outputStream=communicationSocket.getOutputStream();
-		outputWriter = new OutputStreamWriter(outputStream);
+        outputStream=communicationSocket.getOutputStream();
+        outputWriter = new OutputStreamWriter(outputStream);
     }
-    
+
     public void write(String buffer) throws IOException {
         outputWriter.write(buffer.toCharArray());
         outputWriter.flush();
     }
-    
+
     public OutputStream getOutputStream() {
-    	return outputStream;
+        return outputStream;
     }
 }
