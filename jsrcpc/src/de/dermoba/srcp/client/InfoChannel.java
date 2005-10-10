@@ -24,8 +24,8 @@ public class InfoChannel implements Runnable {
     private ArrayList<InfoDataListener> listeners = null;
 
     /**
-     * creates a new SRCP connection on the command channel to handle all
-     * command communication.
+     * creates a new SRCP connection on the info channel to handle all
+     * info communication.
      * 
      * @param pServerName		server name or IP address
      * @param pServerPort		TCP port number
