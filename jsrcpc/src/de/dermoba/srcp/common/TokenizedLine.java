@@ -21,6 +21,11 @@ public class TokenizedLine {
     private ArrayList<String> tokens = null;
     private int tokenPosition = 0;
 
+/**
+ * create a new tokenizer for a complete String.
+ * 
+ * @param in	String containing white space
+ */
     public TokenizedLine(String in) {
         tokens = new ArrayList<String>();
         String[] t = in.split("\\s");
