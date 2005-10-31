@@ -3,6 +3,10 @@
  *
  * History
  $Log: not supported by cvs2svn $
+ Revision 1.1  2005/10/02 17:49:41  fork_ch
+ - implemented the basic devicegroups
+ - uses now the SocketReader / SocketWriter
+
  Revision 1.1  2005/07/09 13:11:58  harders
  balkon050709
 
@@ -21,7 +25,7 @@ package de.dermoba.srcp.common.exception;
 /**
  *
  * @author  osc
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
   */
 
 public class SRCPUnsufficientDataException extends SRCPCommandException {

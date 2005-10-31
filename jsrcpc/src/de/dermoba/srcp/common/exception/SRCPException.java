@@ -2,6 +2,10 @@
  * $RCSfile: SRCPException.java,v $
  *
  $Log: not supported by cvs2svn $
+ Revision 1.1  2005/10/02 17:49:41  fork_ch
+ - implemented the basic devicegroups
+ - uses now the SocketReader / SocketWriter
+
  Revision 1.3  2005/08/08 08:02:36  harders
  Stand nach Urlaub
 
@@ -22,7 +26,7 @@ package de.dermoba.srcp.common.exception;
 /**
  *
  * @author  osc
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 
 public abstract class SRCPException extends java.lang.Exception {

@@ -11,7 +11,7 @@ package de.dermoba.srcp.common.exception;
 /**
  *
  * @author  osc
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
   */
 
 public abstract class SRCPCommandException extends SRCPException {
