@@ -6,7 +6,7 @@
 # copyright : (C)  by Benjamin Mueller 
 # email     : akula@akula.ch
 # language  : make
-# version   : $Id: Makefile,v 1.1 2005-10-10 15:24:52 fork_ch Exp $
+# version   : $Id: Makefile,v 1.2 2005-11-23 22:25:14 fork_ch Exp $
 #
 #-------------------------------------------------------------------------
 
@@ -25,16 +25,20 @@ CP=$(CLASSPATH):$(EXTRALIBS):./classes
 COMPILER_FLAGS=-classpath $(CP)
 JAVA=/usr/bin/java
 JAVA_FLAGS=-classpath $(CP)
+JAR=/usr/bin/jar
+JAR_FLAGS=cvf
+
+BIN_DIR=bin/
 
 JAVA_CLASSES_DIR=classes
 
 JAVA_FILES=$(shell find ./src -name "*.java")
 
-OBJS=$(addsuffix .class, $(basename $(JAVA_FILES)))
-
-CLEAN_LIST+=./classes javamake.pdb
+CLEAN_LIST+=./classes javamake.pdb bin/
 
 build:: $(JAVA_CLASSES_DIR) javamake.pdb
+
+jar:: javamake.pdb jsrcpc.jar
 
 %.pdb: $(JAVA_FILES) javamake.recompile 
 	@echo "starting java compilation."
@@ -44,6 +48,10 @@ build:: $(JAVA_CLASSES_DIR) javamake.pdb
 	    -d $(JAVA_CLASSES_DIR) $(subst ./,,$(JAVA_FILES)) -C-Xlint:unchecked \
 	    || (touch javamake.recompile && exit 1)
 	@echo "java compilation done."
+
+%.jar: $(JAVA_FILES) javamake.recompile
+	@mkdir -p $(BIN_DIR)
+	$(JAR) $(JAR_FLAGS) $(BIN_DIR)/$@ -C $(JAVA_CLASSES_DIR) de/
 
 javamake.recompile:
 	touch $@

@@ -30,6 +30,7 @@ public class POWER {
 
     /** SRCP syntax: SET <bus> POWER ON|OFF [<freetext>]*/
     public void set(boolean on, String freetext) throws SRCPException {
+        System.out.println("hrer");
         String power = "";
         if(on) {
           power = "ON";
