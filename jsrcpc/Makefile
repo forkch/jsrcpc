@@ -6,7 +6,7 @@
 # copyright : (C)  by Benjamin Mueller 
 # email     : akula@akula.ch
 # language  : make
-# version   : $Id: Makefile,v 1.2 2005-11-23 22:25:14 fork_ch Exp $
+# version   : $Id: Makefile,v 1.3 2006-01-02 15:55:52 fork_ch Exp $
 #
 #-------------------------------------------------------------------------
 
@@ -65,7 +65,7 @@ clean ::
 	$(if $(CLEAN_LIST),rm -rf $(CLEAN_LIST))
 
 test: build
-	$(JAVA) $(JAVA_FLAGS) RailControlGUI
+	$(JAVA) $(JAVA_FLAGS) de.dermoba.srcp.client.Test
 
 .PRECIOUS: javamake.pdb
 

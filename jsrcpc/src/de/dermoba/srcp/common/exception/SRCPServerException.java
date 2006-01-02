@@ -1,5 +1,5 @@
 /*
- * $RCSfile: SRCPWrongValueException.java,v $
+ * $RCSfile: SRCPServerException.java,v $
  *
  * History
  $Log: not supported by cvs2svn $
@@ -21,18 +21,13 @@ package de.dermoba.srcp.common.exception;
 /**
  *
  * @author  osc
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.1 $
   */
 
-public class SRCPWrongValueException extends SRCPCommandException {
+public abstract class SRCPServerException extends SRCPException {
 
-    public final static int NUMBER = 412;
-
-    public SRCPWrongValueException () {
-        super(NUMBER,"wrong value");
+    public SRCPServerException (int Number, String msg) {
+        super(Number,msg);
     }
 
-    public SRCPException cloneExc () {
-    	return new SRCPWrongValueException();
-    }
 }

@@ -4,16 +4,16 @@
  */
 package de.dermoba.srcp.client;
 
-import de.dermoba.srcp.common.SocketReader;
-import de.dermoba.srcp.common.SocketWriter;
-
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+
+import de.dermoba.srcp.common.SocketReader;
+import de.dermoba.srcp.common.SocketWriter;
+import de.dermoba.srcp.common.exception.SRCPException;
+import de.dermoba.srcp.common.exception.SRCPHostNotFoundException;
+import de.dermoba.srcp.common.exception.SRCPIOException;
 
 public class InfoChannel implements Runnable {
 
@@ -37,13 +37,16 @@ public class InfoChannel implements Runnable {
             out = new SocketWriter(socket);
             in = new SocketReader(socket);
 
-            new Thread(this).start();
+            listeners = new ArrayList<InfoDataListener>();
+
+            Thread infoThread = new Thread(this);
+            infoThread.setDaemon(true);
+            infoThread.start();
         } catch (UnknownHostException e) {
-            throw new SRCPException("Unknown host");
+            throw new SRCPHostNotFoundException();
         } catch (IOException e) {
-            throw new SRCPException("Unexpected IOExcpetion");
+            throw new SRCPIOException();
         }
-        listeners = new ArrayList<InfoDataListener>();
     }
 
     public void run() {

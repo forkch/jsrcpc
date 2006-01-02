@@ -1,5 +1,5 @@
 /*
- * $RCSfile: SRCPUnsufficientDataException.java,v $
+ * $RCSfile: SRCPOutOfResourcesException.java,v $
  *
  * History
  $Log: not supported by cvs2svn $
@@ -21,19 +21,19 @@ package de.dermoba.srcp.common.exception;
 /**
  *
  * @author  osc
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.1 $
   */
 
-public class SRCPUnsufficientDataException extends SRCPCommandException {
+public class SRCPOutOfResourcesException extends SRCPCommandException {
+    
+    public final static int NUMBER = 500;
 
-    public final static int NUMBER = 402;
-
-    public SRCPUnsufficientDataException () {
-        super(NUMBER,"unsufficient data");
+    public SRCPOutOfResourcesException () {
+        super(NUMBER,"out of resources");
     }
 
     public SRCPException cloneExc() {
-    	return new SRCPUnsufficientDataException ();
+    	return new SRCPOutOfResourcesException();
     }
+}
 
-}   

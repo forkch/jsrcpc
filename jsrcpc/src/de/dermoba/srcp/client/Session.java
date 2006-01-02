@@ -4,12 +4,16 @@
  */
 package de.dermoba.srcp.client;
 
+import de.dermoba.srcp.common.exception.SRCPException;
+
 public class Session {
 
     private String serverName = null;
     private int serverPort = 0;
+    private boolean oldProtocol;
     private CommandChannel commandChannel = null;
     private InfoChannel infoChannel = null;
+    private ReceivedExceptionHandler exceptionHandler;
 
     /**
      * creates a new SRCP session by connecting to serverName with port serverPort
@@ -19,9 +23,27 @@ public class Session {
      * @param pServerPort
      */
     public Session(String pServerName, int pServerPort) throws SRCPException {
+        this(pServerName, pServerPort, false);
+    }
+
+    /**
+     * creates a new SRCP session by connecting to serverName with port serverPort
+     * using one command session and one info session.
+     * 
+     * @param pServerName
+     * @param pServerPort
+     * @param pOldProtocol
+     */
+    public Session(String pServerName, int pServerPort, boolean pOldProtocol) 
+        throws SRCPException {
         serverName = pServerName;
         serverPort = pServerPort;
+        oldProtocol = pOldProtocol;
         infoChannel = new InfoChannel(serverName, serverPort);
+        try {
+            Thread.sleep(1000);
+        } catch (Exception x ) {
+        }
         commandChannel = new CommandChannel(serverName, serverPort);
     }
 
@@ -39,5 +61,13 @@ public class Session {
 
     public int getServerPort() {
         return serverPort;
+    }
+
+    public ReceivedExceptionHandler getExceptionHandler() {
+        return exceptionHandler;
+    }
+
+    public boolean isOldProtocol() {
+        return oldProtocol;
     }
 }

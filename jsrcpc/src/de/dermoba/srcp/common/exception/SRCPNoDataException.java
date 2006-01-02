@@ -1,5 +1,5 @@
 /*
- * $RCSfile: SRCPWrongValueException.java,v $
+ * $RCSfile: SRCPNoDataException.java,v $
  *
  * History
  $Log: not supported by cvs2svn $
@@ -21,18 +21,19 @@ package de.dermoba.srcp.common.exception;
 /**
  *
  * @author  osc
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.1 $
   */
 
-public class SRCPWrongValueException extends SRCPCommandException {
+public class SRCPNoDataException extends SRCPCommandException {
 
-    public final static int NUMBER = 412;
+    public final static int NUMBER = 416;
 
-    public SRCPWrongValueException () {
-        super(NUMBER,"wrong value");
+    public SRCPNoDataException () {
+        super(NUMBER,"no data");
     }
 
     public SRCPException cloneExc () {
-    	return new SRCPWrongValueException();
+    	return new SRCPNoDataException ();
     }
-}
+
+}   

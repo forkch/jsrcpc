@@ -4,6 +4,8 @@
  */
 package de.dermoba.srcp.client;
 
+import de.dermoba.srcp.common.exception.SRCPException;
+
 public class SERVER {
     private Session session;
     private int bus = 0;
@@ -13,12 +15,18 @@ public class SERVER {
     }
 
     /** SRCP syntax: RESET <bus> SERVER */
-    public void reset() throws SRCPException {
-        session.getCommandChannel().send("RESET " + bus + " SERVER ");
+    public String reset() throws SRCPException {
+        if(!session.isOldProtocol()) {
+            return session.getCommandChannel().send("RESET " + bus + " SERVER ");
+        }
+        return "";
     }
 
     /** SRCP syntax: TERM <bus> SERVER */
-    public void term() throws SRCPException {
-        session.getCommandChannel().send("TERM " + bus + " SERVER ");
+    public String term() throws SRCPException {
+        if(!session.isOldProtocol()) {
+            return session.getCommandChannel().send("TERM " + bus + " SERVER ");
+        }
+        return "";
     }
 }

@@ -4,15 +4,15 @@
  */
 package de.dermoba.srcp.client;
 
-import de.dermoba.srcp.common.SocketReader;
-import de.dermoba.srcp.common.SocketWriter;
-
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
+
+import de.dermoba.srcp.common.SocketReader;
+import de.dermoba.srcp.common.SocketWriter;
+import de.dermoba.srcp.common.exception.SRCPException;
+import de.dermoba.srcp.common.exception.SRCPHostNotFoundException;
+import de.dermoba.srcp.common.exception.SRCPIOException;
 
 public class CommandChannel {
 
@@ -33,18 +33,19 @@ public class CommandChannel {
             socket = new Socket(pServerName, pServerPort);
             out = new SocketWriter(socket);
             in = new SocketReader(socket);
-            sendReceive(null);
-            sendReceive("SET CONNECTIONMODE SRCP COMMAND\n");
-            sendReceive("GO\n");
+            System.out.println(in.read());
+            send("SET CONNECTIONMODE SRCP COMMAND");
+            send("GO");
         } catch (UnknownHostException e) {
-            throw new SRCPException("Unknown host");
+            throw new SRCPHostNotFoundException();
         } catch (IOException e) {
-            throw new SRCPException("Unexpected IOExcpetion");
+            throw new SRCPIOException();
         }
     }
 
     public String sendReceive(String output) throws SRCPException {
         String s = "";
+        System.out.println("TO SERVER: " + output);
         try {
         if (output != null) {
             output += "\n";
@@ -52,11 +53,12 @@ public class CommandChannel {
         }
             s = in.read();
             if (s == null) {
-                throw new SRCPException("Unexpected end-of-file");
+                throw new SRCPIOException();
             }
         } catch (IOException e) {
-            throw new SRCPException("Unexpected IOExcpetion");
+            throw new SRCPIOException();
         }
+        System.out.println("FROM SERVER: " + s);
         return s;
     }
 
@@ -68,6 +70,12 @@ public class CommandChannel {
      * @throws SRCPException
      */
     public String send(String pCommand) throws SRCPException {
-        return sendReceive(pCommand);
+        String response = sendReceive(pCommand);
+        SRCPException ex = 
+            ReceivedExceptionHandler.getInstance().parseResponse(response);
+        if(ex != null) {
+            throw ex;
+        }
+        return response;
     }
 }

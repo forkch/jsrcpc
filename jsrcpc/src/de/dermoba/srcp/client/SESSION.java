@@ -4,6 +4,8 @@
  */
 package de.dermoba.srcp.client;
 
+import de.dermoba.srcp.common.exception.SRCPException;
+
 public class SESSION {
     private Session session;
     private int bus = 0;
@@ -19,13 +21,14 @@ public class SESSION {
     }
 
     /** SRCP syntax: TERM <bus> SESSION */
-    public void term() throws SRCPException {
+    public String term() throws SRCPException {
         //TODO: get sessionID from server
+        return "";
     }
 
     /** SRCP syntax: TERM <bus> SESSION [<sessionid>] */
-    public void term(int pSessionID) throws SRCPException {
-        session.getCommandChannel().send("TERM " + bus + " SESSION " 
+    public String term(int pSessionID) throws SRCPException {
+        return session.getCommandChannel().send("TERM " + bus + " SESSION " 
           + pSessionID);
     }
 }

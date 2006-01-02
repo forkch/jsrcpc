@@ -4,6 +4,7 @@
  */
 package de.dermoba.srcp.client;
 
+import de.dermoba.srcp.common.exception.SRCPException;
 
 public class GL {
 
@@ -18,12 +19,12 @@ public class GL {
     }
 
     /** SRCP syntax: INIT <bus> GL <addr> <protocol> [<parameter>.. ] */
-    public void init(int pBus, int pAddress, String pProtocol) throws SRCPException {
-        init(pBus, pAddress, pProtocol, new String[0]);
+    public String init(int pBus, int pAddress, String pProtocol) throws SRCPException {
+        return init(pBus, pAddress, pProtocol, new String[0]);
     }
 
     /** SRCP syntax: INIT <bus> GL <addr> <protocol> [<parameter>.. ] */
-    public void init(int pBus, int pAddress, String pProtocol, String[] pParameters) throws SRCPException {
+    public String init(int pBus, int pAddress, String pProtocol, String[] pParameters) throws SRCPException {
         bus = pBus;
         address = pAddress;
         protocol = pProtocol;
@@ -33,26 +34,56 @@ public class GL {
             paramBuf.append(parameters[i]);
             paramBuf.append(" ");
         }
-        session.getCommandChannel().send("INIT " + bus + " GL " + address 
-            + " " + protocol + " " + paramBuf.toString());
+        if(!session.isOldProtocol()) {
+            return session.getCommandChannel().send("INIT " + bus + " GL " 
+                + address + " " + protocol + " " + paramBuf.toString());
+        }
+        return "";
     }
 
     /** SRCP syntax SET <bus> GL <addr> <drivemode> <V> <V_max> <f1> .. <fn> */
-    public void set(String drivemode, int v, int vmax, boolean[]f) throws SRCPException {
-        if (v < 0 || v > vmax) {
-            return;
+    public String set(String drivemode, int v, int vmax, boolean[]f) throws SRCPException {
+        //if (v < 0 || v > vmax) {
+            //return;
+        //}
+        StringBuffer functionBuf = new StringBuffer();
+        for(int i = 0; i < f.length; i++) {
+            if(f[i]) {
+                functionBuf.append("1 ");
+            } else {
+                functionBuf.append("0 ");
+            }
         }
-        session.getCommandChannel().send("SET " + bus + " GL " + address + " " + drivemode + " " + v + " " + vmax);
+
+        if(!session.isOldProtocol()) {
+            return session.getCommandChannel().send("SET " + bus + " GL " 
+                + address + " " + drivemode + " " + v + " " + vmax + " " 
+                + functionBuf);
+        } else {
+            return session.getCommandChannel().send("SET GL " + protocol + " " 
+                + address + " " + drivemode + " " + v + " " + vmax + " " 
+                + functionBuf);
+        }
     }
+
 
     /** SRCP syntax GET <bus> GL <addr> */
     public String get() throws SRCPException {
-        return session.getCommandChannel().send("GET " + bus + " GL " 
-            + address); 
+        if(!session.isOldProtocol()) {
+            return session.getCommandChannel().send("GET " + bus + " GL " 
+                + address); 
+        } else {
+            return session.getCommandChannel().send("GET GL " 
+                + address); 
+        }
     }
 
     /** SRCP syntax: TERM <bus> GL <addr> */
-    public void term() throws SRCPException {
-        session.getCommandChannel().send("TERM " + bus + " GL " + address);
+    public String term() throws SRCPException {
+        if(!session.isOldProtocol()) {
+            return session.getCommandChannel().send("TERM " + bus 
+                + " GL " + address);
+        }
+        return "";
     }
 }

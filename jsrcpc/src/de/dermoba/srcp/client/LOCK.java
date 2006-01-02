@@ -4,31 +4,43 @@
  */
 package de.dermoba.srcp.client;
 
+import de.dermoba.srcp.common.exception.SRCPException;
+
 public class LOCK {
     private Session session;
     private int bus;
 
-    public LOCK(Session pSession) {
+    public LOCK(Session pSession, int pBus) {
         session = pSession;
+        bus = pBus;
     }
 
     /** SRCP syntax GET <bus> LOCK <devicegroup> <addr> */
     public String get(String pDevicegroup, int pAddr) throws SRCPException {
-        return session.getCommandChannel().send("GET " + bus + " LOCK " 
-            + " " + pDevicegroup + " " + pAddr);
+        if(!session.isOldProtocol()) {
+            return session.getCommandChannel().send("GET " + bus + " LOCK " 
+                + " " + pDevicegroup + " " + pAddr);
+        }
+        return "";
     }
 
     /** SRCP syntax: SET <bus> LOCK ON|OFF [<freetext>]*/
-    public void set(String pDevicegroup, int pAddr, int pDuration) 
+    public String set(String pDevicegroup, int pAddr, int pDuration) 
         throws SRCPException {
 
-        session.getCommandChannel().send("SET " + bus + " LOCK " + pDevicegroup 
-            + " " + pAddr + " " + pDuration);
+        if(!session.isOldProtocol()) {
+            return session.getCommandChannel().send("SET " + bus + " LOCK " 
+                + pDevicegroup + " " + pAddr + " " + pDuration);
+        }
+        return "";
     }
 
     /** SRCP syntax: TERM <bus> LOCK */
-    public void term(String pDevicegroup, int pAddr) throws SRCPException {
-        session.getCommandChannel().send("SET " + bus + " LOCK " + pDevicegroup 
-            + " " + pAddr);
+    public String term(String pDevicegroup, int pAddr) throws SRCPException {
+        if(!session.isOldProtocol()) {
+            return session.getCommandChannel().send("SET " + bus + " LOCK " 
+                + pDevicegroup + " " + pAddr);
+        }
+        return "";
     }
 }

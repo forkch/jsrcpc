@@ -1,5 +1,5 @@
 /*
- * $RCSfile: SRCPUnsufficientDataException.java,v $
+ * $RCSfile: SRCPTemporarlyProhibitedException.java,v $
  *
  * History
  $Log: not supported by cvs2svn $
@@ -21,19 +21,19 @@ package de.dermoba.srcp.common.exception;
 /**
  *
  * @author  osc
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.1 $
   */
 
-public class SRCPUnsufficientDataException extends SRCPCommandException {
+public class SRCPTemporarlyProhibitedException extends SRCPCommandException {
 
-    public final static int NUMBER = 402;
+    public final static int NUMBER = 413;
 
-    public SRCPUnsufficientDataException () {
-        super(NUMBER,"unsufficient data");
+    public SRCPTemporarlyProhibitedException () {
+        super(NUMBER,"temporarly prohibited");
     }
 
     public SRCPException cloneExc() {
-    	return new SRCPUnsufficientDataException ();
+    	return new SRCPTemporarlyProhibitedException ();
     }
 
-}   
+}

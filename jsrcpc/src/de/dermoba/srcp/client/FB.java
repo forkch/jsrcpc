@@ -4,6 +4,8 @@
  */
 package de.dermoba.srcp.client;
 
+import de.dermoba.srcp.common.exception.SRCPException;
+
 public class FB {
 
     private Session session;
@@ -14,9 +16,9 @@ public class FB {
     }
 
     /** SRCP syntax: INIT <bus> FB <addr> <device protocol> [<parameter>.. ] */
-    public void init(int pBus) throws SRCPException {
+    public String init(int pBus) throws SRCPException {
         bus = pBus;
-        session.getCommandChannel().send("INIT " + bus + " FB ");
+        return session.getCommandChannel().send("INIT " + bus + " FB ");
     }
 
     /** SRCP syntax GET <bus> FB <addr> */
@@ -26,13 +28,13 @@ public class FB {
     }
 
     /** SRCP syntax: TERM <bus> FB */
-    public void term() throws SRCPException {
-        session.getCommandChannel().send("TERM " + bus + " FB ");
+    public String term() throws SRCPException {
+        return session.getCommandChannel().send("TERM " + bus + " FB ");
     }
 
     /** SRCP syntax: WAIT <bus> FB <addr> <value> <timeout>*/
-    public void term(int address, int value, int timeout) throws SRCPException {
-        session.getCommandChannel().send("WAIT " + bus + " FB " + address 
+    public String term(int address, int value, int timeout) throws SRCPException {
+        return session.getCommandChannel().send("WAIT " + bus + " FB " + address 
             + " " + value + " " + timeout);
     }
 

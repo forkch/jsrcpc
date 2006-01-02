@@ -1,5 +1,5 @@
 /*
- * $RCSfile: SRCPWrongValueException.java,v $
+ * $RCSfile: SRCPUnsupportedOperationException.java,v $
  *
  * History
  $Log: not supported by cvs2svn $
@@ -21,18 +21,18 @@ package de.dermoba.srcp.common.exception;
 /**
  *
  * @author  osc
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.1 $
   */
 
-public class SRCPWrongValueException extends SRCPCommandException {
+public class SRCPUnsupportedOperationException extends SRCPCommandException {
 
-    public final static int NUMBER = 412;
+    public final static int NUMBER = 423;
 
-    public SRCPWrongValueException () {
-        super(NUMBER,"wrong value");
+    public SRCPUnsupportedOperationException () {
+        super(NUMBER,"unsupported device");
     }
 
     public SRCPException cloneExc () {
-    	return new SRCPWrongValueException();
+    	return new SRCPUnsupportedOperationException();
     }
 }

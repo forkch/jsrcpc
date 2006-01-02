@@ -4,6 +4,8 @@
  */
 package de.dermoba.srcp.client;
 
+import de.dermoba.srcp.common.exception.SRCPException;
+
 public class DESCRIPTION {
     private Session session;
     private int bus = 0;
@@ -15,19 +17,29 @@ public class DESCRIPTION {
     /** SRCP syntax: GET <bus> DESCRIPTION */
     public String get(int pBus) throws SRCPException {
         bus = pBus;
-        return session.getCommandChannel().send("GET " + bus + " DESCRIPTION ");
+        if(!session.isOldProtocol()) {
+            return session.getCommandChannel().send(
+                "GET " + bus + " DESCRIPTION ");
+        }
+        return "";
     }
 
     /** SRCP syntax: GET <bus> DESCRIPTION <devicegroup> [<address>]*/
     public String get(int pBus, String pDevicegroup) throws SRCPException {
-        return session.getCommandChannel().send("GET " + bus + " DESCRIPTION "
-            + pDevicegroup);
+        if(!session.isOldProtocol()) {
+            return session.getCommandChannel().send("GET " + bus + " DESCRIPTION "
+                + pDevicegroup);
+        }
+        return "";
     }
 
     /** SRCP syntax: GET <bus> DESCRIPTION <devicegroup> [<address>]*/
     public String get(int pBus, String pDevicegroup, int pAddress) 
         throws SRCPException {
-        return session.getCommandChannel().send("GET " + bus + " DESCRIPTION "
-            + pDevicegroup + " " + pAddress);
-    }
+            if(!session.isOldProtocol()) {
+                return session.getCommandChannel().send("GET " + bus 
+                    + " DESCRIPTION " + pDevicegroup + " " + pAddress);
+            }
+        return "";
+        }
 }
