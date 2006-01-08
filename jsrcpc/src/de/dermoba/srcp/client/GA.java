@@ -8,13 +8,13 @@ import de.dermoba.srcp.common.exception.SRCPException;
 
 public class GA {
 
-    private Session session = null;
+    private SRCPSession session = null;
     private int bus;
     private int address;
     private String protocol;
     private String[] parameters;
 
-    public GA(Session pSession) {
+    public GA(SRCPSession pSession) {
         session = pSession;
     }
 

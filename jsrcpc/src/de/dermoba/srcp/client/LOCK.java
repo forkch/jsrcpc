@@ -7,10 +7,10 @@ package de.dermoba.srcp.client;
 import de.dermoba.srcp.common.exception.SRCPException;
 
 public class LOCK {
-    private Session session;
+    private SRCPSession session;
     private int bus;
 
-    public LOCK(Session pSession, int pBus) {
+    public LOCK(SRCPSession pSession, int pBus) {
         session = pSession;
         bus = pBus;
     }

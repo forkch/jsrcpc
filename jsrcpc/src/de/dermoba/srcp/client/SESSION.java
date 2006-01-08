@@ -7,10 +7,10 @@ package de.dermoba.srcp.client;
 import de.dermoba.srcp.common.exception.SRCPException;
 
 public class SESSION {
-    private Session session;
+    private SRCPSession session;
     private int bus = 0;
 
-    public SESSION(Session pSession) {
+    public SESSION(SRCPSession pSession) {
         session = pSession;
     }
 

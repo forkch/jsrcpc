@@ -8,10 +8,10 @@ import de.dermoba.srcp.common.exception.SRCPException;
 
 public class FB {
 
-    private Session session;
+    private SRCPSession session;
     private int bus;
 
-    public FB(Session pSession) {
+    public FB(SRCPSession pSession) {
         session = pSession;
     }
 

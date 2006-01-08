@@ -6,7 +6,7 @@ package de.dermoba.srcp.client;
 
 import de.dermoba.srcp.common.exception.SRCPException;
 
-public class Session {
+public class SRCPSession {
 
     private String serverName = null;
     private int serverPort = 0;
@@ -22,7 +22,7 @@ public class Session {
      * @param pServerName
      * @param pServerPort
      */
-    public Session(String pServerName, int pServerPort) throws SRCPException {
+    public SRCPSession(String pServerName, int pServerPort) throws SRCPException {
         this(pServerName, pServerPort, false);
     }
 
@@ -34,7 +34,7 @@ public class Session {
      * @param pServerPort
      * @param pOldProtocol
      */
-    public Session(String pServerName, int pServerPort, boolean pOldProtocol) 
+    public SRCPSession(String pServerName, int pServerPort, boolean pOldProtocol) 
         throws SRCPException {
         serverName = pServerName;
         serverPort = pServerPort;

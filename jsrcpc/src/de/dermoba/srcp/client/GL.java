@@ -8,13 +8,13 @@ import de.dermoba.srcp.common.exception.SRCPException;
 
 public class GL {
 
-    private Session session = null;
+    private SRCPSession session = null;
     private int bus = 0;
     private int address = 0;
     private String protocol = null;
     private String[] parameters = null;
 
-    public GL(Session pSession) {
+    public GL(SRCPSession pSession) {
         session = pSession;
     }
 

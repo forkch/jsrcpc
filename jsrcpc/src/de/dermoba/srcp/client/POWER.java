@@ -7,10 +7,10 @@ package de.dermoba.srcp.client;
 import de.dermoba.srcp.common.exception.SRCPException;
 
 public class POWER {
-    private Session session;
+    private SRCPSession session;
     private int bus;
 
-    public POWER(Session pSession) {
+    public POWER(SRCPSession pSession) {
         session = pSession;
     }
 
