@@ -2,8 +2,9 @@
  * Created on 26.09.2005
  *
  */
-package de.dermoba.srcp.client;
+package de.dermoba.srcp.devices;
 
+import de.dermoba.srcp.client.SRCPSession;
 import de.dermoba.srcp.common.exception.SRCPException;
 
 public class FB {

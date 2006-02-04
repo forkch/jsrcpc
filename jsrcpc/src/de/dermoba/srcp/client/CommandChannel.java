@@ -72,7 +72,7 @@ public class CommandChannel {
     public String send(String pCommand) throws SRCPException {
         String response = sendReceive(pCommand);
         SRCPException ex = 
-            ReceivedExceptionHandler.getInstance().parseResponse(response);
+            ReceivedExceptionFactory.parseResponse(response);
         if(ex != null) {
             throw ex;
         }

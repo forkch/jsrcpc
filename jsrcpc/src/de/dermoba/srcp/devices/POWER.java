@@ -2,8 +2,9 @@
  * Created on 31.10.2005
  *
  */
-package de.dermoba.srcp.client;
+package de.dermoba.srcp.devices;
 
+import de.dermoba.srcp.client.SRCPSession;
 import de.dermoba.srcp.common.exception.SRCPException;
 
 public class POWER {
@@ -25,11 +26,10 @@ public class POWER {
 
     /** SRCP syntax GET <bus> POWER <addr> */
     public String get() throws SRCPException {
-        if(!session.isOldProtocol()) {
-            return session.getCommandChannel().send("GET " + bus + " POWER ");
-        } else {
+        if(session.isOldProtocol()) {
             return session.getCommandChannel().send("GET POWER ");
         }
+        return session.getCommandChannel().send("GET " + bus + " POWER ");
     }
 
     /** SRCP syntax: SET <bus> POWER ON|OFF [<freetext>]*/
@@ -45,19 +45,18 @@ public class POWER {
         } else {
             power = "OFF";
         }
-        if(!session.isOldProtocol()) {
-            return session.getCommandChannel().send("SET " + bus + " POWER " + power 
-                + " " + freetext);
-        } else {
+        if(session.isOldProtocol()) {
             return session.getCommandChannel().send("SET POWER " + power);
         }
+        return session.getCommandChannel().send("SET " + bus + " POWER " + power 
+                + " " + freetext);
     }
 
     /** SRCP syntax: TERM <bus> POWER */
     public String term() throws SRCPException {
-        if(!session.isOldProtocol()) {
-            return session.getCommandChannel().send("TERM " + bus + " POWER ");
+        if(session.isOldProtocol()) {
+            return "";
         }
-        return "";
+        return session.getCommandChannel().send("TERM " + bus + " POWER ");
     }
 }

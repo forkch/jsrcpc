@@ -13,7 +13,7 @@ public class SRCPSession {
     private boolean oldProtocol;
     private CommandChannel commandChannel = null;
     private InfoChannel infoChannel = null;
-    private ReceivedExceptionHandler exceptionHandler;
+    private ReceivedExceptionFactory exceptionHandler;
 
     /**
      * creates a new SRCP session by connecting to serverName with port serverPort
@@ -43,6 +43,7 @@ public class SRCPSession {
         try {
             Thread.sleep(1000);
         } catch (Exception x ) {
+        	// no interrupt expected :-)
         }
         commandChannel = new CommandChannel(serverName, serverPort);
     }
@@ -63,7 +64,7 @@ public class SRCPSession {
         return serverPort;
     }
 
-    public ReceivedExceptionHandler getExceptionHandler() {
+    public ReceivedExceptionFactory getExceptionHandler() {
         return exceptionHandler;
     }
 
