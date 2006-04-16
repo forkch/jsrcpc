@@ -45,8 +45,10 @@ public class GL {
     /** SRCP syntax SET <bus> GL <addr> <drivemode> <V> <V_max> <f1> .. <fn> */
     public String set(String drivemode, int v, int vmax, boolean[]f) throws SRCPException {
         StringBuffer functionBuf = new StringBuffer();
-        for(int i = 0; i < f.length; i++) {
-            functionBuf.append(f[i] ? "1 " : "0 ");
+        if(f != null) {
+        	for(int i = 0; i < f.length; i++) {
+        		functionBuf.append(f[i] ? "1 " : "0 ");
+        	}
         }
         if(session.isOldProtocol()) {
             return session.getCommandChannel().send("SET GL " + protocol + " " 

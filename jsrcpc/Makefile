@@ -6,7 +6,7 @@
 # copyright : (C)  by Benjamin Mueller 
 # email     : akula@akula.ch
 # language  : make
-# version   : $Id: Makefile,v 1.3 2006-01-02 15:55:52 fork_ch Exp $
+# version   : $Id: Makefile,v 1.4 2006-04-16 11:14:16 fork_ch Exp $
 #
 #-------------------------------------------------------------------------
 
@@ -19,56 +19,7 @@
 #
 #-------------------------------------------------------------------------
 
-JAVAMAKE=java -jar ./lib/javamake.jar
-EXTRALIBS=
-CP=$(CLASSPATH):$(EXTRALIBS):./classes
-COMPILER_FLAGS=-classpath $(CP)
-JAVA=/usr/bin/java
-JAVA_FLAGS=-classpath $(CP)
-JAR=/usr/bin/jar
-JAR_FLAGS=cvf
+include ~/.make/common.mk
 
-BIN_DIR=bin/
-
-JAVA_CLASSES_DIR=classes
-
-JAVA_FILES=$(shell find ./src -name "*.java")
-
-CLEAN_LIST+=./classes javamake.pdb bin/
-
-build:: $(JAVA_CLASSES_DIR) javamake.pdb
-
-jar:: javamake.pdb jsrcpc.jar
-
-%.pdb: $(JAVA_FILES) javamake.recompile 
-	@echo "starting java compilation."
-	@mkdir -p $(JAVA_CLASSES_DIR)
-	$(JAVAMAKE) -pdb $@ \
-	    -classpath $(subst $(space),$(colon), $(CP)) \
-	    -d $(JAVA_CLASSES_DIR) $(subst ./,,$(JAVA_FILES)) -C-Xlint:unchecked \
-	    || (touch javamake.recompile && exit 1)
-	@echo "java compilation done."
-
-%.jar: $(JAVA_FILES) javamake.recompile
-	@mkdir -p $(BIN_DIR)
-	$(JAR) $(JAR_FLAGS) $(BIN_DIR)/$@ -C $(JAVA_CLASSES_DIR) de/
-
-javamake.recompile:
-	touch $@
-
-java-build: $(JAVA_CLASSES_DIR) $(JAVAMAKE_PDB)
-
-$(JAVA_CLASSES_DIR):
-	mkdir -p classes
-
-clean ::
-	$(if $(CLEAN_LIST),rm -rf $(CLEAN_LIST))
-
-test: build
-	$(JAVA) $(JAVA_FLAGS) de.dermoba.srcp.client.Test
-
-.PRECIOUS: javamake.pdb
-
-.PHONY: build clean test
-
+build:: java-build lib/jsrcpc.jar
 # " vim:ts=4

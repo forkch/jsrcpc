@@ -3,6 +3,8 @@ package de.dermoba.srcp.client;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Properties;
 
 import de.dermoba.srcp.common.TokenizedLine;
@@ -20,15 +22,15 @@ public class ReceivedExceptionFactory extends Properties {
 	
 	private static ReceivedExceptionFactory instance = null;
 	
-	private final String EXCEPTIONS_FILE = "../res/srcp_exceptions.properties";
+	//private final String EXCEPTIONS_FILE = "res/srcp_exceptions.properties";
 
 	private ReceivedExceptionFactory() throws SRCPIOException {
 		try {
-			File f = new File(EXCEPTIONS_FILE);
-			FileInputStream fis = new FileInputStream(f);
-			load(fis);
+			URL url = this.getClass().getResource("/res/srcp_exceptions.properties");
+			System.out.println(url);
+			load(url.openStream());
 		} catch (IOException x) {
-			throw new SRCPIOException();
+			throw new SRCPIOException(x);
 		}
 	}
 	

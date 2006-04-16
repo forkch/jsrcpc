@@ -11,6 +11,10 @@ public class SRCPInternalErrorException extends SRCPException {
 	public SRCPInternalErrorException() {
         super(NUMBER,"Internal server error");
 	}
+
+	public SRCPInternalErrorException(Throwable cause) {
+        super(NUMBER,"Internal server error", cause);
+	}
 	
 	public SRCPException cloneExc() {
     	return new SRCPInternalErrorException();

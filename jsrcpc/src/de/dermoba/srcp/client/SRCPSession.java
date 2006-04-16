@@ -47,6 +47,10 @@ public class SRCPSession {
         }
         commandChannel = new CommandChannel(serverName, serverPort);
     }
+    
+    public void connect() throws SRCPException {
+    	commandChannel.connect();
+    }
 
     public CommandChannel getCommandChannel() {
         return commandChannel;

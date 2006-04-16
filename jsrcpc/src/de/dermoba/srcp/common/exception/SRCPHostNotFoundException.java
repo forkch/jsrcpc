@@ -8,6 +8,10 @@ public class SRCPHostNotFoundException extends SRCPServerException {
         super(NUMBER,"host not found");
     }
 
+	public SRCPHostNotFoundException (Throwable cause) {
+        super(NUMBER,"host not found", cause);
+    }
+
 	public SRCPException cloneExc() {
 		return new SRCPHostNotFoundException();
 	}
