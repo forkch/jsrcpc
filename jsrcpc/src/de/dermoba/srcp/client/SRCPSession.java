@@ -49,7 +49,13 @@ public class SRCPSession {
     }
     
     public void connect() throws SRCPException {
+    	infoChannel.connect();
     	commandChannel.connect();
+    }
+    
+    public void disconnect() throws SRCPException {
+    	commandChannel.disconnect();
+    	infoChannel.disconnect();
     }
 
     public CommandChannel getCommandChannel() {

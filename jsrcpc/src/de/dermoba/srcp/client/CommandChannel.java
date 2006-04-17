@@ -44,7 +44,7 @@ public class CommandChannel {
 		} catch (UnknownHostException e) {
 			throw new SRCPHostNotFoundException();
 		} catch (IOException e) {
-			throw new SRCPIOException();
+			throw new SRCPIOException(e);
 		}
 	}
 	
@@ -57,6 +57,14 @@ public class CommandChannel {
 	}
 		send("SET CONNECTIONMODE SRCP COMMAND");
 		send("GO");
+	}
+
+	public void disconnect() throws SRCPIOException {
+		try {
+			socket.close();
+		} catch (IOException e) {
+			throw new SRCPIOException(e);
+		}
 	}
 
 	public String sendReceive(String output) throws SRCPException {
@@ -105,4 +113,5 @@ public class CommandChannel {
 	public void removeCommandDataListener(CommandDataListener l) {
 		listeners.remove(l);
 	}
+
 }

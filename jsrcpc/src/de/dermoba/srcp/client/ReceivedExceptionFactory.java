@@ -22,12 +22,11 @@ public class ReceivedExceptionFactory extends Properties {
 	
 	private static ReceivedExceptionFactory instance = null;
 	
-	//private final String EXCEPTIONS_FILE = "res/srcp_exceptions.properties";
+	private final String EXCEPTIONS_FILE = "/srcp_exceptions.properties";
 
 	private ReceivedExceptionFactory() throws SRCPIOException {
 		try {
-			URL url = this.getClass().getResource("/res/srcp_exceptions.properties");
-			System.out.println(url);
+			URL url = this.getClass().getResource(EXCEPTIONS_FILE);
 			load(url.openStream());
 		} catch (IOException x) {
 			throw new SRCPIOException(x);
