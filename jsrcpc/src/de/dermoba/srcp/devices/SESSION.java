@@ -22,7 +22,7 @@ public class SESSION {
     }
 
     /** SRCP syntax: TERM <bus> SESSION */
-    public String term() throws SRCPException {
+    public String term() {
         //TODO: get sessionID from server
         return "";
     }
