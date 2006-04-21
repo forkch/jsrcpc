@@ -1,9 +1,6 @@
 package de.dermoba.srcp.client;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Properties;
 
@@ -22,6 +19,7 @@ public class ReceivedExceptionFactory extends Properties {
 	
 	private static ReceivedExceptionFactory instance = null;
 	
+
 	private final String EXCEPTIONS_FILE = "/srcp_exceptions.properties";
 
 	private ReceivedExceptionFactory() throws SRCPIOException {

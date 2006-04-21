@@ -43,6 +43,9 @@ public class TokenizedLine {
         return tokens.get(tokenPosition++).trim();
     }
 
+    public double nextDoubleToken() throws SRCPUnsufficientDataException, NumberFormatException  {
+    	return Double.parseDouble(nextStringToken());
+    }
     public int nextIntToken() throws SRCPUnsufficientDataException, NumberFormatException  {
         return Integer.parseInt(nextStringToken());
     }

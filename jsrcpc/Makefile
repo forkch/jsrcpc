@@ -6,7 +6,7 @@
 # copyright : (C)  by Benjamin Mueller 
 # email     : akula@akula.ch
 # language  : make
-# version   : $Id: Makefile,v 1.4 2006-04-16 11:14:16 fork_ch Exp $
+# version   : $Id: Makefile,v 1.5 2006-04-21 07:31:33 fork_ch Exp $
 #
 #-------------------------------------------------------------------------
 
@@ -21,5 +21,10 @@
 
 include ~/.make/common.mk
 
-build:: java-build lib/jsrcpc.jar
+JAR_FILE=lib/jsrcpc.jar
+
+build:: java-build $(JAR_FILE)
+
+test: build
+	java -classpath $(CP) de.dermoba.srcp.client.Test
 # " vim:ts=4
