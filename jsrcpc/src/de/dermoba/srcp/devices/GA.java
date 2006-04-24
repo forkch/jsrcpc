@@ -71,4 +71,28 @@ public class GA {
         }
         return session.getCommandChannel().send("TERM " + bus + " GA " + address);
     }
+
+	public int getAddress() {
+		return address;
+	}
+
+	public void setAddress(int address) {
+		this.address = address;
+	}
+
+	public int getBus() {
+		return bus;
+	}
+
+	public void setBus(int bus) {
+		this.bus = bus;
+	}
+
+	public String[] getParameters() {
+		return parameters;
+	}
+
+	public void setParameters(String[] parameters) {
+		this.parameters = parameters;
+	}
 }
