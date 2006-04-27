@@ -1,8 +1,8 @@
 package de.dermoba.srcp.devices;
 
 public interface GLInfoListener {
-	public void GLset(double timestamp, int bus, int address, int drivemode,
-			int v, int v_max, boolean[] function);
+	public void GLset(double timestamp, int bus, int address, String drivemode,
+			int v, int vMax, boolean[] functions);
 
 	public void GLinit(double timestamp, int bus, int address, String protocol,
 			String[] params);

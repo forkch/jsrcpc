@@ -85,7 +85,6 @@ public class InfoChannel implements Runnable {
 		infoThread.interrupt();
 		try {
 			socket.close();
-			System.out.println("here");
 		} catch (IOException e) {
 			throw new SRCPIOException(e);
 		}
@@ -135,6 +134,8 @@ public class InfoChannel implements Runnable {
 
 						while (tokenLine.hasMoreElements()) {
 							// TODO: get params
+
+							tokenLine.nextStringToken();
 						}
 						for (GAInfoListener l : GAListeners) {
 							l.GAinit(timestamp, bus, address, protocol, null);
@@ -145,7 +146,47 @@ public class InfoChannel implements Runnable {
 						}
 					}
 				} else if (deviceGroup.equals("GL")) {
-					// TODO: parse GL-Info
+					
+					int address = tokenLine.nextIntToken();
+					
+					if (number == 100) {
+						String drivemode = tokenLine.nextStringToken();
+						int v = tokenLine.nextIntToken();
+						int vMax = tokenLine.nextIntToken();
+						List<Boolean> functions1 = new ArrayList<Boolean>();
+						
+						while(tokenLine.hasMoreElements()) {
+							String value = tokenLine.nextStringToken();
+							if(value.equals("0")) {
+								functions1.add(new Boolean(false));
+							} else if(value.equals("1")) {
+								functions1.add(new Boolean(true));
+							}
+						}
+						boolean[] functions2 = new boolean[functions1.size()];
+						int i = 0;
+						for(Boolean b : functions1) {
+							functions2[i] = b.booleanValue();
+						}
+						for (GLInfoListener l : GLListeners) {
+							l.GLset(timestamp, bus, address, drivemode, v, vMax, functions2);
+						}
+						
+					} else if (number == 101) {
+						String protocol = tokenLine.nextStringToken();
+						while (tokenLine.hasMoreElements()) {
+							// TODO: get params
+							tokenLine.nextStringToken();
+						}
+						for (GLInfoListener l : GLListeners) {
+							l.GLinit(timestamp, bus, address, protocol, null);
+						}
+					} else if (number == 102) {
+						for (GLInfoListener l : GLListeners) {
+							l.GLterm(timestamp, bus, address);
+						}
+					}
+					
 				} else if (deviceGroup.equals("POWER")) {
 					// TODO: parse POWER-Info
 				} else if (deviceGroup.equals("DESCRIPTION")) {
@@ -167,5 +208,9 @@ public class InfoChannel implements Runnable {
 
 	public void addGAInfoListener(GAInfoListener l) {
 		GAListeners.add(l);
+	}
+	
+	public void addGLInfoListener(GLInfoListener l) {
+		GLListeners.add(l);
 	}
 }

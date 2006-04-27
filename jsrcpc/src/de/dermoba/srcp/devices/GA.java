@@ -44,7 +44,7 @@ public class GA {
 
     /** SRCP syntax SET <bus> GA <addr> <port> <value> <delay> */
     public String set(int port, int value, int delay) throws SRCPException {
-        if(session.isOldProtocol()) {
+    	if(session.isOldProtocol()) {
             return session.getCommandChannel().send(
                     "SET  GA " + protocol + " " + address + " " 
                     + port + " " + value + " " + delay);
@@ -72,16 +72,9 @@ public class GA {
         return session.getCommandChannel().send("TERM " + bus + " GA " + address);
     }
 
-	public int getAddress() {
-		return address;
-	}
-
+	
 	public void setAddress(int address) {
 		this.address = address;
-	}
-
-	public int getBus() {
-		return bus;
 	}
 
 	public void setBus(int bus) {

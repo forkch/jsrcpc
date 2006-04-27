@@ -79,4 +79,12 @@ public class GL {
         return session.getCommandChannel().send("TERM " + bus 
                 + " GL " + address);
     }
+
+	public void setAddress(int address) {
+		this.address = address;
+	}
+
+	public void setBus(int bus) {
+		this.bus = bus;
+	}
 }
