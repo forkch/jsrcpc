@@ -6,7 +6,7 @@
 # copyright : (C)  by Benjamin Mueller 
 # email     : akula@akula.ch
 # language  : make
-# version   : $Id: Makefile,v 1.5 2006-04-21 07:31:33 fork_ch Exp $
+# version   : $Id: Makefile,v 1.6 2006-04-30 18:43:59 fork_ch Exp $
 #
 #-------------------------------------------------------------------------
 
@@ -22,6 +22,7 @@
 include ~/.make/common.mk
 
 JAR_FILE=lib/jsrcpc.jar
+CLEAN_LIST=$(JAR_FILE)
 
 build:: java-build $(JAR_FILE)
 
