@@ -82,7 +82,6 @@ public class InfoChannel implements Runnable {
 	}
 
 	public void disconnect() throws SRCPException {
-		infoThread.interrupt();
 		try {
 			socket.close();
 		} catch (IOException e) {
@@ -96,13 +95,12 @@ public class InfoChannel implements Runnable {
 			out.write("SET CONNECTIONMODE SRCP INFO\n");
 			s = in.read();
 			out.write("GO\n");
-			while (!Thread.currentThread().isInterrupted()) {
+			while (true) {
 				s = in.read();
 				if (s == null)
 					break;
 				informListener(s);
 			}
-			System.out.println("interrupted");
 		} catch (IOException e) {
 			// what to do, if IOException on info channel?
 		}
@@ -153,23 +151,19 @@ public class InfoChannel implements Runnable {
 						String drivemode = tokenLine.nextStringToken();
 						int v = tokenLine.nextIntToken();
 						int vMax = tokenLine.nextIntToken();
-						List<Boolean> functions1 = new ArrayList<Boolean>();
-						
+						boolean[] functions = new boolean[5];
+						int i = 0;
 						while(tokenLine.hasMoreElements()) {
 							String value = tokenLine.nextStringToken();
 							if(value.equals("0")) {
-								functions1.add(new Boolean(false));
+								functions[i] = false;
 							} else if(value.equals("1")) {
-								functions1.add(new Boolean(true));
+								functions[i] = true;
 							}
-						}
-						boolean[] functions2 = new boolean[functions1.size()];
-						int i = 0;
-						for(Boolean b : functions1) {
-							functions2[i] = b.booleanValue();
+							i++;
 						}
 						for (GLInfoListener l : GLListeners) {
-							l.GLset(timestamp, bus, address, drivemode, v, vMax, functions2);
+							l.GLset(timestamp, bus, address, drivemode, v, vMax, functions);
 						}
 						
 					} else if (number == 101) {
