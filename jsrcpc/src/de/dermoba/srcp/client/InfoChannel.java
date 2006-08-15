@@ -2,10 +2,12 @@
  * Created on 26.09.2005
  *
  */
+
 package de.dermoba.srcp.client;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,192 +21,228 @@ import de.dermoba.srcp.common.exception.SRCPIOException;
 import de.dermoba.srcp.common.exception.SRCPUnsufficientDataException;
 import de.dermoba.srcp.devices.GAInfoListener;
 import de.dermoba.srcp.devices.GLInfoListener;
+import de.dermoba.srcp.devices.LOCKInfoListener;
 
 public class InfoChannel implements Runnable {
 
-	private Socket socket = null;
+    private Socket                      socket    = null;
+    private SocketWriter                out       = null;
+    private SocketReader                in        = null;
+    private String                      serverName;
+    private int                         serverPort;
+    private int                         id;
+    private List<GAInfoListener>        GAListeners;
+    private List<GLInfoListener>        GLListeners;
+    private List<LOCKInfoListener>      LOCKListeners;
+    // private List<POWERInfoListener> POWERListeners;
+    // private List<DESCRIPTIONInfoListener> DESCRIPTIONListeners;
+    // private List<SESSIONInfoListener> SESSIONListeners;
+    private ArrayList<InfoDataListener> listeners = null;
+    private Thread                      infoThread;
 
-	private SocketWriter out = null;
+    /**
+     * creates a new SRCP connection on the info channel to handle all info
+     * communication.
+     * 
+     * @param pServerName
+     *            server name or IP address
+     * @param pServerPort
+     *            TCP port number
+     * @throws SRCPException
+     */
+    public InfoChannel(String pServerName, int pServerPort) {
+        serverName = pServerName;
+        serverPort = pServerPort;
+        listeners = new ArrayList<InfoDataListener>();
 
-	private SocketReader in = null;
+        GAListeners = new ArrayList<GAInfoListener>();
+        GLListeners = new ArrayList<GLInfoListener>();
+        LOCKListeners = new ArrayList<LOCKInfoListener>();
+    }
 
-	private String serverName;
+    public void connect() throws SRCPException {
+        try {
+            socket = new Socket(serverName, serverPort);
+            out = new SocketWriter(socket);
+            in = new SocketReader(socket);
 
-	private int serverPort;
+            infoThread = new Thread(this);
+            infoThread.setDaemon(true);
+            infoThread.start();
 
-	private List<GAInfoListener> GAListeners;
+        } catch (UnknownHostException e) {
+            throw new SRCPHostNotFoundException();
+        } catch (IOException e) {
+            throw new SRCPIOException();
+        }
 
-	private List<GLInfoListener> GLListeners;
-	//private List<POWERInfoListener> POWERListeners;
-	//private List<DESCRIPTIONInfoListener> DESCRIPTIONListeners;
-	//private List<SESSIONInfoListener> SESSIONListeners;
+    }
 
-	private ArrayList<InfoDataListener> listeners = null;
+    public void disconnect() throws SRCPException {
+        try {
+            socket.close();
+        } catch (IOException e) {
+            throw new SRCPIOException(e);
+        }
+    }
 
-	private Thread infoThread;
+    public void run() {
+        try {
+            String s = in.read();
+            out.write("SET CONNECTIONMODE SRCP INFO\n");
+            s = in.read();
+            out.write("GO\n");
+            s = in.read();
+            String[] sSplitted = s.split(" ");
+            id = Integer.parseInt(sSplitted[4]);
+            while (true) {
+                s = in.read();
+                if (s == null)
+                    break;
+                informListener(s);
+            }
+        } catch (SocketException e) {
+            return;
+        } catch (IOException e) {
+            // what to do, if IOException on info channel?
+        }
+    }
 
-	/**
-	 * creates a new SRCP connection on the info channel to handle all info
-	 * communication.
-	 * 
-	 * @param pServerName
-	 *            server name or IP address
-	 * @param pServerPort
-	 *            TCP port number
-	 * @throws SRCPException
-	 */
-	public InfoChannel(String pServerName, int pServerPort) {
-		serverName = pServerName;
-		serverPort = pServerPort;
-		listeners = new ArrayList<InfoDataListener>();
-		
-		GAListeners = new ArrayList<GAInfoListener>();
-		GLListeners = new ArrayList<GLInfoListener>();
+    public void addInfoDataListener(InfoDataListener listener) {
+        listeners.add(listener);
+    }
 
-	}
+    private void informListener(String s) {
+        try {
+            TokenizedLine tokenLine = new TokenizedLine(s);
+            double timestamp = tokenLine.nextDoubleToken();
+            int number = tokenLine.nextIntToken();
+            if (number < 200) {
+                tokenLine.nextStringToken();
+                int bus = tokenLine.nextIntToken();
+                String deviceGroup = tokenLine.nextStringToken();
+                if (deviceGroup.equals("GA")) {
+                    handleGA(tokenLine, timestamp, number, bus);
+                } else if (deviceGroup.equals("GL")) {
+                    handleGL(tokenLine, timestamp, number, bus);
+                } else if (deviceGroup.equals("LOCK")) {
+                    handleLOCK(tokenLine, timestamp, number, bus);
+                } else if (deviceGroup.equals("POWER")) {
+                    // TODO: parse POWER-Info
+                } else if (deviceGroup.equals("DESCRIPTION")) {
+                    // TODO: parse DESCRIPTION-Info
+                } else if (deviceGroup.equals("SESSION")) {
+                    // TODO: parse SESSION-Info
+                }
+            }
+        } catch (SRCPUnsufficientDataException e) {
+            e.printStackTrace();
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+        }
 
-	public void connect() throws SRCPException {
-		try {
-			socket = new Socket(serverName, serverPort);
-			out = new SocketWriter(socket);
-			in = new SocketReader(socket);
+        for (int i = 0; i < listeners.size(); i++) {
+            listeners.get(i).infoDataReceived(s);
+        }
+    }
 
-			infoThread = new Thread(this);
-			infoThread.setDaemon(true);
-			infoThread.start();
+    private void handleGL(TokenizedLine tokenLine, double timestamp,
+        int number, int bus) throws SRCPUnsufficientDataException {
+        int address = tokenLine.nextIntToken();
 
-		} catch (UnknownHostException e) {
-			throw new SRCPHostNotFoundException();
-		} catch (IOException e) {
-			throw new SRCPIOException();
-		}
+        if (number == 100) {
+            String drivemode = tokenLine.nextStringToken();
+            int v = tokenLine.nextIntToken();
+            int vMax = tokenLine.nextIntToken();
+            boolean[] functions = new boolean[5];
+            int i = 0;
+            while (tokenLine.hasMoreElements()) {
+                String value = tokenLine.nextStringToken();
+                if (value.equals("0")) {
+                    functions[i] = false;
+                } else if (value.equals("1")) {
+                    functions[i] = true;
+                }
+                i++;
+            }
+            for (GLInfoListener l : GLListeners) {
+                l.GLset(timestamp, bus, address, drivemode, v, vMax, functions);
+            }
 
-	}
+        } else if (number == 101) {
+            String protocol = tokenLine.nextStringToken();
+            while (tokenLine.hasMoreElements()) {
+                // TODO: get params
+                tokenLine.nextStringToken();
+            }
+            for (GLInfoListener l : GLListeners) {
+                l.GLinit(timestamp, bus, address, protocol, null);
+            }
+        } else if (number == 102) {
+            for (GLInfoListener l : GLListeners) {
+                l.GLterm(timestamp, bus, address);
+            }
+        }
+    }
 
-	public void disconnect() throws SRCPException {
-		try {
-			socket.close();
-		} catch (IOException e) {
-			throw new SRCPIOException(e);
-		}
-	}
+    private void handleGA(TokenizedLine tokenLine, double timestamp,
+        int number, int bus) throws SRCPUnsufficientDataException {
+        int address = tokenLine.nextIntToken();
+        if (number == 100) {
+            int port = tokenLine.nextIntToken();
+            int value = tokenLine.nextIntToken();
+            for (GAInfoListener l : GAListeners) {
+                l.GAset(timestamp, bus, address, port, value);
+            }
+        } else if (number == 101) {
+            String protocol = tokenLine.nextStringToken();
 
-	public void run() {
-		try {
-			String s = in.read();
-			out.write("SET CONNECTIONMODE SRCP INFO\n");
-			s = in.read();
-			out.write("GO\n");
-			while (true) {
-				s = in.read();
-				if (s == null)
-					break;
-				informListener(s);
-			}
-		} catch (IOException e) {
-			// what to do, if IOException on info channel?
-		}
-	}
+            while (tokenLine.hasMoreElements()) {
+                // TODO: get params
 
-	public void addInfoDataListener(InfoDataListener listener) {
-		listeners.add(listener);
-	}
+                tokenLine.nextStringToken();
+            }
+            for (GAInfoListener l : GAListeners) {
+                l.GAinit(timestamp, bus, address, protocol, null);
+            }
+        } else if (number == 102) {
+            for (GAInfoListener l : GAListeners) {
+                l.GAterm(timestamp, bus, address);
+            }
+        }
+    }
 
-	private void informListener(String s) {
-		try {
-			TokenizedLine tokenLine = new TokenizedLine(s);
-			double timestamp = tokenLine.nextDoubleToken();
-			int number = tokenLine.nextIntToken();
-			if (number < 200) {
-				tokenLine.nextStringToken();
-				int bus = tokenLine.nextIntToken();
-				String deviceGroup = tokenLine.nextStringToken();
-				if (deviceGroup.equals("GA")) {
-					int address = tokenLine.nextIntToken();
-					if (number == 100) {
-						int port = tokenLine.nextIntToken();
-						int value = tokenLine.nextIntToken();
-						for (GAInfoListener l : GAListeners) {
-							l.GAset(timestamp, bus, address, port, value);
-						}
-					} else if (number == 101) {
-						String protocol = tokenLine.nextStringToken();
+    private void handleLOCK(TokenizedLine tokenLine, double timestamp,
+        int number, int bus) throws SRCPUnsufficientDataException {
 
-						while (tokenLine.hasMoreElements()) {
-							// TODO: get params
+        String lockedDeviceGroup = tokenLine.nextStringToken();
+        int address = tokenLine.nextIntToken();
+        if (number == 100) {
+            int duration = tokenLine.nextIntToken();
+            int sessionID = tokenLine.nextIntToken();
+            for(LOCKInfoListener l : LOCKListeners) {
+                l.LOCKset(timestamp, bus, address, lockedDeviceGroup, duration, sessionID);
+            }
+        } else if (number == 102) {
+            for(LOCKInfoListener l : LOCKListeners) {
+                l.LOCKterm(timestamp, bus, address, lockedDeviceGroup);
+            }
+        }
+    }
 
-							tokenLine.nextStringToken();
-						}
-						for (GAInfoListener l : GAListeners) {
-							l.GAinit(timestamp, bus, address, protocol, null);
-						}
-					} else if (number == 102) {
-						for (GAInfoListener l : GAListeners) {
-							l.GAterm(timestamp, bus, address);
-						}
-					}
-				} else if (deviceGroup.equals("GL")) {
-					
-					int address = tokenLine.nextIntToken();
-					
-					if (number == 100) {
-						String drivemode = tokenLine.nextStringToken();
-						int v = tokenLine.nextIntToken();
-						int vMax = tokenLine.nextIntToken();
-						boolean[] functions = new boolean[5];
-						int i = 0;
-						while(tokenLine.hasMoreElements()) {
-							String value = tokenLine.nextStringToken();
-							if(value.equals("0")) {
-								functions[i] = false;
-							} else if(value.equals("1")) {
-								functions[i] = true;
-							}
-							i++;
-						}
-						for (GLInfoListener l : GLListeners) {
-							l.GLset(timestamp, bus, address, drivemode, v, vMax, functions);
-						}
-						
-					} else if (number == 101) {
-						String protocol = tokenLine.nextStringToken();
-						while (tokenLine.hasMoreElements()) {
-							// TODO: get params
-							tokenLine.nextStringToken();
-						}
-						for (GLInfoListener l : GLListeners) {
-							l.GLinit(timestamp, bus, address, protocol, null);
-						}
-					} else if (number == 102) {
-						for (GLInfoListener l : GLListeners) {
-							l.GLterm(timestamp, bus, address);
-						}
-					}
-					
-				} else if (deviceGroup.equals("POWER")) {
-					// TODO: parse POWER-Info
-				} else if (deviceGroup.equals("DESCRIPTION")) {
-					// TODO: parse DESCRIPTION-Info
-				} else if (deviceGroup.equals("SESSION")) {
-					// TODO: parse SESSION-Info
-				}
-			}
-		} catch (SRCPUnsufficientDataException e) {
-			e.printStackTrace();
-		} catch (NumberFormatException e) {
-			e.printStackTrace();
-		}
+    public void addGAInfoListener(GAInfoListener l) {
+        GAListeners.add(l);
+    }
 
-		for (int i = 0; i < listeners.size(); i++) {
-			listeners.get(i).infoDataReceived(s);
-		}
-	}
+    public void addGLInfoListener(GLInfoListener l) {
+        GLListeners.add(l);
+    }
 
-	public void addGAInfoListener(GAInfoListener l) {
-		GAListeners.add(l);
-	}
-	
-	public void addGLInfoListener(GLInfoListener l) {
-		GLListeners.add(l);
-	}
+    public void addLOCKInfoListener(LOCKInfoListener l) {
+        LOCKListeners.add(l);
+    }
+
+    public int getID() {
+        return id;
+    }
 }

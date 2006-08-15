@@ -18,6 +18,7 @@ import de.dermoba.srcp.common.exception.SRCPIOException;
 
 public class CommandChannel {
 
+    private int id;
 	private Socket socket = null;
 	private SocketWriter out = null;
 	private SocketReader in = null;
@@ -56,7 +57,9 @@ public class CommandChannel {
 		throw new SRCPIOException();
 	}
 		send("SET CONNECTIONMODE SRCP COMMAND");
-		send("GO");
+		String output = sendReceive("GO");
+        String[] outputSplitted = output.split(" ");
+        id = Integer.parseInt(outputSplitted[4]);
 	}
 
 	public void disconnect() throws SRCPIOException {
@@ -114,4 +117,7 @@ public class CommandChannel {
 		listeners.remove(l);
 	}
 
+    public int getID() {
+        return id;
+    }
 }

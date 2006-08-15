@@ -81,4 +81,12 @@ public class SRCPSession {
     public boolean isOldProtocol() {
         return oldProtocol;
     }
+    
+    public int getCommandChannelID() {
+        return getCommandChannel().getID();
+    }
+    
+    public int getInfoChannelID() {
+        return getInfoChannel().getID();
+    }
 }
