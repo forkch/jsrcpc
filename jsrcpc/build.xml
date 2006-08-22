@@ -7,6 +7,7 @@
   <property name="src.dir" value="src"/>
   <property name="build.dir" value="build"/>
   <property name="javadoc.dir" value="javadoc"/>
+  <property name="release.dir" value="release/"/>
   <!-- main class for run target -->
   <!-- =================================================================== -->
   <!-- Class paths                                                         -->
@@ -26,50 +27,63 @@
     <mkdir dir="${build.dir}"/>
   </target>
   <!-- =================================================================== -->
-  <!-- CopyImages                                                          -->
-  <!-- =================================================================== -->
-  <target name="copy_images" depends="init">
-    <copy todir="${build.dir}">
-      <fileset dir="./src">
-        <include name="**/*.png"/>
-      </fileset>
-    </copy>
-  </target>
-  <!-- =================================================================== -->
   <!-- Compile: Default                                                    -->
   <!-- =================================================================== -->
-  <target name="compile" depends="copy_images" description="Compiles all Java sources">
+  <target name="compile" depends="" description="Compiles all Java sources">
     <javac destdir="${build.dir}" classpathref="compile.class.path" deprecation="off">
       <src path="${src.dir}"/>
       <include name="**/*.java"/>
       <include name="**/*.png"/>
     </javac>
   </target>
+
+  <!-- =================================================================== -->
+  <!-- RELEASE                                                             -->
+  <!-- =================================================================== -->
+  <target name="makerelease" description="Generates a release">
+    <antcall target="javadoc"/>
+    <antcall target="bin"/>
+    <antcall target="src"/>
+  </target>
   <!-- =================================================================== -->
   <!-- Documentation                                                       -->
   <!-- =================================================================== -->
   <target name="javadoc" description="Generate JavaDoc HTML pages" depends="init">
     <mkdir dir="${javadoc.dir}"/>
-    <javadoc sourcepathref="javadoc.src.path" packagenames="ch.fork.*" destdir="${javadoc.dir}" author="true" use="true" verbose="true" package="true">
+    <javadoc sourcepathref="javadoc.src.path" packagenames="de.*" destdir="${javadoc.dir}" author="true" use="true" verbose="false" package="true">
     </javadoc>
   </target>
   <!-- =================================================================== -->
   <!-- Jar targets                                                         -->
   <!-- =================================================================== -->
-  <target name="jar" depends="compile" description="Builds the ZIP file containing all stuff">
-    <delete file="jsrcpc-bin.jar"/>
-    <jar destfile="jsrcpc-bin.jar" manifest="./src/manifest.mf">
+  <target name="bin" depends="compile" description="Builds the ZIP file containing all stuff">
+    <delete file="jsrcpc-${release}-bin.jar"/>
+    <jar destfile="jsrcpc-${release}-bin.jar" 
+      manifest="./src/manifest.mf">
       <fileset dir="${build.dir}/"
         includes="**/*.class"
+        />
+      <fileset dir="./res/"
+        includes="*"
         />
     </jar>
   </target>
   <!-- =================================================================== -->
-  <!-- Zip targets                                                         -->
+  <!-- Src targets                                                         -->
   <!-- =================================================================== -->
-  <target name="zip" depends="clean" description="Builds the ZIP file containing all stuff">
-    <delete file="jsrcpc-src.tar.bz2"/>
-    <tar tarfile="jsrcpc-src.tar.bz2" basedir="." includes="README COPYRIGHT src/**, doc/**, lib/**, javadoc/**, build.xml, build.properties etc/**" compression="bzip2" />
+  <target name="src" depends="" description="Builds the ZIP file containing all stuff">
+    <mkdir dir="jsrcpc-${release}-src"/>
+    <copy todir="jsrcpc-${release}-src">
+      <fileset dir="." includes="ChangeLog, README, COPYING, TODO, build.xml,
+        build.properties"/>
+      <fileset dir="." includes="src/"/>
+      <fileset dir="." includes="doc/"/>
+      <fileset dir="." includes="javadoc/"/>
+      <fileset dir="." includes="res/"/>
+    </copy>
+    <tar destfile="jsrcpc-${release}-src.tar.bz2"
+      basedir="." includes="jsrcpc-${release}-src/**" compression="bzip2" longfile="gnu"/>
+    <delete dir="jsrcpc-${release}-src"/>
   </target>
   <!-- =================================================================== -->
   <!-- Clean targets                                                       -->
