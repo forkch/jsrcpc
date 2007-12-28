@@ -29,8 +29,8 @@
   <!-- =================================================================== -->
   <!-- Compile: Default                                                    -->
   <!-- =================================================================== -->
-  <target name="compile" depends="" description="Compiles all Java sources">
-    <javac destdir="${build.dir}" classpathref="compile.class.path" deprecation="off">
+  <target name="compile" depends="init" description="Compiles all Java sources">
+    <javac destdir="${build.dir}" classpathref="compile.class.path" debug="on" deprecation="off">
       <src path="${src.dir}"/>
       <include name="**/*.java"/>
       <include name="**/*.png"/>
