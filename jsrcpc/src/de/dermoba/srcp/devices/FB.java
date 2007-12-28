@@ -28,13 +28,19 @@ public class FB {
             + address);
     }
 
+    /** SRCP syntax: SET <bus> FB <addr> <value> */
+    public String set(int address, int value) throws SRCPException {
+        return session.getCommandChannel().send("SET " + bus + " FB " + address 
+            + " " + value);
+    }
+
     /** SRCP syntax: TERM <bus> FB */
     public String term() throws SRCPException {
         return session.getCommandChannel().send("TERM " + bus + " FB ");
     }
 
     /** SRCP syntax: WAIT <bus> FB <addr> <value> <timeout>*/
-    public String term(int address, int value, int timeout) throws SRCPException {
+    public String wait(int address, int value, int timeout) throws SRCPException {
         return session.getCommandChannel().send("WAIT " + bus + " FB " + address 
             + " " + value + " " + timeout);
     }
