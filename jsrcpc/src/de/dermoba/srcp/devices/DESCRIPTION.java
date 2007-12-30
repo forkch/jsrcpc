@@ -15,7 +15,7 @@ public class DESCRIPTION {
         session = pSession;
     }
 
-    /** SRCP syntax: GET <bus> DESCRIPTION */
+    /** SRCP syntax: GET &lt;bus&gt; DESCRIPTION */
     public String get(int pBus) throws SRCPException {
         bus = pBus;
         if(!session.isOldProtocol()) {
@@ -25,7 +25,7 @@ public class DESCRIPTION {
         return "";
     }
 
-    /** SRCP syntax: GET <bus> DESCRIPTION <devicegroup> [<address>]*/
+    /** SRCP syntax: GET &lt;bus&gt; DESCRIPTION &lt;devicegroup&gt; [&lt;address&gt;]*/
     public String get(int pBus, String pDevicegroup) throws SRCPException {
         if(!session.isOldProtocol()) {
             return session.getCommandChannel().send("GET " + bus + " DESCRIPTION "
@@ -34,7 +34,7 @@ public class DESCRIPTION {
         return "";
     }
 
-    /** SRCP syntax: GET <bus> DESCRIPTION <devicegroup> [<address>]*/
+    /** SRCP syntax: GET &lt;bus&gt; DESCRIPTION &lt;devicegroup&gt; [&lt;address&gt;]*/
     public String get(int pBus, String pDevicegroup, int pAddress) 
         throws SRCPException {
             if(!session.isOldProtocol()) {

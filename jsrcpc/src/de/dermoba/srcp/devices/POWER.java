@@ -15,7 +15,7 @@ public class POWER {
         session = pSession;
     }
 
-    /** SRCP syntax: INIT <bus> POWER */
+    /** SRCP syntax: INIT &lt;bus&gt; POWER */
     public String init(int pBus) {
         bus = pBus;
         /*
@@ -26,7 +26,7 @@ public class POWER {
         return "";
     }
 
-    /** SRCP syntax GET <bus> POWER <addr> */
+    /** SRCP syntax GET &lt;bus&gt; POWER &lt;addr&gt; */
     public String get() throws SRCPException {
         if(session.isOldProtocol()) {
             return session.getCommandChannel().send("GET POWER ");
@@ -34,12 +34,12 @@ public class POWER {
         return session.getCommandChannel().send("GET " + bus + " POWER ");
     }
 
-    /** SRCP syntax: SET <bus> POWER ON|OFF [<freetext>]*/
+    /** SRCP syntax: SET &lt;bus&gt; POWER ON|OFF [&lt;freetext&gt;]*/
     public String set(boolean on) throws SRCPException {
         return set(on, "");
     }
 
-    /** SRCP syntax: SET <bus> POWER ON|OFF [<freetext>]*/
+    /** SRCP syntax: SET &lt;bus&gt; POWER ON|OFF [&lt;freetext&gt;]*/
     public String set(boolean on, String freetext) throws SRCPException {
         String power = "";
         if(on) {
@@ -54,7 +54,7 @@ public class POWER {
                 + " " + freetext);
     }
 
-    /** SRCP syntax: TERM <bus> POWER */
+    /** SRCP syntax: TERM &lt;bus&gt; POWER */
     public String term() throws SRCPException {
         if(session.isOldProtocol()) {
             return "";

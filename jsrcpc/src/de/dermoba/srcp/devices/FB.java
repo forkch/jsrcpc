@@ -16,30 +16,30 @@ public class FB {
         session = pSession;
     }
 
-    /** SRCP syntax: INIT <bus> FB <addr> <device protocol> [<parameter>.. ] */
+    /** SRCP syntax: INIT &lt;bus&gt; FB &lt;addr&gt; &lt;device protocol&gt; [&lt;parameter&gt;.. ] */
     public String init(int pBus) throws SRCPException {
         bus = pBus;
         return session.getCommandChannel().send("INIT " + bus + " FB ");
     }
 
-    /** SRCP syntax GET <bus> FB <addr> */
+    /** SRCP syntax GET &lt;bus&gt; FB &lt;addr&gt; */
     public String get(int address) throws SRCPException {
         return session.getCommandChannel().send("GET " + bus + " FB " 
             + address);
     }
 
-    /** SRCP syntax: SET <bus> FB <addr> <value> */
+    /** SRCP syntax: SET &lt;bus&gt; FB &lt;addr&gt; &lt;value&gt; */
     public String set(int address, int value) throws SRCPException {
         return session.getCommandChannel().send("SET " + bus + " FB " + address 
             + " " + value);
     }
 
-    /** SRCP syntax: TERM <bus> FB */
+    /** SRCP syntax: TERM &lt;bus&gt; FB */
     public String term() throws SRCPException {
         return session.getCommandChannel().send("TERM " + bus + " FB ");
     }
 
-    /** SRCP syntax: WAIT <bus> FB <addr> <value> <timeout>*/
+    /** SRCP syntax: WAIT &lt;bus&gt; FB &lt;addr&gt; &lt;value&gt; &lt;timeout&gt;*/
     public String wait(int address, int value, int timeout) throws SRCPException {
         return session.getCommandChannel().send("WAIT " + bus + " FB " + address 
             + " " + value + " " + timeout);

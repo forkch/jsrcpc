@@ -19,12 +19,12 @@ public class GL {
         session = pSession;
     }
 
-    /** SRCP syntax: INIT <bus> GL <addr> <protocol> [<parameter>.. ] */
+    /** SRCP syntax: INIT &lt;bus&gt; GL &lt;addr&gt; &lt;protocol&gt; [&lt;parameter&gt;.. ] */
     public String init(int pBus, int pAddress, String pProtocol) throws SRCPException {
         return init(pBus, pAddress, pProtocol, new String[0]);
     }
 
-    /** SRCP syntax: INIT <bus> GL <addr> <protocol> [<parameter>.. ] */
+    /** SRCP syntax: INIT &lt;bus&gt; GL &lt;addr&gt; &lt;protocol&gt; [&lt;parameter&gt;.. ] */
     public String init(int pBus, int pAddress, String pProtocol, String[] pParameters) throws SRCPException {
         bus = pBus;
         address = pAddress;
@@ -42,7 +42,7 @@ public class GL {
                 + address + " " + protocol + " " + paramBuf.toString());
     }
 
-    /** SRCP syntax SET <bus> GL <addr> <drivemode> <V> <V_max> <f1> .. <fn> */
+    /** SRCP syntax SET &lt;bus&gt; GL &lt;addr&gt; &lt;drivemode&gt; &lt;V&gt; &lt;V_max&gt; &lt;f1&gt; .. &lt;fn&gt; */
     public String set(String drivemode, int v, int vmax, boolean[]f) throws SRCPException {
         StringBuffer functionBuf = new StringBuffer();
         if(f != null) {
@@ -61,7 +61,7 @@ public class GL {
     }
 
 
-    /** SRCP syntax GET <bus> GL <addr> */
+    /** SRCP syntax GET &lt;bus&gt; GL &lt;addr&gt; */
     public String get() throws SRCPException {
         if(session.isOldProtocol()) {
             return session.getCommandChannel().send("GET GL " 
@@ -71,7 +71,7 @@ public class GL {
                 + address); 
     }
 
-    /** SRCP syntax: TERM <bus> GL <addr> */
+    /** SRCP syntax: TERM &lt;bus&gt; GL &lt;addr&gt; */
     public String term() throws SRCPException {
         if(session.isOldProtocol()) {
             return "";

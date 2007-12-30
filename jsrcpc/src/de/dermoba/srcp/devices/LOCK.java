@@ -16,7 +16,7 @@ public class LOCK {
         bus = pBus;
     }
 
-    /** SRCP syntax GET <bus> LOCK <devicegroup> <addr> */
+    /** SRCP syntax GET &lt;bus&gt; LOCK &lt;devicegroup&gt; &lt;addr&gt; */
     public String get(String pDevicegroup, int pAddr) throws SRCPException {
         if(!session.isOldProtocol()) {
             return session.getCommandChannel().send("GET " + bus + " LOCK " 
@@ -25,7 +25,7 @@ public class LOCK {
         return "";
     }
 
-    /** SRCP syntax: SET <bus> LOCK <device group> <addr> <duration>*/
+    /** SRCP syntax: SET &lt;bus&gt; LOCK &lt;device group&gt; &lt;addr&gt; &lt;duration&gt;*/
     public String set(String pDevicegroup, int pAddr, int pDuration) 
         throws SRCPException {
 
@@ -36,7 +36,7 @@ public class LOCK {
         return "";
     }
 
-    /** SRCP syntax: TERM <bus> LOCK <device group> <addr> */
+    /** SRCP syntax: TERM &lt;bus&gt; LOCK &lt;device group&gt; &lt;addr&gt; */
     public String term(String pDevicegroup, int pAddr) throws SRCPException {
         if(!session.isOldProtocol()) {
             return session.getCommandChannel().send("TERM " + bus + " LOCK " 

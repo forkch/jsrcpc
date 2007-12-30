@@ -19,12 +19,12 @@ public class GA {
         session = pSession;
     }
 
-    /** SRCP syntax: INIT <bus> GA <addr> <device protocol> [<parameter>.. ] */
+    /** SRCP syntax: INIT &lt;bus&gt; GA &lt;addr&gt; &lt;device protocol&gt; [&lt;parameter&gt;.. ] */
     public String init(int pBus, int pAddress, String pProtocol) throws SRCPException {
         return init(pBus, pAddress, pProtocol, new String[0]);
     }
 
-    /** SRCP syntax: INIT <bus> GA <addr> <device protocol> [<parameter>.. ] */
+    /** SRCP syntax: INIT &lt;bus&gt; GA &lt;addr&gt; &lt;device protocol&gt; [&lt;parameter&gt;.. ] */
     public String init(int pBus, int pAddress, String pProtocol, String[] pParameters) throws SRCPException {
         bus = pBus;
         address = pAddress;
@@ -42,7 +42,7 @@ public class GA {
         return "";
     }
 
-    /** SRCP syntax SET <bus> GA <addr> <port> <value> <delay> */
+    /** SRCP syntax SET &lt;bus&gt; GA &lt;addr&gt; &lt;port&gt; &lt;value&gt; &lt;delay&gt; */
     public String set(int port, int value, int delay) throws SRCPException {
     	if(session.isOldProtocol()) {
             return session.getCommandChannel().send(
@@ -54,7 +54,7 @@ public class GA {
                 + port + " " + value + " " + delay);
     }
 
-    /** SRCP syntax GET <bus> GA <addr> <port> */
+    /** SRCP syntax GET &lt;bus&gt; GA &lt;addr&gt; &lt;port&gt; */
     public String get(int port) throws SRCPException {
         if(session.isOldProtocol()) {
             return session.getCommandChannel().send("GET GA " + protocol + " " 
@@ -64,7 +64,7 @@ public class GA {
                 + " " + port);
     }
 
-    /** SRCP syntax: TERM <bus> GA <addr> */
+    /** SRCP syntax: TERM &lt;bus&gt; GA &lt;addr&gt; */
     public String term() throws SRCPException {
         if(session.isOldProtocol()) {
             return "";
