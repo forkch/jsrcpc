@@ -6,6 +6,8 @@ package de.dermoba.srcp.common.exception;
 
 public class SRCPInternalErrorException extends SRCPException {
 
+	private static final long serialVersionUID = -2541626350970655030L;
+
     public final static int NUMBER = 601;
 
 	public SRCPInternalErrorException() {

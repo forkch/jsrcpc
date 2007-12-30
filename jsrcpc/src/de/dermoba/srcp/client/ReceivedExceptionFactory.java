@@ -16,8 +16,10 @@ import de.dermoba.srcp.common.exception.SRCPIOException;
  *
  */
 public class ReceivedExceptionFactory extends Properties {
-	
-	private static ReceivedExceptionFactory instance = null;
+
+    private static final long serialVersionUID = 4995179873064071652L;
+
+    private static ReceivedExceptionFactory instance = null;
 	
 
 	private final String EXCEPTIONS_FILE = "/srcp_exceptions.properties";

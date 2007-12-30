@@ -3,6 +3,9 @@
  *
  * History
  $Log: not supported by cvs2svn $
+ Revision 1.1  2007/12/30 13:43:14  andre_schenk
+ fixed typo in class name
+
  Revision 1.2  2006/04/16 11:14:17  fork_ch
  - added CommanChannelListener
  - updated Exceptions to also get the cause of the exception
@@ -30,10 +33,12 @@ package de.dermoba.srcp.common.exception;
 /**
  *
  * @author  osc
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
   */
 
 public class SRCPListTooShortException extends SRCPCommandException {
+
+	private static final long serialVersionUID = 7645576198410116751L;
 
     public final static int NUMBER = 419;
 
