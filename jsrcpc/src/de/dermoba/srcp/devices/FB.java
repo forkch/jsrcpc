@@ -17,9 +17,19 @@ public class FB {
     }
 
     /** SRCP syntax: INIT &lt;bus&gt; FB &lt;addr&gt; &lt;device protocol&gt; [&lt;parameter&gt;.. ] */
-    public String init(int pBus) throws SRCPException {
+    public String init(int pBus, int pAddress, String pProtocol, String[] pParameters) throws SRCPException {
         bus = pBus;
-        return session.getCommandChannel().send("INIT " + bus + " FB ");
+
+        StringBuffer paramBuf = new StringBuffer();
+
+        if (pParameters != null) {
+            for(int i = 0; i < pParameters.length; i++) {
+                paramBuf.append(pParameters[i]);
+                paramBuf.append(" ");
+            }
+        }
+        return session.getCommandChannel().send("INIT " + bus + " FB " 
+                + pAddress + " " + pProtocol + " " + paramBuf);
     }
 
     /** SRCP syntax GET &lt;bus&gt; FB &lt;addr&gt; */
