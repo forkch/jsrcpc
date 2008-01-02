@@ -3,6 +3,9 @@
  *
  * History
  $Log: not supported by cvs2svn $
+ Revision 1.2  2007/12/30 13:54:04  andre_schenk
+ added serialVersionUID
+
  Revision 1.1  2007/12/30 13:43:14  andre_schenk
  fixed typo in class name
 
@@ -33,7 +36,7 @@ package de.dermoba.srcp.common.exception;
 /**
  *
  * @author  osc
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
   */
 
 public class SRCPListTooShortException extends SRCPCommandException {
@@ -43,11 +46,11 @@ public class SRCPListTooShortException extends SRCPCommandException {
     public final static int NUMBER = 419;
 
     public SRCPListTooShortException () {
-        super(NUMBER,"list to short");
+        super(NUMBER,"list too short");
     }
 
     public SRCPListTooShortException (Throwable cause) {
-        super(NUMBER,"list to short", cause);
+        super(NUMBER,"list too short", cause);
     }
     public SRCPException cloneExc () {
     	return new SRCPListTooShortException();
