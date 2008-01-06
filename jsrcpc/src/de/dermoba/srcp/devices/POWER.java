@@ -16,13 +16,11 @@ public class POWER {
     }
 
     /** SRCP syntax: INIT &lt;bus&gt; POWER */
-    public String init(int pBus) {
+    public String init(int pBus) throws SRCPException {
         bus = pBus;
-        /*
         if(!session.isOldProtocol()) {
             return session.getCommandChannel().send("INIT " + bus + " POWER ");
         }
-        */
         return "";
     }
 
