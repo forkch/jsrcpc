@@ -98,7 +98,7 @@ public class CommandChannel {
 	 */
 	public String send(String pCommand) throws SRCPException {
 		String response = sendReceive(pCommand);
-		SRCPException ex = ReceivedExceptionFactory.parseResponse(response);
+        SRCPException ex = ReceivedExceptionFactory.parseResponse(pCommand, response);
 		if (ex != null) {
 			throw ex;
 		}
