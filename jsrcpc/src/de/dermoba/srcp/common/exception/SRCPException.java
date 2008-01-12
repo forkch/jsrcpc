@@ -3,7 +3,7 @@ package de.dermoba.srcp.common.exception;
 /**
  *
  * @author  osc
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 
 public abstract class SRCPException extends java.lang.Exception {
@@ -47,7 +47,12 @@ public abstract class SRCPException extends java.lang.Exception {
     }
 
     public String toString() {
-        return "\"" + requestString + "\" failed: " + errorMessage;
+        if (requestString != null) {
+            return "\"" + requestString + "\" failed: " + getMessage();
+        }
+        else {
+            return getMessage();
+        }
     }
 
     public abstract SRCPException cloneExc();
