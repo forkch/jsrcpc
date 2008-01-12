@@ -6,6 +6,7 @@ package de.dermoba.srcp.devices;
 
 import de.dermoba.srcp.client.SRCPSession;
 import de.dermoba.srcp.common.exception.SRCPException;
+import de.dermoba.srcp.common.exception.SRCPIOException;
 
 public class SESSION {
     private SRCPSession session;
@@ -22,9 +23,16 @@ public class SESSION {
     }
 
     /** SRCP syntax: TERM <bus> SESSION */
-    public String term() {
-        //TODO: get sessionID from server
-        return "";
+    public String term() throws SRCPException {
+        String result = "";
+
+        try {
+            result = session.getCommandChannel().send("TERM " + bus + " SESSION");
+        }
+        catch (SRCPIOException e) {
+            // We will not get a response from the server because it will immediately close the connection.
+        }
+        return result;
     }
 
     /** SRCP syntax: TERM <bus> SESSION [<sessionid>] */
