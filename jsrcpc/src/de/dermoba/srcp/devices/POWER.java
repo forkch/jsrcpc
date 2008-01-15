@@ -8,6 +8,9 @@ import de.dermoba.srcp.client.SRCPSession;
 import de.dermoba.srcp.common.exception.SRCPException;
 
 public class POWER {
+    private static final String POWER_ON  = "ON";
+    private static final String POWER_OFF = "OFF";
+
     private SRCPSession session;
     private int bus;
 
@@ -19,17 +22,30 @@ public class POWER {
     public String init(int pBus) throws SRCPException {
         bus = pBus;
         if(!session.isOldProtocol()) {
-            return session.getCommandChannel().send("INIT " + bus + " POWER ");
+            return session.getCommandChannel().send("INIT " + bus + " POWER");
         }
         return "";
     }
 
     /** SRCP syntax GET &lt;bus&gt; POWER &lt;addr&gt; */
-    public String get() throws SRCPException {
+    public boolean get() throws SRCPException {
+        boolean result = false;
+        String answer = null;
+
         if(session.isOldProtocol()) {
-            return session.getCommandChannel().send("GET POWER ");
+            answer = session.getCommandChannel().send("GET POWER");
         }
-        return session.getCommandChannel().send("GET " + bus + " POWER ");
+        else {
+            answer = session.getCommandChannel().send("GET " + bus + " POWER");
+        }
+        if (answer != null) {
+            String [] words = answer.split(" ");
+
+            if (words.length >= 6) {
+                result = words [5].equals(POWER_ON);
+            }
+        }
+        return result;
     }
 
     /** SRCP syntax: SET &lt;bus&gt; POWER ON|OFF [&lt;freetext&gt;]*/
@@ -41,9 +57,9 @@ public class POWER {
     public String set(boolean on, String freetext) throws SRCPException {
         String power = "";
         if(on) {
-            power = "ON";
+            power = POWER_ON;
         } else {
-            power = "OFF";
+            power = POWER_OFF;
         }
         if(session.isOldProtocol()) {
             return session.getCommandChannel().send("SET POWER " + power);
@@ -57,6 +73,6 @@ public class POWER {
         if(session.isOldProtocol()) {
             return "";
         }
-        return session.getCommandChannel().send("TERM " + bus + " POWER ");
+        return session.getCommandChannel().send("TERM " + bus + " POWER");
     }
 }
