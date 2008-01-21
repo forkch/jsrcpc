@@ -93,8 +93,14 @@ public class InfoChannel implements Runnable {
             s = in.read();
             out.write("GO\n");
             s = in.read();
-            String[] sSplitted = s.split(" ");
-            id = Integer.parseInt(sSplitted[4]);
+            try {
+                String[] sSplitted = s.split(" ");
+
+                id = Integer.parseInt(sSplitted[1]);
+            }
+            catch (NumberFormatException e) {
+                System.err.println ("cannot convert the 2. token from \"" + s + "\" into an integer");
+            }
             while (true) {
                 s = in.read();
                 if (s == null)
@@ -136,8 +142,10 @@ public class InfoChannel implements Runnable {
                 }
             }
         } catch (SRCPUnsufficientDataException e) {
+            System.err.println ("cannot parse line \"" + s + "\"");
             e.printStackTrace();
         } catch (NumberFormatException e) {
+            System.err.println ("cannot convert the next token from \"" + s + "\" into an integer");
             e.printStackTrace();
         }
 
@@ -165,22 +173,27 @@ public class InfoChannel implements Runnable {
                 }
                 i++;
             }
-            for (GLInfoListener l : GLListeners) {
-                l.GLset(timestamp, bus, address, drivemode, v, vMax, functions);
+            synchronized (GLListeners) {
+                for (GLInfoListener l : GLListeners) {
+                    l.GLset(timestamp, bus, address, drivemode, v, vMax, functions);
+                }
             }
-
         } else if (number == 101) {
             String protocol = tokenLine.nextStringToken();
             while (tokenLine.hasMoreElements()) {
                 // TODO: get params
                 tokenLine.nextStringToken();
             }
-            for (GLInfoListener l : GLListeners) {
-                l.GLinit(timestamp, bus, address, protocol, null);
+            synchronized (GLListeners) {
+                for (GLInfoListener l : GLListeners) {
+                    l.GLinit(timestamp, bus, address, protocol, null);
+                }
             }
         } else if (number == 102) {
-            for (GLInfoListener l : GLListeners) {
-                l.GLterm(timestamp, bus, address);
+            synchronized (GLListeners) {
+                for (GLInfoListener l : GLListeners) {
+                    l.GLterm(timestamp, bus, address);
+                }
             }
         }
     }
@@ -191,8 +204,10 @@ public class InfoChannel implements Runnable {
         if (number == 100) {
             int port = tokenLine.nextIntToken();
             int value = tokenLine.nextIntToken();
-            for (GAInfoListener l : GAListeners) {
-                l.GAset(timestamp, bus, address, port, value);
+            synchronized (GAListeners) {
+                for (GAInfoListener l : GAListeners) {
+                    l.GAset(timestamp, bus, address, port, value);
+                }
             }
         } else if (number == 101) {
             String protocol = tokenLine.nextStringToken();
@@ -202,12 +217,16 @@ public class InfoChannel implements Runnable {
 
                 tokenLine.nextStringToken();
             }
-            for (GAInfoListener l : GAListeners) {
-                l.GAinit(timestamp, bus, address, protocol, null);
+            synchronized (GAListeners) {
+                for (GAInfoListener l : GAListeners) {
+                    l.GAinit(timestamp, bus, address, protocol, null);
+                }
             }
         } else if (number == 102) {
-            for (GAInfoListener l : GAListeners) {
-                l.GAterm(timestamp, bus, address);
+            synchronized (GAListeners) {
+                for (GAInfoListener l : GAListeners) {
+                    l.GAterm(timestamp, bus, address);
+                }
             }
         }
     }
@@ -220,25 +239,29 @@ public class InfoChannel implements Runnable {
         if (number == 100) {
             int duration = tokenLine.nextIntToken();
             int sessionID = tokenLine.nextIntToken();
-            for(LOCKInfoListener l : LOCKListeners) {
-                l.LOCKset(timestamp, bus, address, lockedDeviceGroup, duration, sessionID);
+            synchronized (LOCKListeners) {
+                for(LOCKInfoListener l : LOCKListeners) {
+                    l.LOCKset(timestamp, bus, address, lockedDeviceGroup, duration, sessionID);
+                }
             }
         } else if (number == 102) {
-            for(LOCKInfoListener l : LOCKListeners) {
-                l.LOCKterm(timestamp, bus, address, lockedDeviceGroup);
+            synchronized (LOCKListeners) {
+                for(LOCKInfoListener l : LOCKListeners) {
+                    l.LOCKterm(timestamp, bus, address, lockedDeviceGroup);
+                }
             }
         }
     }
 
-    public void addGAInfoListener(GAInfoListener l) {
+    public synchronized void addGAInfoListener(GAInfoListener l) {
         GAListeners.add(l);
     }
 
-    public void addGLInfoListener(GLInfoListener l) {
+    public synchronized void addGLInfoListener(GLInfoListener l) {
         GLListeners.add(l);
     }
 
-    public void addLOCKInfoListener(LOCKInfoListener l) {
+    public synchronized void addLOCKInfoListener(LOCKInfoListener l) {
         LOCKListeners.add(l);
     }
 
