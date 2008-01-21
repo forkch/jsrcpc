@@ -22,6 +22,7 @@ import de.dermoba.srcp.common.exception.SRCPUnsufficientDataException;
 import de.dermoba.srcp.devices.GAInfoListener;
 import de.dermoba.srcp.devices.GLInfoListener;
 import de.dermoba.srcp.devices.LOCKInfoListener;
+import de.dermoba.srcp.devices.POWERInfoListener;
 
 public class InfoChannel implements Runnable {
 
@@ -34,7 +35,7 @@ public class InfoChannel implements Runnable {
     private List<GAInfoListener>        GAListeners;
     private List<GLInfoListener>        GLListeners;
     private List<LOCKInfoListener>      LOCKListeners;
-    // private List<POWERInfoListener> POWERListeners;
+    private List<POWERInfoListener>     POWERListeners;
     // private List<DESCRIPTIONInfoListener> DESCRIPTIONListeners;
     // private List<SESSIONInfoListener> SESSIONListeners;
     private ArrayList<InfoDataListener> listeners = null;
@@ -58,6 +59,7 @@ public class InfoChannel implements Runnable {
         GAListeners = new ArrayList<GAInfoListener>();
         GLListeners = new ArrayList<GLInfoListener>();
         LOCKListeners = new ArrayList<LOCKInfoListener>();
+        POWERListeners = new ArrayList<POWERInfoListener>();
     }
 
     public void connect() throws SRCPException {
@@ -134,7 +136,7 @@ public class InfoChannel implements Runnable {
                 } else if (deviceGroup.equals("LOCK")) {
                     handleLOCK(tokenLine, timestamp, number, bus);
                 } else if (deviceGroup.equals("POWER")) {
-                    // TODO: parse POWER-Info
+                    handlePOWER(tokenLine, timestamp, number, bus);
                 } else if (deviceGroup.equals("DESCRIPTION")) {
                     // TODO: parse DESCRIPTION-Info
                 } else if (deviceGroup.equals("SESSION")) {
@@ -253,6 +255,25 @@ public class InfoChannel implements Runnable {
         }
     }
 
+    private void handlePOWER(TokenizedLine tokenLine, double timestamp,
+        int number, int bus) throws SRCPUnsufficientDataException {
+
+        if (number == 100) {
+            boolean powerOn = tokenLine.nextStringToken().equals("ON");
+            synchronized (POWERListeners) {
+                for(POWERInfoListener l : POWERListeners) {
+                    l.POWERset(timestamp, bus, powerOn);
+                }
+            }
+        } else if (number == 102) {
+            synchronized (POWERListeners) {
+                for(POWERInfoListener l : POWERListeners) {
+                    l.POWERterm(timestamp, bus);
+                }
+            }
+        }
+    }
+
     public synchronized void addGAInfoListener(GAInfoListener l) {
         GAListeners.add(l);
     }
@@ -263,6 +284,10 @@ public class InfoChannel implements Runnable {
 
     public synchronized void addLOCKInfoListener(LOCKInfoListener l) {
         LOCKListeners.add(l);
+    }
+
+    public synchronized void addPOWERInfoListener(POWERInfoListener l) {
+        POWERListeners.add(l);
     }
 
     public int getID() {
