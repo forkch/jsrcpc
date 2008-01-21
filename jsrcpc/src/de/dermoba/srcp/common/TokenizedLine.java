@@ -12,7 +12,7 @@ import de.dermoba.srcp.common.exception.SRCPWrongValueException;
 /**
  * create an object containing a complete line and pass tokens taken
  * from this line.
- * 
+ *
  * @author kurt
  *
  */
@@ -23,7 +23,7 @@ public class TokenizedLine {
 
 /**
  * create a new tokenizer for a complete String.
- * 
+ *
  * @param in	String containing white space
  */
     public TokenizedLine(String in) {
@@ -44,7 +44,7 @@ public class TokenizedLine {
     }
 
     public double nextDoubleToken() throws SRCPUnsufficientDataException, NumberFormatException  {
-    	return Double.parseDouble(nextStringToken());
+        return Double.parseDouble(nextStringToken());
     }
     public int nextIntToken() throws SRCPUnsufficientDataException, NumberFormatException  {
         return Integer.parseInt(nextStringToken());
@@ -64,5 +64,9 @@ public class TokenizedLine {
 
     public boolean hasMoreElements() {
         return tokenPosition < tokens.size();
+    }
+
+    public String toString() {
+        return tokens.toString();
     }
 }
