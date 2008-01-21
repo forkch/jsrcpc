@@ -19,6 +19,7 @@ import de.dermoba.srcp.common.exception.SRCPException;
 import de.dermoba.srcp.common.exception.SRCPHostNotFoundException;
 import de.dermoba.srcp.common.exception.SRCPIOException;
 import de.dermoba.srcp.common.exception.SRCPUnsufficientDataException;
+import de.dermoba.srcp.devices.FBInfoListener;
 import de.dermoba.srcp.devices.GAInfoListener;
 import de.dermoba.srcp.devices.GLInfoListener;
 import de.dermoba.srcp.devices.LOCKInfoListener;
@@ -32,6 +33,7 @@ public class InfoChannel implements Runnable {
     private String                      serverName;
     private int                         serverPort;
     private int                         id;
+    private List<FBInfoListener>        FBListeners;
     private List<GAInfoListener>        GAListeners;
     private List<GLInfoListener>        GLListeners;
     private List<LOCKInfoListener>      LOCKListeners;
@@ -44,7 +46,7 @@ public class InfoChannel implements Runnable {
     /**
      * creates a new SRCP connection on the info channel to handle all info
      * communication.
-     * 
+     *
      * @param pServerName
      *            server name or IP address
      * @param pServerPort
@@ -56,6 +58,7 @@ public class InfoChannel implements Runnable {
         serverPort = pServerPort;
         listeners = new ArrayList<InfoDataListener>();
 
+        FBListeners = new ArrayList<FBInfoListener>();
         GAListeners = new ArrayList<GAInfoListener>();
         GLListeners = new ArrayList<GLInfoListener>();
         LOCKListeners = new ArrayList<LOCKInfoListener>();
@@ -129,7 +132,9 @@ public class InfoChannel implements Runnable {
                 tokenLine.nextStringToken();
                 int bus = tokenLine.nextIntToken();
                 String deviceGroup = tokenLine.nextStringToken();
-                if (deviceGroup.equals("GA")) {
+                if (deviceGroup.equals("FB")) {
+                    handleFB(tokenLine, timestamp, number, bus);
+                } else if (deviceGroup.equals("GA")) {
                     handleGA(tokenLine, timestamp, number, bus);
                 } else if (deviceGroup.equals("GL")) {
                     handleGL(tokenLine, timestamp, number, bus);
@@ -153,6 +158,26 @@ public class InfoChannel implements Runnable {
 
         for (int i = 0; i < listeners.size(); i++) {
             listeners.get(i).infoDataReceived(s);
+        }
+    }
+
+    private void handleFB(TokenizedLine tokenLine, double timestamp,
+        int number, int bus) throws SRCPUnsufficientDataException {
+
+        if (number == 100) {
+            int address = tokenLine.nextIntToken();
+            int value = tokenLine.nextIntToken();
+            synchronized (FBListeners) {
+                for(FBInfoListener l : FBListeners) {
+                    l.FBset(timestamp, bus, address, value);
+                }
+            }
+        } else if (number == 102) {
+            synchronized (FBListeners) {
+                for(FBInfoListener l : FBListeners) {
+                    l.FBterm(timestamp, bus);
+                }
+            }
         }
     }
 
@@ -272,6 +297,10 @@ public class InfoChannel implements Runnable {
                 }
             }
         }
+    }
+
+    public synchronized void addFBInfoListener(FBInfoListener l) {
+        FBListeners.add(l);
     }
 
     public synchronized void addGAInfoListener(GAInfoListener l) {
