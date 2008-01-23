@@ -27,6 +27,10 @@ import de.dermoba.srcp.devices.POWERInfoListener;
 
 public class InfoChannel implements Runnable {
 
+    private static final int INFO_SET  = 100;
+    private static final int INFO_INIT = 101;
+    private static final int INFO_TERM = 102;
+
     private Socket                      socket    = null;
     private SocketWriter                out       = null;
     private SocketReader                in        = null;
@@ -164,7 +168,7 @@ public class InfoChannel implements Runnable {
     private void handleFB(TokenizedLine tokenLine, double timestamp,
         int number, int bus) throws SRCPUnsufficientDataException {
 
-        if (number == 100) {
+        if (number == INFO_SET) {
             int address = tokenLine.nextIntToken();
             int value = tokenLine.nextIntToken();
             synchronized (FBListeners) {
@@ -172,7 +176,7 @@ public class InfoChannel implements Runnable {
                     l.FBset(timestamp, bus, address, value);
                 }
             }
-        } else if (number == 102) {
+        } else if (number == INFO_TERM) {
             synchronized (FBListeners) {
                 for(FBInfoListener l : FBListeners) {
                     l.FBterm(timestamp, bus);
@@ -185,7 +189,7 @@ public class InfoChannel implements Runnable {
         int number, int bus) throws SRCPUnsufficientDataException {
         int address = tokenLine.nextIntToken();
 
-        if (number == 100) {
+        if (number == INFO_SET) {
             String drivemode = tokenLine.nextStringToken();
             int v = tokenLine.nextIntToken();
             int vMax = tokenLine.nextIntToken();
@@ -205,7 +209,7 @@ public class InfoChannel implements Runnable {
                     l.GLset(timestamp, bus, address, drivemode, v, vMax, functions);
                 }
             }
-        } else if (number == 101) {
+        } else if (number == INFO_INIT) {
             String protocol = tokenLine.nextStringToken();
             while (tokenLine.hasMoreElements()) {
                 // TODO: get params
@@ -216,7 +220,7 @@ public class InfoChannel implements Runnable {
                     l.GLinit(timestamp, bus, address, protocol, null);
                 }
             }
-        } else if (number == 102) {
+        } else if (number == INFO_TERM) {
             synchronized (GLListeners) {
                 for (GLInfoListener l : GLListeners) {
                     l.GLterm(timestamp, bus, address);
@@ -228,7 +232,7 @@ public class InfoChannel implements Runnable {
     private void handleGA(TokenizedLine tokenLine, double timestamp,
         int number, int bus) throws SRCPUnsufficientDataException {
         int address = tokenLine.nextIntToken();
-        if (number == 100) {
+        if (number == INFO_SET) {
             int port = tokenLine.nextIntToken();
             int value = tokenLine.nextIntToken();
             synchronized (GAListeners) {
@@ -236,7 +240,7 @@ public class InfoChannel implements Runnable {
                     l.GAset(timestamp, bus, address, port, value);
                 }
             }
-        } else if (number == 101) {
+        } else if (number == INFO_INIT) {
             String protocol = tokenLine.nextStringToken();
 
             while (tokenLine.hasMoreElements()) {
@@ -249,7 +253,7 @@ public class InfoChannel implements Runnable {
                     l.GAinit(timestamp, bus, address, protocol, null);
                 }
             }
-        } else if (number == 102) {
+        } else if (number == INFO_TERM) {
             synchronized (GAListeners) {
                 for (GAInfoListener l : GAListeners) {
                     l.GAterm(timestamp, bus, address);
@@ -263,7 +267,7 @@ public class InfoChannel implements Runnable {
 
         String lockedDeviceGroup = tokenLine.nextStringToken();
         int address = tokenLine.nextIntToken();
-        if (number == 100) {
+        if (number == INFO_SET) {
             int duration = tokenLine.nextIntToken();
             int sessionID = tokenLine.nextIntToken();
             synchronized (LOCKListeners) {
@@ -271,7 +275,7 @@ public class InfoChannel implements Runnable {
                     l.LOCKset(timestamp, bus, address, lockedDeviceGroup, duration, sessionID);
                 }
             }
-        } else if (number == 102) {
+        } else if (number == INFO_TERM) {
             synchronized (LOCKListeners) {
                 for(LOCKInfoListener l : LOCKListeners) {
                     l.LOCKterm(timestamp, bus, address, lockedDeviceGroup);
@@ -283,14 +287,14 @@ public class InfoChannel implements Runnable {
     private void handlePOWER(TokenizedLine tokenLine, double timestamp,
         int number, int bus) throws SRCPUnsufficientDataException {
 
-        if (number == 100) {
+        if (number == INFO_SET) {
             boolean powerOn = tokenLine.nextStringToken().equals("ON");
             synchronized (POWERListeners) {
                 for(POWERInfoListener l : POWERListeners) {
                     l.POWERset(timestamp, bus, powerOn);
                 }
             }
-        } else if (number == 102) {
+        } else if (number == INFO_TERM) {
             synchronized (POWERListeners) {
                 for(POWERInfoListener l : POWERListeners) {
                     l.POWERterm(timestamp, bus);
