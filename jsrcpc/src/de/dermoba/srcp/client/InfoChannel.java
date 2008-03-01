@@ -323,6 +323,26 @@ public class InfoChannel implements Runnable {
         POWERListeners.add(l);
     }
 
+    public synchronized void removeFBInfoListener(FBInfoListener l) {
+        FBListeners.remove(l);
+    }
+
+    public synchronized void removeGAInfoListener(GAInfoListener l) {
+        GAListeners.remove(l);
+    }
+
+    public synchronized void removeGLInfoListener(GLInfoListener l) {
+        GLListeners.remove(l);
+    }
+
+    public synchronized void removeLOCKInfoListener(LOCKInfoListener l) {
+        LOCKListeners.remove(l);
+    }
+
+    public synchronized void removePOWERInfoListener(POWERInfoListener l) {
+        POWERListeners.remove(l);
+    }
+
     public int getID() {
         return id;
     }
