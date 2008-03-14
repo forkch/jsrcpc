@@ -10,6 +10,7 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import de.dermoba.srcp.common.SocketReader;
@@ -193,20 +194,21 @@ public class InfoChannel implements Runnable {
             String drivemode = tokenLine.nextStringToken();
             int v = tokenLine.nextIntToken();
             int vMax = tokenLine.nextIntToken();
-            boolean[] functions = new boolean[5];
-            int i = 0;
+            ArrayList <Boolean> functions = new ArrayList <Boolean> ();
+
             while (tokenLine.hasMoreElements()) {
-                String value = tokenLine.nextStringToken();
-                if (value.equals("0")) {
-                    functions[i] = false;
-                } else if (value.equals("1")) {
-                    functions[i] = true;
-                }
-                i++;
+                functions.add(tokenLine.nextStringToken().equals("1"));
+            }
+
+            boolean[] f = new boolean[functions.size()];
+            int i = 0;
+
+            for (Iterator it = functions.iterator(); it.hasNext();) {
+                f[i++] = ((Boolean) it.next()).booleanValue();
             }
             synchronized (GLListeners) {
                 for (GLInfoListener l : GLListeners) {
-                    l.GLset(timestamp, bus, address, drivemode, v, vMax, functions);
+                    l.GLset(timestamp, bus, address, drivemode, v, vMax, f);
                 }
             }
         } else if (number == INFO_INIT) {
