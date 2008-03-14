@@ -46,9 +46,9 @@ public class GL {
     public String set(String drivemode, int v, int vmax, boolean[]f) throws SRCPException {
         StringBuffer functionBuf = new StringBuffer();
         if(f != null) {
-        	for(int i = 0; i < f.length; i++) {
-        		functionBuf.append(f[i] ? "1 " : "0 ");
-        	}
+            for(int i = 0; i < f.length; i++) {
+                functionBuf.append(f[i] ? "1 " : "0 ");
+            }
         }
         if(session.isOldProtocol()) {
             return session.getCommandChannel().send("SET GL " + protocol + " " 
@@ -60,15 +60,14 @@ public class GL {
                 + functionBuf);
     }
 
-
     /** SRCP syntax GET &lt;bus&gt; GL &lt;addr&gt; */
-    public String get() throws SRCPException {
+    public GLData get() throws SRCPException {
         if(session.isOldProtocol()) {
-            return session.getCommandChannel().send("GET GL " 
-                    + address); 
+            return new GLData(session.getCommandChannel().send("GET GL "
+                                                               + address));
         }
-        return session.getCommandChannel().send("GET " + bus + " GL " 
-                + address); 
+        return new GLData(session.getCommandChannel().send("GET " + bus + " GL "
+                                                           + address));
     }
 
     /** SRCP syntax: TERM &lt;bus&gt; GL &lt;addr&gt; */
