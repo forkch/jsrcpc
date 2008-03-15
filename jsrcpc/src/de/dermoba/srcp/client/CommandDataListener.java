@@ -10,7 +10,7 @@
  * copyright : (C) by Benjamin Mueller 
  * email     : mullb@bfh.ch
  * language  : java
- * version   : $Id: CommandDataListener.java,v 1.1 2006-04-16 11:14:17 fork_ch Exp $
+ * version   : $Id: CommandDataListener.java,v 1.2 2008-03-15 11:47:40 andre_schenk Exp $
  * 
  *----------------------------------------------------------------------*/
 
@@ -26,5 +26,7 @@
 package de.dermoba.srcp.client;
 public interface CommandDataListener {
 
-	public void commandDataSent(String commandData);
+	public void commandDataReceived(String response);
+
+	public void commandDataSent(String request);
 }

@@ -52,10 +52,10 @@ public class CommandChannel {
 	public void connect() throws SRCPException {
 		try {
 			String incoming = in.read();
-			informListeners(incoming);
-	} catch (IOException e) {
-		throw new SRCPIOException();
-	}
+			informListenersReceived(incoming);
+        } catch (IOException e) {
+            throw new SRCPIOException();
+        }
 		send("SET CONNECTIONMODE SRCP COMMAND");
 		String output = sendReceive("GO");
         String[] outputSplitted = output.split(" ");
@@ -74,9 +74,9 @@ public class CommandChannel {
 		String s = "";
 		try {
 			if (output != null) {
+				informListenersSent(output);
 				output += "\n";
 				out.write(output);
-				informListeners(output);
 			}
 			s = in.read();
 			if (s == null) {
@@ -85,6 +85,7 @@ public class CommandChannel {
 		} catch (IOException e) {
 			throw new SRCPIOException();
 		}
+        informListenersReceived(s);
 		return s;
 	}
 
@@ -105,11 +106,18 @@ public class CommandChannel {
 		return response;
 	}
 
-	public void informListeners(String s) {
+	private void informListenersReceived(String s) {
+		for(CommandDataListener l : listeners) {
+			l.commandDataReceived(s);
+		}
+	}
+
+	private void informListenersSent(String s) {
 		for(CommandDataListener l : listeners) {
 			l.commandDataSent(s);
 		}
 	}
+
 	public void addCommandDataListener(CommandDataListener l) {
 		listeners.add(l);
 	}
