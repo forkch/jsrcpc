@@ -62,8 +62,9 @@ public class CommandChannel {
         id = Integer.parseInt(outputSplitted[4]);
 	}
 
-	public void disconnect() throws SRCPIOException {
+	public void disconnect() throws SRCPException {
 		try {
+			//sendReceive("SESSION 0 TERM");
 			socket.close();
 		} catch (IOException e) {
 			throw new SRCPIOException(e);
