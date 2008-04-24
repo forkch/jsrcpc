@@ -3,7 +3,7 @@
  * copyright : (C) 2008 by Benjamin Mueller 
  * email     : news@fork.ch
  * website   : http://sourceforge.net/projects/adhocrailway
- * version   : $Id: SRCPLock.java,v 1.1 2008-04-24 06:19:06 fork_ch Exp $
+ * version   : $Id: SRCPLock.java,v 1.2 2008-04-24 18:37:37 fork_ch Exp $
  * 
  *----------------------------------------------------------------------*/
 
@@ -55,6 +55,33 @@ public class SRCPLock {
 
 	public int getSessionID() {
 		return sessionID;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (locked ? 1231 : 1237);
+		result = prime * result + sessionID;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		final SRCPLock other = (SRCPLock) obj;
+		if (!lock.equals(other.lock))
+			return false;
+		if (locked != other.locked)
+			return false;
+		if (sessionID != other.sessionID)
+			return false;
+		return true;
 	}
 
 }

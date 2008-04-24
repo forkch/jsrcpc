@@ -3,7 +3,7 @@
  * copyright : (C) 2008 by Benjamin Mueller 
  * email     : news@fork.ch
  * website   : http://sourceforge.net/projects/adhocrailway
- * version   : $Id: SRCPRouteControl.java,v 1.1 2008-04-24 07:29:52 fork_ch Exp $
+ * version   : $Id: SRCPRouteControl.java,v 1.2 2008-04-24 18:37:38 fork_ch Exp $
  * 
  *----------------------------------------------------------------------*/
 
@@ -69,7 +69,7 @@ public class SRCPRouteControl {
 	 * 
 	 * @see ch.fork.AdHocRailway.domain.routes.RouteControlIface#enableRoute(ch.fork.AdHocRailway.domain.routes.Route)
 	 */
-	public void enableRoute(SRCPRoute route) throws SRCPTurnoutException {
+	public void enableRoute(SRCPRoute route) throws SRCPTurnoutException, SRCPRouteException {
 		checkRoute(route);
 		logger.debug("enabling route: " + route);
 
@@ -84,7 +84,7 @@ public class SRCPRouteControl {
 	 * 
 	 * @see ch.fork.AdHocRailway.domain.routes.RouteControlIface#disableRoute(ch.fork.AdHocRailway.domain.routes.Route)
 	 */
-	public void disableRoute(SRCPRoute route) throws SRCPTurnoutException {
+	public void disableRoute(SRCPRoute route) throws SRCPTurnoutException , SRCPRouteException{
 		checkRoute(route);
 		logger.debug("disabling route: " + route);
 		
@@ -94,7 +94,7 @@ public class SRCPRouteControl {
 		lastRouteState = SRCPRouteState.DISABLED;
 	}
 
-	private void checkRoute(SRCPRoute r) {
+	private void checkRoute(SRCPRoute r) throws SRCPRouteException {
 		if (session == null)
 			throw new SRCPRouteException(Constants.ERR_NOT_CONNECTED,
 					new NoSessionException());

@@ -3,7 +3,7 @@
  * copyright : (C) 2008 by Benjamin Mueller 
  * email     : news@fork.ch
  * website   : http://sourceforge.net/projects/adhocrailway
- * version   : $Id: SRCPRouter.java,v 1.1 2008-04-24 07:29:53 fork_ch Exp $
+ * version   : $Id: SRCPRouter.java,v 1.2 2008-04-24 18:37:38 fork_ch Exp $
  * 
  *----------------------------------------------------------------------*/
 
@@ -20,6 +20,7 @@ package de.dermoba.srcp.model.routes;
 
 import java.util.List;
 
+import de.dermoba.srcp.model.SRCPModelException;
 import de.dermoba.srcp.model.turnouts.SRCPTurnout;
 import de.dermoba.srcp.model.turnouts.SRCPTurnoutControl;
 import de.dermoba.srcp.model.turnouts.SRCPTurnoutException;
@@ -29,7 +30,7 @@ public class SRCPRouter extends Thread {
 	private boolean							enableRoute;
 	private int								waitTime;
 	private List<SRCPRouteChangeListener>	listener;
-	private SRCPTurnoutException				switchException;
+	private SRCPModelException				switchException;
 	private SRCPRoute						sRoute;
 
 	public SRCPRouter(SRCPRoute sRoute, boolean enableRoute, int waitTime,
@@ -48,14 +49,14 @@ public class SRCPRouter extends Thread {
 			} else {
 				disableRoute();
 			}
-		} catch (SRCPTurnoutException e) {
+		} catch (SRCPModelException e) {
 			this.switchException = e;
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
 	}
 
-	private void disableRoute() throws SRCPTurnoutException, InterruptedException {
+	private void disableRoute() throws SRCPTurnoutException, SRCPModelException, InterruptedException {
 		List<SRCPRouteItem> routeItems = sRoute.getRouteItems();
 		SRCPTurnoutControl sc = SRCPTurnoutControl.getInstance();
 		for (SRCPRouteItem ri : routeItems) {
@@ -73,7 +74,7 @@ public class SRCPRouter extends Thread {
 		}
 	}
 
-	private void enableRoute() throws SRCPTurnoutException, InterruptedException {
+	private void enableRoute() throws SRCPTurnoutException, SRCPModelException, InterruptedException {
 		List<SRCPRouteItem> routeItems = sRoute.getRouteItems();
 		SRCPTurnoutControl sc = SRCPTurnoutControl.getInstance();
 		for (SRCPRouteItem ri : routeItems) {
@@ -100,7 +101,7 @@ public class SRCPRouter extends Thread {
 		}
 	}
 
-	public SRCPTurnoutException getSwitchException() {
+	public SRCPModelException getSwitchException() {
 		return switchException;
 	}
 }

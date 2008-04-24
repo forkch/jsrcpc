@@ -3,7 +3,7 @@
  * copyright : (C) 2008 by Benjamin Mueller 
  * email     : news@fork.ch
  * website   : http://sourceforge.net/projects/adhocrailway
- * version   : $Id: SRCPLockChangeListener.java,v 1.1 2008-04-24 06:19:06 fork_ch Exp $
+ * version   : $Id: SRCPLockChangeListener.java,v 1.2 2008-04-24 18:37:37 fork_ch Exp $
  * 
  *----------------------------------------------------------------------*/
 
@@ -20,5 +20,5 @@ package de.dermoba.srcp.model.locking;
 
 public interface SRCPLockChangeListener {
 
-	public void lockChanged(Object changedLock);
+	public void lockChanged(Object changedLock, boolean locked);
 }

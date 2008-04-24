@@ -5,6 +5,8 @@
   <property file="build.properties"/>
   <!-- set global properties for this build -->
   <property name="src.dir" value="src"/>
+	<property name="etc.dir" value="etc"/>
+	<property name="lib.dir" value="lib"/>
   <property name="build.dir" value="build"/>
   <property name="javadoc.dir" value="javadoc"/>
   <property name="release.dir" value="release/"/>
@@ -12,8 +14,18 @@
   <!-- =================================================================== -->
   <!-- Class paths                                                         -->
   <!-- =================================================================== -->
-  <path id="compile.class.path">
-  </path>
+	<path id="compile.class.path">
+		<fileset dir="${lib.dir}">
+			<include name="**/*.jar"/>
+			<include name="**/*.zip"/>
+		</fileset>
+	</path>
+	<path id="run.class.path">
+		<fileset dir="${lib.dir}">
+			<include name="**/*.jar"/>
+			<include name="**/*.zip"/>
+		</fileset>
+	</path>
   <path id="javadoc.src.path">
     <pathelement location="./src/"/>
   </path>
@@ -25,16 +37,21 @@
     <tstamp/>
     <!-- Create the build directory structure used by compile -->
     <mkdir dir="${build.dir}"/>
+		<copy todir="${build.dir}">
+			<fileset dir="./res">
+				<include name="**/*"/>
+			</fileset>
+		</copy>
   </target>
   <!-- =================================================================== -->
   <!-- Compile: Default                                                    -->
   <!-- =================================================================== -->
   <target name="compile" depends="init" description="Compiles all Java sources">
-    <javac destdir="${build.dir}" classpathref="compile.class.path" debug="on" deprecation="off">
-      <src path="${src.dir}"/>
-      <include name="**/*.java"/>
-      <include name="**/*.png"/>
-    </javac>
+		<javac destdir="${build.dir}" classpathref="compile.class.path"
+			deprecation="off">
+			<src path="${src.dir}"/>
+			<include name="**/*.java"/>
+		</javac>
   </target>
 
   <!-- =================================================================== -->
@@ -50,41 +67,76 @@
   <!-- =================================================================== -->
   <target name="javadoc" description="Generate JavaDoc HTML pages" depends="init">
     <mkdir dir="${javadoc.dir}"/>
-    <javadoc sourcepathref="javadoc.src.path" packagenames="de.*" destdir="${javadoc.dir}" author="true" use="true" verbose="false" package="true">
+		<javadoc sourcepath="${src.dir}" packagenames="*"
+			classpathref="compile.class.path"  destdir="${javadoc.dir}"
+			author="true" use="true" verbose="false" package="true">
     </javadoc>
   </target>
-  <!-- =================================================================== -->
-  <!-- Jar targets                                                         -->
-  <!-- =================================================================== -->
-  <target name="bin" depends="compile" description="Builds the ZIP file containing all stuff">
-    <delete file="jsrcpc-${release}-bin.jar"/>
-    <jar destfile="jsrcpc-${release}-bin.jar" 
-      manifest="./src/manifest.mf">
-      <fileset dir="${build.dir}/"
-        includes="**/*.class"
-        />
-      <fileset dir="./res/"
-        includes="*"
-        />
-    </jar>
-  </target>
-  <!-- =================================================================== -->
-  <!-- Src targets                                                         -->
-  <!-- =================================================================== -->
-  <target name="src" depends="" description="Builds the ZIP file containing all stuff">
-    <mkdir dir="jsrcpc-${release}-src"/>
-    <copy todir="jsrcpc-${release}-src">
-      <fileset dir="." includes="ChangeLog, README, COPYING, TODO, build.xml,
-        build.properties"/>
-      <fileset dir="." includes="src/"/>
-      <fileset dir="." includes="doc/"/>
-      <fileset dir="." includes="javadoc/"/>
-      <fileset dir="." includes="res/"/>
-    </copy>
-    <tar destfile="jsrcpc-${release}-src.tar.bz2"
-      basedir="." includes="jsrcpc-${release}-src/**" compression="bzip2" longfile="gnu"/>
-    <delete dir="jsrcpc-${release}-src"/>
-  </target>
+	<!-- =================================================================== -->
+	<!-- Jar targets                                                         -->
+	<!-- =================================================================== -->
+	<target name="jar" depends="compile"
+		description="Builds a JAR file">
+		<delete file="jsrcpc-${release}.jar"/>
+		<jar destfile="jsrcpc-${release}.jar"
+			manifest="./src/manifest.mf">
+			<fileset dir="${build.dir}/" includes="**/*.class"/>
+			<fileset dir="${build.dir}/" includes="**/*.properties"/>
+		</jar>
+	</target>
+	
+	<!-- =================================================================== -->
+	<!-- Zip targets                                                         -->
+	<!-- =================================================================== -->
+	<target name="bin" depends="clean-all, jar"
+		description="Builds the ZIP file containing all stuff">
+		<property name="bindir" value="${release.dir}/jsrcpc-${release}-bin"/>
+		<delete file="jsrcpc-${release}-bin.zip"/>
+		<mkdir dir=""/>
+		<copy todir="${bindir}">
+			<fileset dir="">
+				<filename name="jsrcpc-${release}.jar" />
+			</fileset>
+		</copy>
+		<copy todir="${bindir}/${lib.dir}">
+			<fileset dir="${lib.dir}"  excludes="**/.svn/"/>
+		</copy>
+		<copy todir="${bindir}/${etc.dir}">
+			<fileset dir="${etc.dir}"  excludes="**/.svn/"/>
+		</copy>
+		<tar destfile="jsrcpc-${release}-bin.tar.bz2" basedir="${release.dir}"
+      compression="bzip2"
+			/>
+		<zip destfile="jsrcpc-${release}-bin.zip" basedir="${release.dir}"/>
+		
+	</target>
+	
+	<target name="src" depends="clean-all, javadoc"
+		description="Builds the ZIP file containing all stuff">
+		<property name="srcdir" value="${release.dir}/jsrcpc-${release}-src"/>
+		<delete file="jsrcpc-${release}-src.zip"/>
+		
+		<copy todir="${srcdir}">
+			<fileset dir="."
+				includes="build.xml, build.properties"
+				excludes="**/.svn/"/>
+		</copy>
+		<copy todir="${srcdir}/${lib.dir}">
+			<fileset dir="${lib.dir}"  excludes="**/.svn/"/>
+		</copy>
+		<copy todir="${srcdir}/${src.dir}">
+			<fileset dir="${src.dir}"  excludes="**/.svn/"/>
+		</copy>
+		<copy todir="${srcdir}/${etc.dir}">
+			<fileset dir="${etc.dir}"  excludes="**/.svn/"/>
+		</copy>
+		<tar destfile="jsrcpc-${release}-src.tar.bz2" basedir="${release.dir}"
+      compression="bzip2"
+			/>
+		<zip destfile="jsrcpc-${release}-src.zip" basedir="${release.dir}"
+			/>
+		<delete file="ChangeLog"/>
+	</target>
   <!-- =================================================================== -->
   <!-- Clean targets                                                       -->
   <!-- =================================================================== -->

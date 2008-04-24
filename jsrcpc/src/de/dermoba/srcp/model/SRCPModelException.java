@@ -3,7 +3,7 @@
  * copyright : (C) 2008 by Benjamin Mueller 
  * email     : news@fork.ch
  * website   : http://sourceforge.net/projects/adhocrailway
- * version   : $Id: SRCPModelException.java,v 1.1 2008-04-24 06:19:05 fork_ch Exp $
+ * version   : $Id: SRCPModelException.java,v 1.2 2008-04-24 18:37:37 fork_ch Exp $
  * 
  *----------------------------------------------------------------------*/
 
@@ -18,7 +18,7 @@
 
 package de.dermoba.srcp.model;
 
-public class SRCPModelException extends RuntimeException {
+public class SRCPModelException extends Exception {
 
 	public SRCPModelException() {
 		super();
