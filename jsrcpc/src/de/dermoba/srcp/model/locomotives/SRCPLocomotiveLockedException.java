@@ -3,7 +3,7 @@
  * copyright : (C) 2008 by Benjamin Mueller 
  * email     : news@fork.ch
  * website   : http://sourceforge.net/projects/adhocrailway
- * version   : $Id: LockingException.java,v 1.1 2008-04-24 06:19:05 fork_ch Exp $
+ * version   : $Id: SRCPLocomotiveLockedException.java,v 1.1 2008-04-24 07:29:51 fork_ch Exp $
  * 
  *----------------------------------------------------------------------*/
 
@@ -16,30 +16,14 @@
  *
  *----------------------------------------------------------------------*/
 
-package de.dermoba.srcp.model.locking;
+package de.dermoba.srcp.model.locomotives;
 
-import de.dermoba.srcp.model.SRCPModelException;
-
-public class LockingException extends SRCPModelException {
-
-	public LockingException() {
-		super();
-		// TODO Auto-generated constructor stub
+public class SRCPLocomotiveLockedException extends SRCPLocomotiveException {
+	public SRCPLocomotiveLockedException(String msg) {
+		super(msg);
 	}
 
-	public LockingException(String message, Throwable cause) {
-		super(message, cause);
-		// TODO Auto-generated constructor stub
+	public SRCPLocomotiveLockedException(String msg, Exception parent) {
+		super(msg, parent);
 	}
-
-	public LockingException(String message) {
-		super(message);
-		// TODO Auto-generated constructor stub
-	}
-
-	public LockingException(Throwable cause) {
-		super(cause);
-		// TODO Auto-generated constructor stub
-	}
-
 }

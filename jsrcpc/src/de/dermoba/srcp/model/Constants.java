@@ -3,7 +3,7 @@
  * copyright : (C) 2008 by Benjamin Mueller 
  * email     : news@fork.ch
  * website   : http://sourceforge.net/projects/adhocrailway
- * version   : $Id: Constants.java,v 1.1 2008-04-24 06:19:05 fork_ch Exp $
+ * version   : $Id: Constants.java,v 1.2 2008-04-24 07:29:48 fork_ch Exp $
  * 
  *----------------------------------------------------------------------*/
 
@@ -39,15 +39,13 @@ public interface Constants {
 
 	public static final String	ERR_INVALID_ADDRESS			= "Invalid address";
 
-	public static final String	ERR_VERSION_NOT_SUPPORTED	= "Version not supported";
+	public static final String	ERR_TOGGLE_FAILED			= "Toggle of switch failed";
 
-	public static final int		DEFAULT_BUS					= 1;
+	public static final int		DEFAULT_ACTIVATION_TIME		= 50;
 
-	public static final String				ERR_TOGGLE_FAILED			= "Toggle of switch failed";
-	
-	public static final int DEFAULT_ACTIVATION_TIME = 50;
-	
-	public static final boolean INTERFACE_6051_CONNECTED = false;
-	
-	public static final int DEFAULT_LOCK_DURATION = 0;
+	public static final boolean	INTERFACE_6051_CONNECTED	= false;
+
+	public static final int		DEFAULT_LOCK_DURATION		= 0;
+
+	public static final int		DEFAULT_ROUTING_DELAY		= 250;
 }

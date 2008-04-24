@@ -3,7 +3,7 @@
  * copyright : (C) 2008 by Benjamin Mueller 
  * email     : news@fork.ch
  * website   : http://sourceforge.net/projects/adhocrailway
- * version   : $Id: LocomotiveException.java,v 1.1 2008-04-24 06:19:06 fork_ch Exp $
+ * version   : $Id: SRCPLocomotiveException.java,v 1.1 2008-04-24 07:29:51 fork_ch Exp $
  * 
  *----------------------------------------------------------------------*/
 
@@ -21,23 +21,23 @@ package de.dermoba.srcp.model.locomotives;
 import de.dermoba.srcp.model.SRCPModelException;
 
 
-public class LocomotiveException extends SRCPModelException {
+public class SRCPLocomotiveException extends SRCPModelException {
 
-	public LocomotiveException() {
+	public SRCPLocomotiveException() {
 		// TODO Auto-generated constructor stub
 	}
 
-	public LocomotiveException(String message) {
+	public SRCPLocomotiveException(String message) {
 		super(message);
 		// TODO Auto-generated constructor stub
 	}
 
-	public LocomotiveException(Throwable cause) {
+	public SRCPLocomotiveException(Throwable cause) {
 		super(cause);
 		// TODO Auto-generated constructor stub
 	}
 
-	public LocomotiveException(String message, Throwable cause) {
+	public SRCPLocomotiveException(String message, Throwable cause) {
 		super(message, cause);
 		// TODO Auto-generated constructor stub
 	}

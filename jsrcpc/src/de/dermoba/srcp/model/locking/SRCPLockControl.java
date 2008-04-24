@@ -3,7 +3,7 @@
  * copyright : (C) 2008 by Benjamin Mueller 
  * email     : news@fork.ch
  * website   : http://sourceforge.net/projects/adhocrailway
- * version   : $Id: SRCPLockControl.java,v 1.1 2008-04-24 06:19:06 fork_ch Exp $
+ * version   : $Id: SRCPLockControl.java,v 1.2 2008-04-24 07:29:49 fork_ch Exp $
  * 
  *----------------------------------------------------------------------*/
 
@@ -84,12 +84,12 @@ public class SRCPLockControl implements LOCKInfoListener, Constants {
 	}
 
 	public boolean acquireLock(String deviceGroup, SRCPAddress address)
-			throws LockingException {
+			throws SRCPLockingException {
 		logger.info("acquireLock( " + deviceGroup + " , " + address + " )");
 		if (addressToControlObject.get(deviceGroup) == null)
-			throw new LockingException("Object to lock not found");
+			throw new SRCPLockingException("Object to lock not found");
 		if (addressToControlObject.get(deviceGroup).get(address) == null)
-			throw new LockingException("Object to lock not found");
+			throw new SRCPLockingException("Object to lock not found");
 
 		Object obj = addressToControlObject.get(deviceGroup).get(address);
 		SRCPLock sLock = locks.get(obj);
@@ -99,21 +99,21 @@ public class SRCPLockControl implements LOCKInfoListener, Constants {
 			sLock.setLocked(true);
 			sLock.setSessionID(session.getCommandChannelID());
 		} catch (SRCPDeviceLockedException e) {
-			throw new LockingException(ERR_LOCKED, e);
+			throw new SRCPLockingException(ERR_LOCKED, e);
 		} catch (SRCPException e) {
-			throw new LockingException(ERR_FAILED, e);
+			throw new SRCPLockingException(ERR_FAILED, e);
 		}
 		return true;
 	}
 
 	public boolean releaseLock(String deviceGroup, SRCPAddress address)
-			throws LockingException {
+			throws SRCPLockingException {
 
 		logger.info("acquireLock( " + deviceGroup + " , " + address + " )");
 		if (addressToControlObject.get(deviceGroup) == null)
-			throw new LockingException("Object to lock not found");
+			throw new SRCPLockingException("Object to lock not found");
 		if (addressToControlObject.get(deviceGroup).get(address) == null)
-			throw new LockingException("Object to lock not found");
+			throw new SRCPLockingException("Object to lock not found");
 
 		Object obj = addressToControlObject.get(deviceGroup).get(address);
 
@@ -124,14 +124,14 @@ public class SRCPLockControl implements LOCKInfoListener, Constants {
 			sLock.setLocked(false);
 			sLock.setSessionID(-1);
 		} catch (SRCPDeviceLockedException e) {
-			throw new LockingException(ERR_LOCKED, e);
+			throw new SRCPLockingException(ERR_LOCKED, e);
 		} catch (SRCPException e) {
-			throw new LockingException(ERR_FAILED, e);
+			throw new SRCPLockingException(ERR_FAILED, e);
 		}
 		return true;
 	}
 
-	public void releaseAllLocks() throws LockingException {
+	public void releaseAllLocks() throws SRCPLockingException {
 
 	}
 

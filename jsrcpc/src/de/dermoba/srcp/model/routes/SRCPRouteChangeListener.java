@@ -3,7 +3,7 @@
  * copyright : (C) 2008 by Benjamin Mueller 
  * email     : news@fork.ch
  * website   : http://sourceforge.net/projects/adhocrailway
- * version   : $Id: LocomotiveLockedException.java,v 1.1 2008-04-24 06:19:06 fork_ch Exp $
+ * version   : $Id: SRCPRouteChangeListener.java,v 1.1 2008-04-24 07:29:51 fork_ch Exp $
  * 
  *----------------------------------------------------------------------*/
 
@@ -16,14 +16,12 @@
  *
  *----------------------------------------------------------------------*/
 
-package de.dermoba.srcp.model.locomotives;
+package de.dermoba.srcp.model.routes;
 
-public class LocomotiveLockedException extends LocomotiveException {
-	public LocomotiveLockedException(String msg) {
-		super(msg);
-	}
+public interface SRCPRouteChangeListener {
+	public void nextTurnoutRouted(SRCPRoute r);
 
-	public LocomotiveLockedException(String msg, Exception parent) {
-		super(msg, parent);
-	}
+	public void nextTurnoutDerouted(SRCPRoute r);
+
+	public void routeChanged(SRCPRoute r);
 }

@@ -3,7 +3,7 @@
  * copyright : (C) 2008 by Benjamin Mueller 
  * email     : news@fork.ch
  * website   : http://sourceforge.net/projects/adhocrailway
- * version   : $Id: SRCPLockControlIface.java,v 1.1 2008-04-24 06:19:06 fork_ch Exp $
+ * version   : $Id: SRCPRouteException.java,v 1.1 2008-04-24 07:29:52 fork_ch Exp $
  * 
  *----------------------------------------------------------------------*/
 
@@ -16,16 +16,29 @@
  *
  *----------------------------------------------------------------------*/
 
-package de.dermoba.srcp.model.locking;
+package de.dermoba.srcp.model.routes;
 
-public interface SRCPLockControlIface<E> {
+import de.dermoba.srcp.model.SRCPModelException;
 
-	public boolean isLocked(E object) throws LockingException;
+public class SRCPRouteException extends SRCPModelException {
 
-	public boolean isLockedByMe(E object) throws LockingException;
+	public SRCPRouteException() {
+		// TODO Auto-generated constructor stub
+	}
 
-	public boolean acquireLock(E object) throws LockingException;
+	public SRCPRouteException(String message) {
+		super(message);
+		// TODO Auto-generated constructor stub
+	}
 
-	public boolean releaseLock(E object) throws LockingException;
+	public SRCPRouteException(String message, Throwable cause) {
+		super(message, cause);
+		// TODO Auto-generated constructor stub
+	}
+
+	public SRCPRouteException(Throwable cause) {
+		super(cause);
+		// TODO Auto-generated constructor stub
+	}
 
 }
