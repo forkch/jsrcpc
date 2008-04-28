@@ -3,7 +3,7 @@
  * copyright : (C) 2008 by Benjamin Mueller 
  * email     : news@fork.ch
  * website   : http://sourceforge.net/projects/adhocrailway
- * version   : $Id: SRCPTurnoutControl.java,v 1.2 2008-04-24 18:37:38 fork_ch Exp $
+ * version   : $Id: SRCPTurnoutControl.java,v 1.3 2008-04-28 19:08:24 fork_ch Exp $
  * 
  *----------------------------------------------------------------------*/
 
@@ -277,8 +277,8 @@ public class SRCPTurnoutControl implements GAInfoListener {
 		try {
 			ga.set(getPort(turnout, SRCPTurnout.TURNOUT_STRAIGHT_PORT),
 					SRCPTurnout.TURNOUT_PORT_ACTIVATE, activationTime);
-			ga.set(getPort(turnout, SRCPTurnout.TURNOUT_CURVED_PORT),
-					SRCPTurnout.TURNOUT_PORT_DEACTIVATE, activationTime);
+			//ga.set(getPort(turnout, SRCPTurnout.TURNOUT_CURVED_PORT),
+			//		SRCPTurnout.TURNOUT_PORT_DEACTIVATE, activationTime);
 			turnout.setTurnoutState(SRCPTurnoutState.STRAIGHT);
 			// informListeners(turnout);
 			lastChangedTurnout = turnout;
@@ -318,8 +318,8 @@ public class SRCPTurnoutControl implements GAInfoListener {
 
 			ga.set(getPort(turnout, SRCPTurnout.TURNOUT_CURVED_PORT),
 					SRCPTurnout.TURNOUT_PORT_ACTIVATE, activationTime);
-			ga.set(getPort(turnout, SRCPTurnout.TURNOUT_STRAIGHT_PORT),
-					SRCPTurnout.TURNOUT_PORT_DEACTIVATE, activationTime);
+			//ga.set(getPort(turnout, SRCPTurnout.TURNOUT_STRAIGHT_PORT),
+			//		SRCPTurnout.TURNOUT_PORT_DEACTIVATE, activationTime);
 			turnout.setTurnoutState(SRCPTurnoutState.LEFT);
 			// informListeners(turnout);
 			lastChangedTurnout = turnout;
@@ -538,13 +538,13 @@ public class SRCPTurnoutControl implements GAInfoListener {
 				initTurnoutThreeWay(turnout);
 			try {
 				GA ga = new GA(session);
-				if (interface6051Connected) {
+				//if (interface6051Connected) {
 					ga.init(turnout.getBus1(), turnout.getAddress1(), turnout
 							.getProtocol());
-				} else {
+				//} else {
 					ga.setBus(turnout.getBus1());
 					ga.setAddress(turnout.getAddress1());
-				}
+				//}
 
 				turnout.setGA(ga);
 				turnout.setInitialized(true);
@@ -617,7 +617,6 @@ public class SRCPTurnoutControl implements GAInfoListener {
 	}
 
 	private SRCPTurnout getTurnoutByAddressBus(int bus, int address) {
-		logger.debug("getTurnoutByAddressBus()");
 		SRCPAddress key1 = new SRCPAddress(bus, address, 0, 0);
 		SRCPTurnout lookup1 = addressTurnoutCache.get(key1);
 		if (lookup1 != null)
