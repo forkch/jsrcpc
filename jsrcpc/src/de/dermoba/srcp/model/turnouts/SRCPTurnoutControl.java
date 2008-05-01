@@ -3,7 +3,7 @@
  * copyright : (C) 2008 by Benjamin Mueller 
  * email     : news@fork.ch
  * website   : http://sourceforge.net/projects/adhocrailway
- * version   : $Id: SRCPTurnoutControl.java,v 1.3 2008-04-28 19:08:24 fork_ch Exp $
+ * version   : $Id: SRCPTurnoutControl.java,v 1.4 2008-05-01 19:41:37 fork_ch Exp $
  * 
  *----------------------------------------------------------------------*/
 
@@ -72,10 +72,9 @@ public class SRCPTurnoutControl implements GAInfoListener {
 	}
 
 	public void update(Set<SRCPTurnout> turnouts) {
-
 		this.addressTurnoutCache.clear();
 		this.addressThreewayCache.clear();
-		srcpTurnouts.clear();
+		this.srcpTurnouts.clear();
 		for (SRCPTurnout turnout : turnouts) {
 			srcpTurnouts.add(turnout);
 			turnout.setSession(session);
@@ -497,6 +496,32 @@ public class SRCPTurnoutControl implements GAInfoListener {
 							.getTurnoutState());
 		logger.debug("turnoutChanged(" + changedTurnout + ")");
 
+	}
+	
+	public void addTurnout(SRCPTurnout turnout) {
+		srcpTurnouts.add(turnout);
+		addressTurnoutCache.put(new SRCPAddress(turnout.getBus1(), turnout
+				.getAddress1(), turnout.getBus2(), turnout.getAddress2()),
+				turnout);
+		if (turnout.isThreeWay()) {
+			addressThreewayCache.put(new SRCPAddress(turnout.getBus1(),
+					turnout.getAddress1(), 0, 0), turnout);
+			addressThreewayCache.put(new SRCPAddress(0, 0, turnout
+					.getBus2(), turnout.getAddress2()), turnout);
+		}
+	}
+	
+	public void removeTurnout(SRCPTurnout turnout) {
+		srcpTurnouts.remove(turnout);
+		addressTurnoutCache.remove(new SRCPAddress(turnout.getBus1(), turnout
+				.getAddress1(), turnout.getBus2(), turnout.getAddress2()));
+		if(turnout.isThreeWay()) {
+
+			addressTurnoutCache.remove(new SRCPAddress(turnout.getBus1(), turnout
+					.getAddress1(), 0,0));
+			addressTurnoutCache.remove(new SRCPAddress(0, 0, turnout
+					.getBus2(), turnout.getAddress2()));
+		}
 	}
 
 	void checkTurnout(SRCPTurnout turnout) throws SRCPModelException {
