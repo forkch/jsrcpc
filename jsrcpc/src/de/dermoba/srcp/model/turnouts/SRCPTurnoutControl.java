@@ -3,7 +3,7 @@
  * copyright : (C) 2008 by Benjamin Mueller 
  * email     : news@fork.ch
  * website   : http://sourceforge.net/projects/adhocrailway
- * version   : $Id: SRCPTurnoutControl.java,v 1.4 2008-05-01 19:41:37 fork_ch Exp $
+ * version   : $Id: SRCPTurnoutControl.java,v 1.5 2008-05-12 18:02:24 fork_ch Exp $
  * 
  *----------------------------------------------------------------------*/
 
@@ -563,13 +563,13 @@ public class SRCPTurnoutControl implements GAInfoListener {
 				initTurnoutThreeWay(turnout);
 			try {
 				GA ga = new GA(session);
-				//if (interface6051Connected) {
+				if (interface6051Connected) {
 					ga.init(turnout.getBus1(), turnout.getAddress1(), turnout
 							.getProtocol());
-				//} else {
+				} else {
 					ga.setBus(turnout.getBus1());
 					ga.setAddress(turnout.getAddress1());
-				//}
+				}
 
 				turnout.setGA(ga);
 				turnout.setInitialized(true);

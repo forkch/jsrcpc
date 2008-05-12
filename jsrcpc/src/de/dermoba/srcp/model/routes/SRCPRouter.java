@@ -3,7 +3,7 @@
  * copyright : (C) 2008 by Benjamin Mueller 
  * email     : news@fork.ch
  * website   : http://sourceforge.net/projects/adhocrailway
- * version   : $Id: SRCPRouter.java,v 1.2 2008-04-24 18:37:38 fork_ch Exp $
+ * version   : $Id: SRCPRouter.java,v 1.3 2008-05-12 18:02:23 fork_ch Exp $
  * 
  *----------------------------------------------------------------------*/
 
@@ -22,10 +22,12 @@ import java.util.List;
 
 import de.dermoba.srcp.model.SRCPModelException;
 import de.dermoba.srcp.model.turnouts.SRCPTurnout;
+import de.dermoba.srcp.model.turnouts.SRCPTurnoutChangeListener;
 import de.dermoba.srcp.model.turnouts.SRCPTurnoutControl;
 import de.dermoba.srcp.model.turnouts.SRCPTurnoutException;
+import de.dermoba.srcp.model.turnouts.SRCPTurnoutState;
 
-public class SRCPRouter extends Thread {
+public class SRCPRouter extends Thread implements SRCPTurnoutChangeListener {
 
 	private boolean							enableRoute;
 	private int								waitTime;
@@ -44,11 +46,15 @@ public class SRCPRouter extends Thread {
 	public void run() {
 		try {
 			sRoute.setRouteState(SRCPRouteState.ROUTING);
+
+			SRCPTurnoutControl sc = SRCPTurnoutControl.getInstance();
+			sc.addTurnoutChangeListener(this);
 			if (enableRoute) {
 				enableRoute();
 			} else {
 				disableRoute();
 			}
+			sc.removeTurnoutChangeListener(this);
 		} catch (SRCPModelException e) {
 			this.switchException = e;
 		} catch (InterruptedException e) {
@@ -63,9 +69,7 @@ public class SRCPRouter extends Thread {
 			SRCPTurnout turnoutToRoute = ri.getTurnout();
 
 			sc.setDefaultState(turnoutToRoute);
-			for (SRCPRouteChangeListener l : listener) {
-				l.nextTurnoutDerouted(sRoute);
-			}
+			
 			Thread.sleep(waitTime);
 		}
 		sRoute.setRouteState(SRCPRouteState.DISABLED);
@@ -90,9 +94,6 @@ public class SRCPRouter extends Thread {
 				sc.setCurvedRight(turnoutToRoute);
 				break;
 			}
-			for (SRCPRouteChangeListener l : listener) {
-				l.nextTurnoutRouted(sRoute);
-			}
 			Thread.sleep(waitTime);
 		}
 		sRoute.setRouteState(SRCPRouteState.ENABLED);
@@ -103,5 +104,21 @@ public class SRCPRouter extends Thread {
 
 	public SRCPModelException getSwitchException() {
 		return switchException;
+	}
+
+	public void turnoutChanged(SRCPTurnout changedTurnout,
+			SRCPTurnoutState newState) {
+		for(SRCPRouteItem item : sRoute.getRouteItems()) {
+			if(item.getTurnout().equals(changedTurnout)) {
+				for (SRCPRouteChangeListener l : listener) {
+					if(enableRoute) 
+						l.nextTurnoutRouted(sRoute);
+					else
+						l.nextTurnoutDerouted(sRoute);
+				}
+			}
+		}
+		
+		
 	}
 }

@@ -3,7 +3,7 @@
  * copyright : (C) 2008 by Benjamin Mueller 
  * email     : news@fork.ch
  * website   : http://sourceforge.net/projects/adhocrailway
- * version   : $Id: SRCPLockControl.java,v 1.3 2008-04-24 18:37:37 fork_ch Exp $
+ * version   : $Id: SRCPLockControl.java,v 1.4 2008-05-12 18:02:22 fork_ch Exp $
  * 
  *----------------------------------------------------------------------*/
 
@@ -168,6 +168,7 @@ public class SRCPLockControl implements LOCKInfoListener, Constants {
 		for (SRCPLockChangeListener l : listeners) {
 			l.lockChanged(object, locked);
 		}
+		logger.debug("lockChanged");
 	}
 
 	public void addLockChangeListener(SRCPLockChangeListener l) {

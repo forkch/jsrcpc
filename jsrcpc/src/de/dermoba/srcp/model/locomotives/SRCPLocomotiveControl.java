@@ -3,7 +3,7 @@
  * copyright : (C) 2008 by Benjamin Mueller 
  * email     : news@fork.ch
  * website   : http://sourceforge.net/projects/adhocrailway
- * version   : $Id: SRCPLocomotiveControl.java,v 1.3 2008-04-24 18:37:37 fork_ch Exp $
+ * version   : $Id: SRCPLocomotiveControl.java,v 1.4 2008-05-12 18:02:23 fork_ch Exp $
  * 
  *----------------------------------------------------------------------*/
 
@@ -175,6 +175,8 @@ public class SRCPLocomotiveControl implements GLInfoListener, Constants {
 				break;
 			}
 			locomotive.setCurrentSpeed(speed);
+			locomotive.setFunctions(functions);
+			informListeners(locomotive);
 		} catch (SRCPDeviceLockedException x) {
 			throw new SRCPLocomotiveLockedException(ERR_LOCKED);
 		} catch (SRCPException x) {
@@ -267,7 +269,7 @@ public class SRCPLocomotiveControl implements GLInfoListener, Constants {
 			locomotive.setInitialized(true);
 			checkLocomotive(locomotive);
 
-			informListeners(locomotive);
+			//informListeners(locomotive);
 		} catch (SRCPModelException e1) {
 		}
 	}
@@ -286,14 +288,14 @@ public class SRCPLocomotiveControl implements GLInfoListener, Constants {
 			// ignore unknown locomotive
 		}
 		if (locomotive != null) {
-			if (drivemode.equals(SRCPLocomotive.FORWARD_DIRECTION)) {
+			/*if (drivemode.equals(SRCPLocomotive.FORWARD_DIRECTION)) {
 				locomotive.setDirection(SRCPLocomotiveDirection.FORWARD);
 			} else if (drivemode.equals(SRCPLocomotive.REVERSE_DIRECTION)) {
 				locomotive.setDirection(SRCPLocomotiveDirection.REVERSE);
 			}
 			locomotive.setCurrentSpeed(v);
-			locomotive.setFunctions(functions);
-			informListeners(locomotive);
+			locomotive.setFunctions(functions);*/
+			//informListeners(locomotive);
 		}
 	}
 
