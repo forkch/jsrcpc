@@ -203,7 +203,7 @@ public class InfoChannel implements Runnable {
             boolean[] f = new boolean[functions.size()];
             int i = 0;
 
-            for (Iterator it = functions.iterator(); it.hasNext();) {
+            for (Iterator <Boolean> it = functions.iterator(); it.hasNext();) {
                 f[i++] = ((Boolean) it.next()).booleanValue();
             }
             synchronized (GLListeners) {
