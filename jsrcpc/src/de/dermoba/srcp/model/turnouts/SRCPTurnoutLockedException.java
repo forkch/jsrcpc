@@ -3,7 +3,7 @@
  * copyright : (C) 2008 by Benjamin Mueller 
  * email     : news@fork.ch
  * website   : http://sourceforge.net/projects/adhocrailway
- * version   : $Id: SRCPTurnoutLockedException.java,v 1.1 2008-04-24 06:19:07 fork_ch Exp $
+ * version   : $Id: SRCPTurnoutLockedException.java,v 1.2 2008-06-09 12:31:34 andre_schenk Exp $
  * 
  *----------------------------------------------------------------------*/
 
@@ -19,7 +19,9 @@
 package de.dermoba.srcp.model.turnouts;
 
 public class SRCPTurnoutLockedException extends SRCPTurnoutException {
-	public SRCPTurnoutLockedException(String msg) {
+    private static final long serialVersionUID = -2591868435018483946L;
+
+    public SRCPTurnoutLockedException(String msg) {
 		super(msg);
 	}
 

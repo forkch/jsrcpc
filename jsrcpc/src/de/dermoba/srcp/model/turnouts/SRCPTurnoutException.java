@@ -3,7 +3,7 @@
  * copyright : (C) 2008 by Benjamin Mueller 
  * email     : news@fork.ch
  * website   : http://sourceforge.net/projects/adhocrailway
- * version   : $Id: SRCPTurnoutException.java,v 1.1 2008-04-24 06:19:07 fork_ch Exp $
+ * version   : $Id: SRCPTurnoutException.java,v 1.2 2008-06-09 12:31:34 andre_schenk Exp $
  * 
  *----------------------------------------------------------------------*/
 
@@ -21,7 +21,8 @@ package de.dermoba.srcp.model.turnouts;
 import de.dermoba.srcp.model.SRCPModelException;
 
 public class SRCPTurnoutException extends SRCPModelException {
-
+    private static final long serialVersionUID = 2207391220597009105L;
+	
 	public SRCPTurnoutException() {
 		// TODO Auto-generated constructor stub
 	}

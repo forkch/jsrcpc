@@ -3,7 +3,7 @@
  * copyright : (C) 2008 by Benjamin Mueller 
  * email     : news@fork.ch
  * website   : http://sourceforge.net/projects/adhocrailway
- * version   : $Id: SRCPLocomotiveException.java,v 1.1 2008-04-24 07:29:51 fork_ch Exp $
+ * version   : $Id: SRCPLocomotiveException.java,v 1.2 2008-06-09 12:31:34 andre_schenk Exp $
  * 
  *----------------------------------------------------------------------*/
 
@@ -22,6 +22,7 @@ import de.dermoba.srcp.model.SRCPModelException;
 
 
 public class SRCPLocomotiveException extends SRCPModelException {
+    private static final long serialVersionUID = 8332984197889239793L;
 
 	public SRCPLocomotiveException() {
 		// TODO Auto-generated constructor stub

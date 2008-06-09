@@ -3,7 +3,7 @@
  * copyright : (C) 2008 by Benjamin Mueller 
  * email     : news@fork.ch
  * website   : http://sourceforge.net/projects/adhocrailway
- * version   : $Id: SRCPLockingException.java,v 1.1 2008-04-24 07:29:49 fork_ch Exp $
+ * version   : $Id: SRCPLockingException.java,v 1.2 2008-06-09 12:31:34 andre_schenk Exp $
  * 
  *----------------------------------------------------------------------*/
 
@@ -21,6 +21,7 @@ package de.dermoba.srcp.model.locking;
 import de.dermoba.srcp.model.SRCPModelException;
 
 public class SRCPLockingException extends SRCPModelException {
+    private static final long serialVersionUID = -7333146090709460659L;
 
 	public SRCPLockingException() {
 		super();

@@ -3,7 +3,7 @@
  * copyright : (C) 2008 by Benjamin Mueller 
  * email     : news@fork.ch
  * website   : http://sourceforge.net/projects/adhocrailway
- * version   : $Id: SRCPLocomotiveLockedException.java,v 1.1 2008-04-24 07:29:51 fork_ch Exp $
+ * version   : $Id: SRCPLocomotiveLockedException.java,v 1.2 2008-06-09 12:31:34 andre_schenk Exp $
  * 
  *----------------------------------------------------------------------*/
 
@@ -19,6 +19,8 @@
 package de.dermoba.srcp.model.locomotives;
 
 public class SRCPLocomotiveLockedException extends SRCPLocomotiveException {
+    private static final long serialVersionUID = -344175166616117239L;
+
 	public SRCPLocomotiveLockedException(String msg) {
 		super(msg);
 	}

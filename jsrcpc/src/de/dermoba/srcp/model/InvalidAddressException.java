@@ -3,7 +3,7 @@
  * copyright : (C) 2008 by Benjamin Mueller 
  * email     : news@fork.ch
  * website   : http://sourceforge.net/projects/adhocrailway
- * version   : $Id: InvalidAddressException.java,v 1.1 2008-04-24 06:19:05 fork_ch Exp $
+ * version   : $Id: InvalidAddressException.java,v 1.2 2008-06-09 12:31:34 andre_schenk Exp $
  * 
  *----------------------------------------------------------------------*/
 
@@ -19,6 +19,7 @@
 package de.dermoba.srcp.model;
 
 public class InvalidAddressException extends SRCPModelException {
+    private static final long serialVersionUID = 8368717093694068924L;
 
 	public InvalidAddressException() {
 		super(Constants.ERR_INVALID_ADDRESS);
