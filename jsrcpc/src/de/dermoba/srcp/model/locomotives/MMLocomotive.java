@@ -1,7 +1,5 @@
 package de.dermoba.srcp.model.locomotives;
 
-import de.dermoba.srcp.model.turnouts.MMTurnout;
-
 public class MMLocomotive extends SRCPLocomotive {
 
 	public final static int		MAX_MM_LOCOMOTIVE_ADDRESS	= 99;
