@@ -4,6 +4,8 @@
  */
 package de.dermoba.srcp.common;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 
 import de.dermoba.srcp.common.exception.SRCPUnsufficientDataException;
@@ -12,8 +14,10 @@ import de.dermoba.srcp.common.exception.SRCPWrongValueException;
 /**
  * create an object containing a complete line and pass tokens taken
  * from this line.
+ * tokens will be decoded as URL in RFC 2396. 
  *
  * @author kurt
+ * @author Michael Oppenauer
  *
  */
 public class TokenizedLine {
@@ -43,6 +47,14 @@ public class TokenizedLine {
         return tokens.get(tokenPosition++).trim();
     }
 
+    public String nextURLStringToken() throws SRCPUnsufficientDataException, SRCPWrongValueException {
+        try {
+			return URLDecoder.decode(nextStringToken(), "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			throw new SRCPWrongValueException(e);
+		}
+    }
+    
     public double nextDoubleToken() throws SRCPUnsufficientDataException, NumberFormatException  {
         return Double.parseDouble(nextStringToken());
     }
