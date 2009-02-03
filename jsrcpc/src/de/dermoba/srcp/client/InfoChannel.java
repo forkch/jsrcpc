@@ -20,9 +20,12 @@ import de.dermoba.srcp.common.exception.SRCPException;
 import de.dermoba.srcp.common.exception.SRCPHostNotFoundException;
 import de.dermoba.srcp.common.exception.SRCPIOException;
 import de.dermoba.srcp.common.exception.SRCPUnsufficientDataException;
+import de.dermoba.srcp.common.exception.SRCPWrongValueException;
+import de.dermoba.srcp.devices.CRCFInfoListener;
 import de.dermoba.srcp.devices.FBInfoListener;
 import de.dermoba.srcp.devices.GAInfoListener;
 import de.dermoba.srcp.devices.GLInfoListener;
+import de.dermoba.srcp.devices.GMInfoListener;
 import de.dermoba.srcp.devices.LOCKInfoListener;
 import de.dermoba.srcp.devices.POWERInfoListener;
 
@@ -43,11 +46,14 @@ public class InfoChannel implements Runnable {
     private List<GLInfoListener>        GLListeners;
     private List<LOCKInfoListener>      LOCKListeners;
     private List<POWERInfoListener>     POWERListeners;
+    private List<GMInfoListener>		GMListeners;
+    private List<CRCFInfoListener>		CRCFListeners;
     // private List<DESCRIPTIONInfoListener> DESCRIPTIONListeners;
     // private List<SESSIONInfoListener> SESSIONListeners;
     private ArrayList<InfoDataListener> listeners = null;
     private Thread                      infoThread;
-
+    private CRCFHandler					CRCFHandle;
+    
     /**
      * creates a new SRCP connection on the info channel to handle all info
      * communication.
@@ -68,6 +74,11 @@ public class InfoChannel implements Runnable {
         GLListeners = new ArrayList<GLInfoListener>();
         LOCKListeners = new ArrayList<LOCKInfoListener>();
         POWERListeners = new ArrayList<POWERInfoListener>();
+        GMListeners = new ArrayList<GMInfoListener>();
+        CRCFListeners = new ArrayList<CRCFInfoListener>();
+        
+        CRCFHandle = new CRCFHandler();
+        GMListeners.add(CRCFHandle);
     }
 
     public void connect() throws SRCPException {
@@ -90,6 +101,7 @@ public class InfoChannel implements Runnable {
 
     public void disconnect() throws SRCPException {
         try {
+        	GMListeners.remove(CRCFHandle);
             socket.close();
         } catch (IOException e) {
             throw new SRCPIOException(e);
@@ -106,10 +118,10 @@ public class InfoChannel implements Runnable {
             try {
                 String[] sSplitted = s.split(" ");
 
-                id = Integer.parseInt(sSplitted[1]);
+                id = Integer.parseInt(sSplitted[4]);
             }
             catch (NumberFormatException e) {
-                System.err.println ("cannot convert the 2. token from \"" + s + "\" into an integer");
+                System.err.println ("cannot convert the 5. token from \"" + s + "\" into an integer");
             }
             while (true) {
                 s = in.read();
@@ -151,6 +163,8 @@ public class InfoChannel implements Runnable {
                     // TODO: parse DESCRIPTION-Info
                 } else if (deviceGroup.equals("SESSION")) {
                     // TODO: parse SESSION-Info
+                } else if (deviceGroup.equals("GM")) {
+                    handleGM(tokenLine, timestamp, number, bus);
                 }
             }
         } catch (SRCPUnsufficientDataException e) {
@@ -159,7 +173,10 @@ public class InfoChannel implements Runnable {
         } catch (NumberFormatException e) {
             System.err.println ("cannot convert the next token from \"" + s + "\" into an integer");
             e.printStackTrace();
-        }
+        } catch (SRCPWrongValueException e) {
+            System.err.println ("wrong value in line \"" + s + "\"");
+			e.printStackTrace();
+		}
 
         for (int i = 0; i < listeners.size(); i++) {
             listeners.get(i).infoDataReceived(s);
@@ -305,7 +322,33 @@ public class InfoChannel implements Runnable {
         }
     }
 
-    public synchronized void addFBInfoListener(FBInfoListener l) {
+    /**
+     * Handles GM Messages, calls all registered GMInfoListeners. 
+     * 
+     * @param tokenLine
+     * @param timestamp
+     * @param number
+     * @param bus
+     * @throws SRCPUnsufficientDataException
+     * @throws NumberFormatException
+     * @throws SRCPWrongValueException
+     */
+    private void handleGM(TokenizedLine tokenLine, double timestamp,
+        int number, int bus) throws SRCPUnsufficientDataException, NumberFormatException, SRCPWrongValueException {
+    	
+        if (number == INFO_SET) {
+            int sendTo = tokenLine.nextIntToken();
+            int replyTo = tokenLine.nextIntToken();
+            String messageType = tokenLine.nextStringToken();
+            synchronized (GMListeners) {
+                for(GMInfoListener l : GMListeners) {
+                    l.GMset(timestamp, bus, sendTo, replyTo, messageType, tokenLine);
+                }
+            }
+        }
+    }
+    		       		
+	public synchronized void addFBInfoListener(FBInfoListener l) {
         FBListeners.add(l);
     }
 
@@ -323,6 +366,14 @@ public class InfoChannel implements Runnable {
 
     public synchronized void addPOWERInfoListener(POWERInfoListener l) {
         POWERListeners.add(l);
+    }
+
+    public synchronized void addGMInfoListener(GMInfoListener l) {
+        GMListeners.add(l);
+    }
+
+    public synchronized void addCRCFInfoListener(CRCFInfoListener l) {
+        CRCFListeners.add(l);
     }
 
     public synchronized void removeFBInfoListener(FBInfoListener l) {
@@ -345,7 +396,60 @@ public class InfoChannel implements Runnable {
         POWERListeners.remove(l);
     }
 
+    public synchronized void removeGMInfoListener(GMInfoListener l) {
+        GMListeners.remove(l);
+    }
+
+    public synchronized void removeCRCFInfoListener(CRCFInfoListener l) {
+        CRCFListeners.remove(l);
+    }
+
     public int getID() {
         return id;
+    }
+    
+    /**
+     * Handler for CRCF Messages, is registered as GMInfoListener.
+     * Calls CRCFInfoListener.
+     * 
+     * @author Michael Oppenauer
+     * 03.02.2009
+     *
+     */
+    class CRCFHandler implements GMInfoListener {
+    	
+    	public CRCFHandler () {
+    	}
+
+		/* (non-Javadoc)
+		 * @see de.dermoba.srcp.devices.GMInfoListener#GMset(double, int, int, int, java.lang.String, de.dermoba.srcp.common.TokenizedLine)
+		 */
+		public void GMset(double timestamp, int bus, int sendTo, int replyTo,
+				String messageType, TokenizedLine tokenLine) throws SRCPUnsufficientDataException, NumberFormatException, SRCPWrongValueException {
+            if (messageType.equals("CRCF")) {
+            	String actor = tokenLine.nextURLStringToken();
+            	int actor_id = tokenLine.nextIntToken(0);
+            	String method = tokenLine.nextStringToken();
+            	String attribute = tokenLine.nextURLStringToken();
+            	String attribute_value = "";
+            	if (tokenLine.hasMoreElements()) {
+            		attribute_value = tokenLine.nextURLStringToken();
+            	}
+				synchronized (CRCFListeners) {
+					for (CRCFInfoListener l : CRCFListeners) {
+						if (method.equals("GET")) {
+							l.CRCFget(timestamp, bus, sendTo, replyTo, actor, actor_id, attribute);
+						} else if (method.equals("SET")) {
+							l.CRCFset(timestamp, bus, sendTo, replyTo, actor, actor_id, attribute, attribute_value);
+						} else if (method.equals("INFO")) {
+							l.CRCFinfo(timestamp, bus, sendTo, replyTo, actor, actor_id, attribute, attribute_value);
+						} else if (method.equals("LIST")) {
+							l.CRCFlist(timestamp, bus, sendTo, replyTo, actor, actor_id, attribute);
+						}
+		            }
+				}
+		 	}
+		}
+    	
     }
 }
