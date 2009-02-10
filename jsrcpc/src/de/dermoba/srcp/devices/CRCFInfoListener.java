@@ -1,6 +1,8 @@
 
 package de.dermoba.srcp.devices;
 
+import java.util.UUID;
+
 /**
  * Interface for Listeners of CRCF Messages.
  * 
@@ -26,7 +28,7 @@ public interface CRCFInfoListener {
 	 *  the actor
 	 */
 	public void CRCFget(double timestamp, int bus, int sendTo, int replyTo,
-			String actor, int actor_id, String attribute);
+			String actor, UUID actor_id, String attribute);
 
 	/**
 	 * If the Listener is registered at the InfoChannel, then this
@@ -44,7 +46,7 @@ public interface CRCFInfoListener {
 	 * @param attribute_value	new value for the attribute
 	 */
 	public void CRCFset(double timestamp, int bus, int sendTo, int replyTo,
-			String actor, int actor_id, String attribute, String attribute_value);
+			String actor, UUID actor_id, String attribute, String attribute_value);
 
 
 	/**
@@ -63,7 +65,7 @@ public interface CRCFInfoListener {
 	 * @param attribute_value	new value for the attribute
 	 */
 	public void CRCFinfo(double timestamp, int bus, int sendTo, int replyTo,
-			String actor, int actor_id, String attribute, String attribute_value);
+			String actor, UUID actor_id, String attribute, String attribute_value);
 
 
 	/**
@@ -85,5 +87,5 @@ public interface CRCFInfoListener {
 	 *  to the actor
 	 */
 	public void CRCFlist(double timestamp, int bus, int sendTo, int replyTo,
-			String actor, int actor_id, String attribute);
+			String actor, UUID actor_id, String attribute);
 }
