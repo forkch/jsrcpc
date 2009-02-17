@@ -34,6 +34,6 @@ public class SocketReader {
                 buffer.append((char)input);
             }
         }
-        return buffer.toString().toUpperCase().trim();
+        return buffer.toString().trim();
     }
 }
