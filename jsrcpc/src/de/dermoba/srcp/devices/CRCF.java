@@ -31,17 +31,18 @@ public class CRCF {
     private String message(int sendTo, int replyTo, String actor, UUID actor_id, String messageType, String attribute, String attribute_value) throws SRCPException {
     	String[] message;
         if (attribute_value.equals("")) {
-        	message = new String[4];
-        } else {
         	message = new String[5];
+        } else {
+        	message = new String[6];
         }
         try {
-        	message[0] = actor;
-			message[1] = URLEncoder.encode(actor_id.toString(), "UTF-8");
-	        message[2] = messageType;
-	        message[3] = attribute;
+        	message[0] = "CRCF";
+        	message[1] = actor;
+			message[2] = URLEncoder.encode(actor_id.toString(), "UTF-8");
+	        message[3] = messageType;
+	        message[4] = attribute;
 	        if (!attribute_value.equals("")) {
-	            message[4] = attribute_value;
+	            message[5] = attribute_value;
 	        }
 		} catch (UnsupportedEncodingException e) {
 			System.out.println("Can't encode UUID.");
