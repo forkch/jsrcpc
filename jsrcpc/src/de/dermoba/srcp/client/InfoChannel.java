@@ -12,6 +12,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.UUID;
 
 import de.dermoba.srcp.common.SocketReader;
 import de.dermoba.srcp.common.SocketWriter;
@@ -148,7 +149,7 @@ public class InfoChannel implements Runnable {
             if (number < 200) {
                 tokenLine.nextStringToken();
                 int bus = tokenLine.nextIntToken();
-                String deviceGroup = tokenLine.nextStringToken();
+                String deviceGroup = tokenLine.nextStringToken().toUpperCase();
                 if (deviceGroup.equals("FB")) {
                     handleFB(tokenLine, timestamp, number, bus);
                 } else if (deviceGroup.equals("GA")) {
@@ -428,7 +429,7 @@ public class InfoChannel implements Runnable {
 				String messageType, TokenizedLine tokenLine) throws SRCPUnsufficientDataException, NumberFormatException, SRCPWrongValueException {
             if (messageType.equals("CRCF")) {
             	String actor = tokenLine.nextURLStringToken();
-            	int actor_id = tokenLine.nextIntToken(0);
+            	UUID actor_id = UUID.fromString(tokenLine.nextURLStringToken());
             	String method = tokenLine.nextStringToken();
             	String attribute = tokenLine.nextURLStringToken();
             	String attribute_value = "";
