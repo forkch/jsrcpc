@@ -6,6 +6,7 @@ package de.dermoba.srcp.client;
 
 public interface InfoDataListener {
 
-    public abstract void infoDataReceived(String infoData);
+    public void infoDataReceived(String infoData);
 
+    public void infoDataSent(String infoData);
 }

@@ -109,12 +109,17 @@ public class InfoChannel implements Runnable {
         }
     }
 
+    private void send(String s) throws IOException {
+        informListenersSent(s);
+        out.write(s + "\n");
+    }
+
     public void run() {
         try {
             String s = in.read();
-            out.write("SET CONNECTIONMODE SRCP INFO\n");
+            send("SET CONNECTIONMODE SRCP INFO");
             s = in.read();
-            out.write("GO\n");
+            send("GO");
             s = in.read();
             try {
                 String[] sSplitted = s.split(" ");
@@ -128,7 +133,7 @@ public class InfoChannel implements Runnable {
                 s = in.read();
                 if (s == null)
                     break;
-                informListener(s);
+                informListenersReceived(s);
             }
         } catch (SocketException e) {
             return;
@@ -141,7 +146,11 @@ public class InfoChannel implements Runnable {
         listeners.add(listener);
     }
 
-    private void informListener(String s) {
+    public void removeInfoDataListener(InfoDataListener listener) {
+        listeners.remove(listener);
+    }
+
+    private void informListenersReceived(String s) {
         try {
             TokenizedLine tokenLine = new TokenizedLine(s);
             double timestamp = tokenLine.nextDoubleToken();
@@ -181,6 +190,12 @@ public class InfoChannel implements Runnable {
 
         for (int i = 0; i < listeners.size(); i++) {
             listeners.get(i).infoDataReceived(s);
+        }
+    }
+
+    private void informListenersSent(String s) {
+        for (int i = 0; i < listeners.size(); i++) {
+            listeners.get(i).infoDataSent(s);
         }
     }
 
