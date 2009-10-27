@@ -51,7 +51,7 @@ public class CommandChannel {
 	
 	public void connect() throws SRCPException {
 		try {
-			String incoming = in.read();
+			String incoming = in.readGreeting();
 			informListenersReceived(incoming);
         } catch (IOException e) {
             throw new SRCPIOException();

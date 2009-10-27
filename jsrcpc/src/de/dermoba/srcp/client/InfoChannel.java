@@ -116,7 +116,7 @@ public class InfoChannel implements Runnable {
 
     public void run() {
         try {
-            String s = in.read();
+            String s = in.readGreeting();
             send("SET CONNECTIONMODE SRCP INFO");
             s = in.read();
             send("GO");
