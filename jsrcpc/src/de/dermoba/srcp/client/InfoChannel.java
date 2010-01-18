@@ -124,10 +124,12 @@ public class InfoChannel implements Runnable {
             try {
                 String[] sSplitted = s.split(" ");
 
-                id = Integer.parseInt(sSplitted[4]);
+                if (sSplitted.length >= 5) {
+                    id = Integer.parseInt(sSplitted[4]);
+                }
             }
             catch (NumberFormatException e) {
-                System.err.println ("cannot convert the 5. token from \"" + s + "\" into an integer");
+                System.err.println (s + ": cannot convert the 5. token from \"" + s + "\" into an integer");
             }
             while (true) {
                 s = in.read();
