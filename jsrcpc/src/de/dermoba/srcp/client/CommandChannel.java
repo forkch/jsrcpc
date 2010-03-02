@@ -58,8 +58,11 @@ public class CommandChannel {
         }
 		send("SET CONNECTIONMODE SRCP COMMAND");
 		String output = sendReceive("GO");
-        String[] outputSplitted = output.split(" ");
-        id = Integer.parseInt(outputSplitted[4]);
+                String[] outputSplitted = output.split(" ");
+
+                if (outputSplitted.length >= 5) {
+                    id = Integer.parseInt(outputSplitted[4]);
+                }
 	}
 
 	public void disconnect() throws SRCPException {
