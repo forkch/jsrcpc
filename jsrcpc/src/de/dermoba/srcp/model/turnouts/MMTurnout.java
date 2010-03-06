@@ -31,6 +31,7 @@ public class MMTurnout extends SRCPTurnout {
 		switch (turnoutType) {
 		case DEFAULT:
 		case DOUBLECROSS:
+		case CUTTER:
 			return !(address1 <= 0 || address1 > MMTurnout.MAX_MM_TURNOUT_ADDRESS);
 		case THREEWAY:
 			return !(address1 <= 0

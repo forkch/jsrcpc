@@ -3,7 +3,7 @@
  * copyright : (C) 2008 by Benjamin Mueller 
  * email     : news@fork.ch
  * website   : http://sourceforge.net/projects/adhocrailway
- * version   : $Id: SRCPTurnout.java,v 1.1 2008-04-24 06:19:07 fork_ch Exp $
+ * version   : $Id: SRCPTurnout.java,v 1.2 2010-03-06 18:22:08 fork_ch Exp $
  * 
  *----------------------------------------------------------------------*/
 
@@ -92,6 +92,7 @@ public abstract class SRCPTurnout {
 		switch (turnoutType) {
 		case DEFAULT:
 		case DOUBLECROSS:
+		case CUTTER:
 			return (bus1 > 0);
 		case THREEWAY:
 			return (bus2 > 0);
@@ -161,6 +162,10 @@ public abstract class SRCPTurnout {
 
 	public boolean isThreeWay() {
 		return turnoutType.equals(SRCPTurnoutTypes.THREEWAY);
+	}
+	
+	public boolean isCutter() {
+		return turnoutType.equals(SRCPTurnoutTypes.CUTTER);
 	}
 
 	public void setAddress1(int address1) {

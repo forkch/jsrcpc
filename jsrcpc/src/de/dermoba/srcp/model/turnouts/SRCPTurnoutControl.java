@@ -3,7 +3,7 @@
  * copyright : (C) 2008 by Benjamin Mueller 
  * email     : news@fork.ch
  * website   : http://sourceforge.net/projects/adhocrailway
- * version   : $Id: SRCPTurnoutControl.java,v 1.5 2008-05-12 18:02:24 fork_ch Exp $
+ * version   : $Id: SRCPTurnoutControl.java,v 1.6 2010-03-06 18:22:08 fork_ch Exp $
  * 
  *----------------------------------------------------------------------*/
 
@@ -53,7 +53,8 @@ public class SRCPTurnoutControl implements GAInfoListener {
 	private SRCPTurnoutState				previousState;
 	private SRCPSession						session;
 	private boolean							interface6051Connected	= Constants.INTERFACE_6051_CONNECTED;
-	private int								activationTime			= Constants.DEFAULT_ACTIVATION_TIME;
+	private int								turnoutActivationTime	= Constants.DEFAULT_ACTIVATION_TIME;
+	private int								cutterActivationTime	= Constants.DEFAULT_CUTTER_ACTIVATION_TIME;
 
 	private SRCPTurnoutControl() {
 		logger.info("SRCPTurnoutControl loaded");
@@ -208,7 +209,7 @@ public class SRCPTurnoutControl implements GAInfoListener {
 		checkTurnout(turnout);
 		previousState = turnout.getTurnoutState();
 		if (turnout.isThreeWay()) {
-			setDefaultStateTheeWay(turnout);
+			setDefaultStateThreeWay(turnout);
 			return;
 		}
 		switch (turnout.getDefaultState()) {
@@ -224,7 +225,7 @@ public class SRCPTurnoutControl implements GAInfoListener {
 		lastChangedTurnout = turnout;
 	}
 
-	private void setDefaultStateTheeWay(SRCPTurnout turnout)
+	private void setDefaultStateThreeWay(SRCPTurnout turnout)
 			throws SRCPTurnoutException, SRCPModelException {
 		checkTurnout(turnout);
 		SRCPTurnout[] subTurnouts = turnout.getSubTurnouts();
@@ -274,11 +275,26 @@ public class SRCPTurnoutControl implements GAInfoListener {
 		}
 		GA ga = turnout.getGA();
 		try {
-			ga.set(getPort(turnout, SRCPTurnout.TURNOUT_STRAIGHT_PORT),
-					SRCPTurnout.TURNOUT_PORT_ACTIVATE, activationTime);
-			//ga.set(getPort(turnout, SRCPTurnout.TURNOUT_CURVED_PORT),
-			//		SRCPTurnout.TURNOUT_PORT_DEACTIVATE, activationTime);
-			turnout.setTurnoutState(SRCPTurnoutState.STRAIGHT);
+			int time;
+			int reps;
+			if (turnout.isCutter()) {
+				time = cutterActivationTime;
+				reps = 5;
+			} else {
+				time = turnoutActivationTime;
+				reps = 1;
+			}
+			for (int i = 0; i < reps; i++) {
+				ga.set(getPort(turnout, SRCPTurnout.TURNOUT_STRAIGHT_PORT),
+						SRCPTurnout.TURNOUT_PORT_ACTIVATE, time);
+			}
+			// ga.set(getPort(turnout, SRCPTurnout.TURNOUT_CURVED_PORT),
+			// SRCPTurnout.TURNOUT_PORT_DEACTIVATE, activationTime);
+			if (turnout.isCutter())
+				turnout.setTurnoutState(SRCPTurnoutState.LEFT);
+			else
+				turnout.setTurnoutState(SRCPTurnoutState.STRAIGHT);
+
 			// informListeners(turnout);
 			lastChangedTurnout = turnout;
 		} catch (SRCPDeviceLockedException x1) {
@@ -314,11 +330,23 @@ public class SRCPTurnoutControl implements GAInfoListener {
 		}
 		GA ga = turnout.getGA();
 		try {
+			int time;
+			int reps;
+			if (turnout.isCutter()) {
+				time = cutterActivationTime;
+				reps = 5;
+			} else {
+				time = turnoutActivationTime;
+				reps = 1;
+			}
 
-			ga.set(getPort(turnout, SRCPTurnout.TURNOUT_CURVED_PORT),
-					SRCPTurnout.TURNOUT_PORT_ACTIVATE, activationTime);
-			//ga.set(getPort(turnout, SRCPTurnout.TURNOUT_STRAIGHT_PORT),
-			//		SRCPTurnout.TURNOUT_PORT_DEACTIVATE, activationTime);
+			for (int i = 0; i < reps; i++) {
+				ga.set(getPort(turnout, SRCPTurnout.TURNOUT_CURVED_PORT),
+						SRCPTurnout.TURNOUT_PORT_ACTIVATE, time);
+			}
+
+			// ga.set(getPort(turnout, SRCPTurnout.TURNOUT_STRAIGHT_PORT),
+			// SRCPTurnout.TURNOUT_PORT_DEACTIVATE, activationTime);
 			turnout.setTurnoutState(SRCPTurnoutState.LEFT);
 			// informListeners(turnout);
 			lastChangedTurnout = turnout;
@@ -393,7 +421,7 @@ public class SRCPTurnoutControl implements GAInfoListener {
 		}
 		try {
 			checkTurnout(turnout);
-
+			
 			if (value == 0) {
 				// ignore deactivation
 				return;
@@ -413,6 +441,11 @@ public class SRCPTurnoutControl implements GAInfoListener {
 	}
 
 	private void portChanged(SRCPTurnout turnout, int port) {
+		if (turnout.isCutter()) {
+			turnout.setTurnoutState(SRCPTurnoutState.LEFT);
+			return;
+		}
+
 		if (port == getPort(turnout, SRCPTurnout.TURNOUT_STRAIGHT_PORT)) {
 			turnout.setTurnoutState(SRCPTurnoutState.STRAIGHT);
 		} else if (port == getPort(turnout, SRCPTurnout.TURNOUT_CURVED_PORT)) {
@@ -497,30 +530,30 @@ public class SRCPTurnoutControl implements GAInfoListener {
 		logger.debug("turnoutChanged(" + changedTurnout + ")");
 
 	}
-	
+
 	public void addTurnout(SRCPTurnout turnout) {
 		srcpTurnouts.add(turnout);
 		addressTurnoutCache.put(new SRCPAddress(turnout.getBus1(), turnout
 				.getAddress1(), turnout.getBus2(), turnout.getAddress2()),
 				turnout);
 		if (turnout.isThreeWay()) {
-			addressThreewayCache.put(new SRCPAddress(turnout.getBus1(),
-					turnout.getAddress1(), 0, 0), turnout);
-			addressThreewayCache.put(new SRCPAddress(0, 0, turnout
-					.getBus2(), turnout.getAddress2()), turnout);
+			addressThreewayCache.put(new SRCPAddress(turnout.getBus1(), turnout
+					.getAddress1(), 0, 0), turnout);
+			addressThreewayCache.put(new SRCPAddress(0, 0, turnout.getBus2(),
+					turnout.getAddress2()), turnout);
 		}
 	}
-	
+
 	public void removeTurnout(SRCPTurnout turnout) {
 		srcpTurnouts.remove(turnout);
 		addressTurnoutCache.remove(new SRCPAddress(turnout.getBus1(), turnout
 				.getAddress1(), turnout.getBus2(), turnout.getAddress2()));
-		if(turnout.isThreeWay()) {
+		if (turnout.isThreeWay()) {
 
-			addressTurnoutCache.remove(new SRCPAddress(turnout.getBus1(), turnout
-					.getAddress1(), 0,0));
-			addressTurnoutCache.remove(new SRCPAddress(0, 0, turnout
-					.getBus2(), turnout.getAddress2()));
+			addressTurnoutCache.remove(new SRCPAddress(turnout.getBus1(),
+					turnout.getAddress1(), 0, 0));
+			addressTurnoutCache.remove(new SRCPAddress(0, 0, turnout.getBus2(),
+					turnout.getAddress2()));
 		}
 	}
 
@@ -669,11 +702,19 @@ public class SRCPTurnoutControl implements GAInfoListener {
 		this.interface6051Connected = interface6051Connected;
 	}
 
-	public int getActivationTime() {
-		return activationTime;
+	public int getTurnoutActivationTime() {
+		return turnoutActivationTime;
 	}
 
-	public void setActivationTime(int activationTime) {
-		this.activationTime = activationTime;
+	public void setTurnoutActivationTime(int turnoutActivationTime) {
+		this.turnoutActivationTime = turnoutActivationTime;
+	}
+
+	public int getCutterActivationTime() {
+		return cutterActivationTime;
+	}
+
+	public void setCutterActivationTime(int cutterActivationTime) {
+		this.cutterActivationTime = cutterActivationTime;
 	}
 }
