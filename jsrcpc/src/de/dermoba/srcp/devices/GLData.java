@@ -1,5 +1,7 @@
 package de.dermoba.srcp.devices;
 
+import de.dermoba.srcp.common.exception.SRCPNoDataException;
+
 import java.util.ArrayList;
 
 public class GLData
@@ -12,12 +14,12 @@ public class GLData
     public final int vMax;
     public final boolean [] f;
 
-    public GLData (String data)
+    public GLData (String data) throws SRCPNoDataException
     {
         String [] tokens = data.split (" ");
 
         if (tokens.length < 9) {
-            throw new IllegalArgumentException (data + ": GL data too short");
+            throw new SRCPNoDataException ();
         }
 
         timestamp = Double.parseDouble (tokens [0]);
