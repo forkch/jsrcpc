@@ -36,13 +36,4 @@ public class SocketReader {
         }
         return buffer.toString().trim();
     }
-
-    public String readGreeting() throws IOException {
-        StringBuffer result = new StringBuffer();
-
-        while (inputReader.ready()) {
-            result.append((char) inputReader.read());
-        }
-        return result.toString();
-    }
 }

@@ -19,6 +19,8 @@ import de.dermoba.srcp.common.exception.SRCPIOException;
 public class CommandChannel {
 
     private int id;
+    String serverName = null;
+    int serverPort;
 	private Socket socket = null;
 	private SocketWriter out = null;
 	private SocketReader in = null;
@@ -36,33 +38,30 @@ public class CommandChannel {
 	 */
 	public CommandChannel(String pServerName, int pServerPort)
 			throws SRCPException {
-		try {
-			socket = new Socket(pServerName, pServerPort);
-			out = new SocketWriter(socket);
-			in = new SocketReader(socket);
-			listeners = new HashSet<CommandDataListener>();
-			
-		} catch (UnknownHostException e) {
-			throw new SRCPHostNotFoundException();
-		} catch (IOException e) {
-			throw new SRCPIOException(e);
-		}
+		serverName = pServerName;
+		serverPort = pServerPort;
+		listeners = new HashSet<CommandDataListener>();
 	}
 	
 	public void connect() throws SRCPException {
 		try {
-			String incoming = in.readGreeting();
+			socket = new Socket(serverName, serverPort);
+			out = new SocketWriter(socket);
+			in = new SocketReader(socket);
+			String incoming = in.read();
 			informListenersReceived(incoming);
-        } catch (IOException e) {
-            throw new SRCPIOException();
+		} catch (UnknownHostException e) {
+			throw new SRCPHostNotFoundException();
+		} catch (IOException e) {
+			throw new SRCPIOException(e);
         }
 		send("SET CONNECTIONMODE SRCP COMMAND");
 		String output = sendReceive("GO");
-                String[] outputSplitted = output.split(" ");
+		String[] outputSplitted = output.split(" ");
 
-                if (outputSplitted.length >= 5) {
-                    id = Integer.parseInt(outputSplitted[4]);
-                }
+		if (outputSplitted.length >= 5) {
+			id = Integer.parseInt(outputSplitted[4]);
+        }
 	}
 
 	public void disconnect() throws SRCPException {

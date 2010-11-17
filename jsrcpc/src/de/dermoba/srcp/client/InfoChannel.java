@@ -88,6 +88,24 @@ public class InfoChannel implements Runnable {
             out = new SocketWriter(socket);
             in = new SocketReader(socket);
 
+            // Application protocol layer initialization
+            String s = in.read(); // Ignore welcome message
+            send("SET CONNECTIONMODE SRCP INFO");
+            s = in.read();
+            send("GO");
+            s = in.read();
+            try {
+                String[] sSplitted = s.split(" ");
+
+                if (sSplitted.length >= 5) {
+                    id = Integer.parseInt(sSplitted[4]);
+                }
+            }
+            catch (NumberFormatException e) {
+                System.err.println (s + ": cannot convert the 5. token from \"" + s + "\" into an integer");
+            }
+
+            // Now receive and handle messages continuously.
             infoThread = new Thread(this);
             infoThread.setDaemon(true);
             infoThread.start();
@@ -116,23 +134,8 @@ public class InfoChannel implements Runnable {
 
     public void run() {
         try {
-            String s = in.readGreeting();
-            send("SET CONNECTIONMODE SRCP INFO");
-            s = in.read();
-            send("GO");
-            s = in.read();
-            try {
-                String[] sSplitted = s.split(" ");
-
-                if (sSplitted.length >= 5) {
-                    id = Integer.parseInt(sSplitted[4]);
-                }
-            }
-            catch (NumberFormatException e) {
-                System.err.println (s + ": cannot convert the 5. token from \"" + s + "\" into an integer");
-            }
             while (true) {
-                s = in.read();
+            	String s = in.read();
                 if (s == null)
                     break;
                 informListenersReceived(s);
