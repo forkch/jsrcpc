@@ -3,7 +3,7 @@
  * copyright : (C) 2008 by Benjamin Mueller 
  * email     : news@fork.ch
  * website   : http://sourceforge.net/projects/adhocrailway
- * version   : $Id: SRCPTurnout.java,v 1.2 2010-03-06 18:22:08 fork_ch Exp $
+ * version   : $Id: SRCPTurnout.java,v 1.3 2010-11-17 14:04:55 mlipp Exp $
  * 
  *----------------------------------------------------------------------*/
 
@@ -209,6 +209,10 @@ public abstract class SRCPTurnout {
 	}
 
 	protected void setSession(SRCPSession session) {
+        if (session != this.session) {
+            setGA(null);
+            setInitialized(false);
+        }
 		this.session = session;
 	}
 

@@ -3,7 +3,7 @@
  * copyright : (C) 2008 by Benjamin Mueller 
  * email     : news@fork.ch
  * website   : http://sourceforge.net/projects/adhocrailway
- * version   : $Id: SRCPLocomotive.java,v 1.2 2008-05-12 18:02:23 fork_ch Exp $
+ * version   : $Id: SRCPLocomotive.java,v 1.3 2010-11-17 14:04:55 mlipp Exp $
  * 
  *----------------------------------------------------------------------*/
 
@@ -122,6 +122,10 @@ public abstract class SRCPLocomotive {
 	}
 
 	protected void setSession(SRCPSession session) {
+        if (session != this.session) {
+            setGL(null);
+            setInitialized(false);
+        }
 		this.session = session;
 	}
 
