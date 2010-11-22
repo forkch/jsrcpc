@@ -3,7 +3,7 @@
  * copyright : (C) 2008 by Benjamin Mueller 
  * email     : news@fork.ch
  * website   : http://sourceforge.net/projects/adhocrailway
- * version   : $Id: SRCPLocomotiveControl.java,v 1.4 2008-05-12 18:02:23 fork_ch Exp $
+ * version   : $Id: SRCPLocomotiveControl.java,v 1.5 2010-11-22 13:47:05 mlipp Exp $
  * 
  *----------------------------------------------------------------------*/
 
@@ -28,6 +28,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import de.dermoba.srcp.client.SRCPSession;
+import de.dermoba.srcp.common.Response;
 import de.dermoba.srcp.common.exception.SRCPDeviceLockedException;
 import de.dermoba.srcp.common.exception.SRCPException;
 import de.dermoba.srcp.devices.GL;
@@ -159,21 +160,25 @@ public class SRCPLocomotiveControl implements GLInfoListener, Constants {
 				return;
 			}
 			GL gl = locomotive.getGL();
+			String resp = null;
 			switch (locomotive.direction) {
 			case FORWARD:
-				gl.set(SRCPLocomotive.FORWARD_DIRECTION, speed, drivingSteps,
-						functions);
+				resp = gl.set(SRCPLocomotive.FORWARD_DIRECTION, speed, 
+						      drivingSteps, functions);
 				break;
 			case REVERSE:
-				gl.set(SRCPLocomotive.REVERSE_DIRECTION, speed, drivingSteps,
-						functions);
+				resp = gl.set(SRCPLocomotive.REVERSE_DIRECTION, speed, 
+						      drivingSteps, functions);
 				break;
 			case UNDEF:
-				gl.set(SRCPLocomotive.FORWARD_DIRECTION, speed, drivingSteps,
-						functions);
+				resp = gl.set(SRCPLocomotive.FORWARD_DIRECTION, speed,
+						      drivingSteps, functions);
 				locomotive.setDirection(SRCPLocomotiveDirection.FORWARD);
 				break;
 			}
+			locomotive.setLastCommandAcknowledge
+				((new Response(resp)).getTimestamp());
+			Response r = new Response(resp);
 			locomotive.setCurrentSpeed(speed);
 			locomotive.setFunctions(functions);
 			informListeners(locomotive);
@@ -287,15 +292,17 @@ public class SRCPLocomotiveControl implements GLInfoListener, Constants {
 		} catch (SRCPModelException e1) {
 			// ignore unknown locomotive
 		}
-		if (locomotive != null) {
-			/*if (drivemode.equals(SRCPLocomotive.FORWARD_DIRECTION)) {
+		// Update locomotive if known and if info is newer than our own.
+		if (locomotive != null 
+		    && timestamp > locomotive.getLastCommandAcknowledge()) {
+			if (drivemode.equals(SRCPLocomotive.FORWARD_DIRECTION)) {
 				locomotive.setDirection(SRCPLocomotiveDirection.FORWARD);
 			} else if (drivemode.equals(SRCPLocomotive.REVERSE_DIRECTION)) {
 				locomotive.setDirection(SRCPLocomotiveDirection.REVERSE);
 			}
 			locomotive.setCurrentSpeed(v);
-			locomotive.setFunctions(functions);*/
-			//informListeners(locomotive);
+			locomotive.setFunctions(functions);
+			informListeners(locomotive);
 		}
 	}
 

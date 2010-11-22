@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Properties;
 
+import de.dermoba.srcp.common.Response;
 import de.dermoba.srcp.common.TokenizedLine;
 import de.dermoba.srcp.common.exception.SRCPException;
 import de.dermoba.srcp.common.exception.SRCPIOException;
@@ -47,16 +48,18 @@ public class ReceivedExceptionFactory extends Properties {
         if (instance == null) {
             instance = new ReceivedExceptionFactory();
         }
-        if (instance == null) return null;
-        TokenizedLine line = new TokenizedLine(response);
-        line.nextStringToken(); // timestamp
+        if (instance == null) {
+        	return null;
+        }
+        Response resp = new Response (response);
         SRCPException ex = null;
         try {
-            String strCode = line.nextStringToken();
-            Integer code = new Integer(strCode);
-            if(code >= new Integer(400)) {
+            if(resp.getCode() >= 400) {
                 try {
-                    ex = (SRCPException)(Class.forName(instance.get(strCode).toString()).newInstance());
+                    ex = (SRCPException)
+                    	(Class.forName
+                         (instance.get(Integer.toString(resp.getCode()))
+                          .toString()).newInstance());
                     ex.setRequestString(request);
                 } catch (ClassNotFoundException x) {
                     throw new SRCPIOException();

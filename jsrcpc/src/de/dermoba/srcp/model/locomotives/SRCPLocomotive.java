@@ -3,7 +3,7 @@
  * copyright : (C) 2008 by Benjamin Mueller 
  * email     : news@fork.ch
  * website   : http://sourceforge.net/projects/adhocrailway
- * version   : $Id: SRCPLocomotive.java,v 1.3 2010-11-17 14:04:55 mlipp Exp $
+ * version   : $Id: SRCPLocomotive.java,v 1.4 2010-11-22 13:47:05 mlipp Exp $
  * 
  *----------------------------------------------------------------------*/
 
@@ -48,6 +48,8 @@ public abstract class SRCPLocomotive {
 	protected int						bus;
 
 	protected int						address;
+	
+	private double lastCommandAcknowledge;
 
 	public SRCPLocomotive() {
 		this(0,0);
@@ -147,5 +149,22 @@ public abstract class SRCPLocomotive {
 
 	public int getDrivingSteps() {
 		return drivingSteps;
+	}
+
+	/**
+	 * @return the lastCommandAcknowledge
+	 */
+	public double getLastCommandAcknowledge() {
+		return lastCommandAcknowledge;
+	}
+
+	/**
+	 * Set (usually by the {@link SRCPLocomotiveControl}) to the time stamp
+	 * that the SRCP server returns as part of the command acknowledge message.
+	 * 
+	 * @param lastCommandAcknowledge the lastCommandAcknowledge to set
+	 */
+	public void setLastCommandAcknowledge(double lastCommandAcknowledge) {
+		this.lastCommandAcknowledge = lastCommandAcknowledge;
 	}
 }
