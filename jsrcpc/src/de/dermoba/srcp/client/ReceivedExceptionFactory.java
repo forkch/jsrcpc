@@ -5,7 +5,6 @@ import java.net.URL;
 import java.util.Properties;
 
 import de.dermoba.srcp.common.Response;
-import de.dermoba.srcp.common.TokenizedLine;
 import de.dermoba.srcp.common.exception.SRCPException;
 import de.dermoba.srcp.common.exception.SRCPIOException;
 
