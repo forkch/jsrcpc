@@ -8,7 +8,7 @@ import de.dermoba.srcp.client.SRCPSession;
 import de.dermoba.srcp.common.exception.SRCPException;
 
 public class POWER {
-    private static final String POWER_ON  = "ON";
+    private static final String POWER_ON = "ON";
     private static final String POWER_OFF = "OFF";
 
     private SRCPSession session;
@@ -21,7 +21,7 @@ public class POWER {
     /** SRCP syntax: INIT &lt;bus&gt; POWER */
     public String init(int pBus) throws SRCPException {
         bus = pBus;
-        if(!session.isOldProtocol()) {
+        if (!session.isOldProtocol()) {
             return session.getCommandChannel().send("INIT " + bus + " POWER");
         }
         return "";
@@ -32,47 +32,50 @@ public class POWER {
         boolean result = false;
         String answer = null;
 
-        if(session.isOldProtocol()) {
+        if (session.isOldProtocol()) {
             answer = session.getCommandChannel().send("GET POWER");
-        }
-        else {
+        } else {
             answer = session.getCommandChannel().send("GET " + bus + " POWER");
         }
         if (answer != null) {
-            String [] words = answer.split(" ");
+            String[] words = answer.split(" ");
 
             if (words.length >= 6) {
-                result = words [5].equals(POWER_ON);
+                result = words[5].equals(POWER_ON);
             }
         }
         return result;
     }
 
-    /** SRCP syntax: SET &lt;bus&gt; POWER ON|OFF [&lt;freetext&gt;]*/
+    /** SRCP syntax: SET &lt;bus&gt; POWER ON|OFF [&lt;freetext&gt;] */
     public String set(boolean on) throws SRCPException {
         return set(on, "");
     }
 
-    /** SRCP syntax: SET &lt;bus&gt; POWER ON|OFF [&lt;freetext&gt;]*/
+    /** SRCP syntax: SET &lt;bus&gt; POWER ON|OFF [&lt;freetext&gt;] */
     public String set(boolean on, String freetext) throws SRCPException {
         String power = "";
-        if(on) {
+        if (on) {
             power = POWER_ON;
         } else {
             power = POWER_OFF;
         }
-        if(session.isOldProtocol()) {
+        if (session.isOldProtocol()) {
             return session.getCommandChannel().send("SET POWER " + power);
         }
-        return session.getCommandChannel().send("SET " + bus + " POWER " + power 
-                + " " + freetext);
+        return session.getCommandChannel().send(
+                "SET " + bus + " POWER " + power + " " + freetext);
     }
 
     /** SRCP syntax: TERM &lt;bus&gt; POWER */
     public String term() throws SRCPException {
-        if(session.isOldProtocol()) {
+        if (session.isOldProtocol()) {
             return "";
         }
         return session.getCommandChannel().send("TERM " + bus + " POWER");
+    }
+
+    public void setBus(int bus) {
+        this.bus = bus;
     }
 }
