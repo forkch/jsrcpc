@@ -10,8 +10,7 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.Collection;
 import java.util.UUID;
 
 import de.dermoba.srcp.common.SocketReader;
@@ -29,6 +28,7 @@ import de.dermoba.srcp.devices.GLInfoListener;
 import de.dermoba.srcp.devices.GMInfoListener;
 import de.dermoba.srcp.devices.LOCKInfoListener;
 import de.dermoba.srcp.devices.POWERInfoListener;
+import de.dermoba.srcp.devices.SERVERInfoListener;
 
 public class InfoChannel implements Runnable {
 
@@ -44,33 +44,44 @@ public class InfoChannel implements Runnable {
 
     private SocketReader in = null;
 
-    private String serverName;
+    private final String serverName;
 
-    private int serverPort;
+    private final int serverPort;
 
     private int id;
 
-    private List<FBInfoListener> FBListeners;
+    private Collection<FBInfoListener> FBListeners =
+        new ArrayList<FBInfoListener>();
 
-    private List<GAInfoListener> GAListeners;
+    private Collection<GAInfoListener> GAListeners =
+        new ArrayList<GAInfoListener>();
 
-    private List<GLInfoListener> GLListeners;
+    private Collection<GLInfoListener> GLListeners =
+        new ArrayList<GLInfoListener>();
 
-    private List<LOCKInfoListener> LOCKListeners;
+    private Collection<LOCKInfoListener> LOCKListeners =
+        new ArrayList<LOCKInfoListener>();
 
-    private List<POWERInfoListener> POWERListeners;
+    private Collection<POWERInfoListener> POWERListeners =
+        new ArrayList<POWERInfoListener>();
 
-    private List<GMInfoListener> GMListeners;
+    private Collection<SERVERInfoListener> SERVERListeners =
+        new ArrayList<SERVERInfoListener>();
 
-    private List<CRCFInfoListener> CRCFListeners;
+    private Collection<GMInfoListener> GMListeners =
+        new ArrayList<GMInfoListener>();
+
+    private Collection<CRCFInfoListener> CRCFListeners =
+        new ArrayList<CRCFInfoListener>();
 
     // private List<DESCRIPTIONInfoListener> DESCRIPTIONListeners;
     // private List<SESSIONInfoListener> SESSIONListeners;
-    private ArrayList<InfoDataListener> listeners = null;
+    private Collection<InfoDataListener> listeners =
+        new ArrayList<InfoDataListener>();
 
     private Thread infoThread;
 
-    private CRCFHandler CRCFHandle;
+    private CRCFHandler CRCFHandle = new CRCFHandler();
 
     /**
      * creates a new SRCP connection on the info channel to handle all info
@@ -85,17 +96,6 @@ public class InfoChannel implements Runnable {
     public InfoChannel(String pServerName, int pServerPort) {
         serverName = pServerName;
         serverPort = pServerPort;
-        listeners = new ArrayList<InfoDataListener>();
-
-        FBListeners = new ArrayList<FBInfoListener>();
-        GAListeners = new ArrayList<GAInfoListener>();
-        GLListeners = new ArrayList<GLInfoListener>();
-        LOCKListeners = new ArrayList<LOCKInfoListener>();
-        POWERListeners = new ArrayList<POWERInfoListener>();
-        GMListeners = new ArrayList<GMInfoListener>();
-        CRCFListeners = new ArrayList<CRCFInfoListener>();
-
-        CRCFHandle = new CRCFHandler();
         GMListeners.add(CRCFHandle);
     }
 
@@ -127,7 +127,6 @@ public class InfoChannel implements Runnable {
             infoThread = new Thread(this);
             infoThread.setDaemon(true);
             infoThread.start();
-
         }
         catch (UnknownHostException e) {
             throw new SRCPHostNotFoundException();
@@ -135,7 +134,6 @@ public class InfoChannel implements Runnable {
         catch (IOException e) {
             throw new SRCPIOException();
         }
-
     }
 
     public void disconnect() throws SRCPException {
@@ -186,6 +184,7 @@ public class InfoChannel implements Runnable {
             TokenizedLine tokenLine = new TokenizedLine(s);
             double timestamp = tokenLine.nextDoubleToken();
             int number = tokenLine.nextIntToken();
+
             if (number < 200) {
                 tokenLine.nextStringToken();
                 int bus = tokenLine.nextIntToken();
@@ -204,6 +203,9 @@ public class InfoChannel implements Runnable {
                 }
                 else if (deviceGroup.equals("POWER")) {
                     handlePOWER(tokenLine, timestamp, number, bus);
+                }
+                else if (deviceGroup.equals("SERVER")) {
+                    handleSERVER(tokenLine, timestamp, number);
                 }
                 else if (deviceGroup.equals("DESCRIPTION")) {
                     // TODO: parse DESCRIPTION-Info
@@ -230,14 +232,14 @@ public class InfoChannel implements Runnable {
             e.printStackTrace();
         }
 
-        for (int i = 0; i < listeners.size(); i++) {
-            listeners.get(i).infoDataReceived(s);
+        for (InfoDataListener listener : listeners) {
+            listener.infoDataReceived(s);
         }
     }
 
     private void informListenersSent(String s) {
-        for (int i = 0; i < listeners.size(); i++) {
-            listeners.get(i).infoDataSent(s);
+        for (InfoDataListener listener : listeners) {
+            listener.infoDataSent(s);
         }
     }
 
@@ -272,7 +274,7 @@ public class InfoChannel implements Runnable {
             String drivemode = tokenLine.nextStringToken();
             int v = tokenLine.nextIntToken();
             int vMax = tokenLine.nextIntToken();
-            ArrayList<Boolean> functions = new ArrayList<Boolean>();
+            Collection<Boolean> functions = new ArrayList<Boolean>();
 
             while (tokenLine.hasMoreElements()) {
                 functions.add(tokenLine.nextStringToken().equals("1"));
@@ -281,8 +283,8 @@ public class InfoChannel implements Runnable {
             boolean[] f = new boolean[functions.size()];
             int i = 0;
 
-            for (Iterator<Boolean> it = functions.iterator(); it.hasNext();) {
-                f[i++] = ((Boolean) it.next()).booleanValue();
+            for (Boolean function : functions) {
+                f[i++] = function.booleanValue();
             }
             synchronized (GLListeners) {
                 for (GLInfoListener l : GLListeners) {
@@ -393,6 +395,26 @@ public class InfoChannel implements Runnable {
         }
     }
 
+    private void handleSERVER(
+        TokenizedLine tokenLine, double timestamp, int number)
+        throws SRCPUnsufficientDataException {
+
+        if (number == INFO_SET) {
+            final String action = tokenLine.nextStringToken();
+
+            synchronized (SERVERListeners) {
+                for (SERVERInfoListener l : SERVERListeners) {
+                    if (action.equals("RESETTING")) {
+                        l.SERVERreset(timestamp);
+                    }
+                    else if (action.equals("TERMINATING")) {
+                        l.SERVERterm(timestamp);
+                    }
+                }
+            }
+        }
+    }
+
     /**
      * Handles GM Messages, calls all registered GMInfoListeners.
      * 
@@ -442,6 +464,10 @@ public class InfoChannel implements Runnable {
         POWERListeners.add(l);
     }
 
+    public synchronized void addSERVERInfoListener(SERVERInfoListener l) {
+        SERVERListeners.add(l);
+    }
+
     public synchronized void addGMInfoListener(GMInfoListener l) {
         GMListeners.add(l);
     }
@@ -470,6 +496,10 @@ public class InfoChannel implements Runnable {
         POWERListeners.remove(l);
     }
 
+    public synchronized void removeSERVERInfoListener(SERVERInfoListener l) {
+        SERVERListeners.remove(l);
+    }
+
     public synchronized void removeGMInfoListener(GMInfoListener l) {
         GMListeners.remove(l);
     }
@@ -490,9 +520,6 @@ public class InfoChannel implements Runnable {
      * 
      */
     class CRCFHandler implements GMInfoListener {
-
-        public CRCFHandler() {
-        }
 
         /*
          * (non-Javadoc)
@@ -536,6 +563,5 @@ public class InfoChannel implements Runnable {
                 }
             }
         }
-
     }
 }
