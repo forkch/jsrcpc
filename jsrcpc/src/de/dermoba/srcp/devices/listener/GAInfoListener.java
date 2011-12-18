@@ -1,4 +1,4 @@
-package de.dermoba.srcp.devices;
+package de.dermoba.srcp.devices.listener;
 
 public interface GAInfoListener {
 	public void GAset(double timestamp, int bus, int address, int port, int value);

@@ -35,7 +35,7 @@ public abstract class LOCODB extends AbstractCRCFActor {
 	 * Handle following messages:
 	 * LIST LOCO
 	 * 
-	 * @see de.dermoba.srcp.devices.CRCFInfoListener#CRCFlist(double, int, int, int, java.lang.String, java.util.UUID, java.lang.String)
+	 * @see de.dermoba.srcp.devices.listener.CRCFInfoListener#CRCFlist(double, int, int, int, java.lang.String, java.util.UUID, java.lang.String)
 	 */
 	@Override
 	public void CRCFlist(double timestamp, int bus, int sendTo, int replyTo,

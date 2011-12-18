@@ -1,5 +1,5 @@
 
-package de.dermoba.srcp.devices;
+package de.dermoba.srcp.devices.listener;
 
 import java.util.UUID;
 

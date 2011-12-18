@@ -21,14 +21,14 @@ import de.dermoba.srcp.common.exception.SRCPHostNotFoundException;
 import de.dermoba.srcp.common.exception.SRCPIOException;
 import de.dermoba.srcp.common.exception.SRCPUnsufficientDataException;
 import de.dermoba.srcp.common.exception.SRCPWrongValueException;
-import de.dermoba.srcp.devices.CRCFInfoListener;
-import de.dermoba.srcp.devices.FBInfoListener;
-import de.dermoba.srcp.devices.GAInfoListener;
-import de.dermoba.srcp.devices.GLInfoListener;
-import de.dermoba.srcp.devices.GMInfoListener;
-import de.dermoba.srcp.devices.LOCKInfoListener;
-import de.dermoba.srcp.devices.POWERInfoListener;
-import de.dermoba.srcp.devices.SERVERInfoListener;
+import de.dermoba.srcp.devices.listener.CRCFInfoListener;
+import de.dermoba.srcp.devices.listener.FBInfoListener;
+import de.dermoba.srcp.devices.listener.GAInfoListener;
+import de.dermoba.srcp.devices.listener.GLInfoListener;
+import de.dermoba.srcp.devices.listener.GMInfoListener;
+import de.dermoba.srcp.devices.listener.LOCKInfoListener;
+import de.dermoba.srcp.devices.listener.POWERInfoListener;
+import de.dermoba.srcp.devices.listener.SERVERInfoListener;
 
 public class InfoChannel implements Runnable {
 

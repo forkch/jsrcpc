@@ -6,7 +6,7 @@ import de.dermoba.srcp.client.InfoChannel;
 import de.dermoba.srcp.client.SRCPSession;
 import de.dermoba.srcp.common.exception.SRCPException;
 import de.dermoba.srcp.devices.CRCF;
-import de.dermoba.srcp.devices.CRCFInfoListener;
+import de.dermoba.srcp.devices.listener.CRCFInfoListener;
 
 /**
  * @author Michael Oppenauer
@@ -55,7 +55,7 @@ public abstract class AbstractCRCFActor implements CRCFInfoListener{
 	 * GET ID
 	 * GET NAME
 	 * 
-	 * @see de.dermoba.srcp.devices.CRCFInfoListener#CRCFget(double, int, int, int, java.lang.String, java.util.UUID, java.lang.String)
+	 * @see de.dermoba.srcp.devices.listener.CRCFInfoListener#CRCFget(double, int, int, int, java.lang.String, java.util.UUID, java.lang.String)
 	 */
 	public void CRCFget(double timestamp, int bus, int sendTo, int replyTo,
 			String actor, UUID actor_id, String attribute) {
@@ -75,7 +75,7 @@ public abstract class AbstractCRCFActor implements CRCFInfoListener{
 	 * Handle following messages:
 	 * INFO NAME: set the name if it is different
 	 * 
-	 * @see de.dermoba.srcp.devices.CRCFInfoListener#CRCFinfo(double, int, int, int, java.lang.String, java.util.UUID, java.lang.String, java.lang.String)
+	 * @see de.dermoba.srcp.devices.listener.CRCFInfoListener#CRCFinfo(double, int, int, int, java.lang.String, java.util.UUID, java.lang.String, java.lang.String)
 	 */
 	public void CRCFinfo(double timestamp, int bus, int sendTo, int replyTo,
 			String actor, UUID actor_id, String attribute, String attribute_value) {
@@ -94,7 +94,7 @@ public abstract class AbstractCRCFActor implements CRCFInfoListener{
 	 * Other classes may override this method,
 	 * if they have to react on incoming LIST messages.
 	 * 
-	 * @see de.dermoba.srcp.devices.CRCFInfoListener#CRCFlist(double, int, int, int, java.lang.String, java.util.UUID, java.lang.String)
+	 * @see de.dermoba.srcp.devices.listener.CRCFInfoListener#CRCFlist(double, int, int, int, java.lang.String, java.util.UUID, java.lang.String)
 	 */
 	public void CRCFlist(double timestamp, int bus, int sendTo, int replyTo,
 			String actor, UUID actor_id, String attribute) {
@@ -105,7 +105,7 @@ public abstract class AbstractCRCFActor implements CRCFInfoListener{
 	 * Other classes may override this method,
 	 * if they have to react on incoming SET messages.
 	 * 
-	 * @see de.dermoba.srcp.devices.CRCFInfoListener#CRCFset(double, int, int, int, java.lang.String, java.util.UUID, java.lang.String, java.lang.String)
+	 * @see de.dermoba.srcp.devices.listener.CRCFInfoListener#CRCFset(double, int, int, int, java.lang.String, java.util.UUID, java.lang.String, java.lang.String)
 	 */
 	public void CRCFset(double timestamp, int bus, int sendTo, int replyTo,
 			String actor, UUID actor_id, String attribute, String attribute_value) {

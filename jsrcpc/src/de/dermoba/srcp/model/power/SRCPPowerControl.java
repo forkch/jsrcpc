@@ -27,7 +27,7 @@ import org.apache.log4j.Logger;
 import de.dermoba.srcp.client.SRCPSession;
 import de.dermoba.srcp.common.exception.SRCPException;
 import de.dermoba.srcp.devices.POWER;
-import de.dermoba.srcp.devices.POWERInfoListener;
+import de.dermoba.srcp.devices.listener.POWERInfoListener;
 import de.dermoba.srcp.model.Constants;
 
 /**
@@ -144,7 +144,7 @@ public class SRCPPowerControl implements POWERInfoListener, Constants {
      * known, it is added to the internally maintained list of
      * power supplies.
      * 
-     * @see de.dermoba.srcp.devices.POWERInfoListener
+     * @see de.dermoba.srcp.devices.listener.POWERInfoListener
      * #POWERset(double, int, boolean)
      */
     public void POWERset(double timestamp, int bus, boolean powerOn) {

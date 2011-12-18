@@ -52,7 +52,7 @@ public abstract class LOCO extends AbstractCRCFActor {
 	 * Handle following messages:
 	 * INFO V_MAX: set the v_max if it is different
 	 * 
-	 * @see de.dermoba.srcp.devices.CRCFInfoListener#CRCFinfo(double, int, int, int, java.lang.String, java.util.UUID, java.lang.String, java.lang.String)
+	 * @see de.dermoba.srcp.devices.listener.CRCFInfoListener#CRCFinfo(double, int, int, int, java.lang.String, java.util.UUID, java.lang.String, java.lang.String)
 	 */
 	public void CRCFinfo(double timestamp, int bus, int sendTo, int replyTo,
 			String actor, UUID actor_id, String attribute, String attribute_value) {

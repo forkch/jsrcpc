@@ -1,4 +1,4 @@
-package de.dermoba.srcp.devices;
+package de.dermoba.srcp.devices.listener;
 
 public interface GLInfoListener {
 	public void GLset(double timestamp, int bus, int address, String drivemode,

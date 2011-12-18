@@ -3,7 +3,7 @@
  * copyright : (C) 2008 by Benjamin Mueller 
  * email     : news@fork.ch
  * website   : http://sourceforge.net/projects/adhocrailway
- * version   : $Id: SRCPLocomotiveControl.java,v 1.5 2010-11-22 13:47:05 mlipp Exp $
+ * version   : $Id: SRCPLocomotiveControl.java,v 1.6 2011-12-18 09:15:44 andre_schenk Exp $
  * 
  *----------------------------------------------------------------------*/
 
@@ -32,7 +32,7 @@ import de.dermoba.srcp.common.Response;
 import de.dermoba.srcp.common.exception.SRCPDeviceLockedException;
 import de.dermoba.srcp.common.exception.SRCPException;
 import de.dermoba.srcp.devices.GL;
-import de.dermoba.srcp.devices.GLInfoListener;
+import de.dermoba.srcp.devices.listener.GLInfoListener;
 import de.dermoba.srcp.model.Constants;
 import de.dermoba.srcp.model.InvalidAddressException;
 import de.dermoba.srcp.model.NoSessionException;

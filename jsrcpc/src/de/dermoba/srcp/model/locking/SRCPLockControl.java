@@ -3,7 +3,7 @@
  * copyright : (C) 2008 by Benjamin Mueller 
  * email     : news@fork.ch
  * website   : http://sourceforge.net/projects/adhocrailway
- * version   : $Id: SRCPLockControl.java,v 1.4 2008-05-12 18:02:22 fork_ch Exp $
+ * version   : $Id: SRCPLockControl.java,v 1.5 2011-12-18 09:15:44 andre_schenk Exp $
  * 
  *----------------------------------------------------------------------*/
 
@@ -29,7 +29,7 @@ import de.dermoba.srcp.client.SRCPSession;
 import de.dermoba.srcp.common.exception.SRCPDeviceLockedException;
 import de.dermoba.srcp.common.exception.SRCPException;
 import de.dermoba.srcp.devices.LOCK;
-import de.dermoba.srcp.devices.LOCKInfoListener;
+import de.dermoba.srcp.devices.listener.LOCKInfoListener;
 import de.dermoba.srcp.model.Constants;
 import de.dermoba.srcp.model.SRCPAddress;
 

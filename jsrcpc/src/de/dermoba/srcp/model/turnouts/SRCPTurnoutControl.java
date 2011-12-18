@@ -3,7 +3,7 @@
  * copyright : (C) 2008 by Benjamin Mueller 
  * email     : news@fork.ch
  * website   : http://sourceforge.net/projects/adhocrailway
- * version   : $Id: SRCPTurnoutControl.java,v 1.6 2010-03-06 18:22:08 fork_ch Exp $
+ * version   : $Id: SRCPTurnoutControl.java,v 1.7 2011-12-18 09:15:44 andre_schenk Exp $
  * 
  *----------------------------------------------------------------------*/
 
@@ -30,7 +30,7 @@ import de.dermoba.srcp.client.SRCPSession;
 import de.dermoba.srcp.common.exception.SRCPDeviceLockedException;
 import de.dermoba.srcp.common.exception.SRCPException;
 import de.dermoba.srcp.devices.GA;
-import de.dermoba.srcp.devices.GAInfoListener;
+import de.dermoba.srcp.devices.listener.GAInfoListener;
 import de.dermoba.srcp.model.Constants;
 import de.dermoba.srcp.model.InvalidAddressException;
 import de.dermoba.srcp.model.NoSessionException;

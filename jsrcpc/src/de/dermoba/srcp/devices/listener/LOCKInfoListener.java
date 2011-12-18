@@ -1,5 +1,5 @@
 
-package de.dermoba.srcp.devices;
+package de.dermoba.srcp.devices.listener;
 
 public interface LOCKInfoListener {
     public void LOCKset(double timestamp, int bus, int address,

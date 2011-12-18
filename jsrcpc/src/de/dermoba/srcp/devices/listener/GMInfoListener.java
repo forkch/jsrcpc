@@ -1,5 +1,5 @@
 
-package de.dermoba.srcp.devices;
+package de.dermoba.srcp.devices.listener;
 
 import de.dermoba.srcp.common.TokenizedLine;
 import de.dermoba.srcp.common.exception.SRCPUnsufficientDataException;
