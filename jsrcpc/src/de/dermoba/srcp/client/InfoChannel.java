@@ -50,34 +50,25 @@ public class InfoChannel implements Runnable {
 
     private int id;
 
-    private Collection<FBInfoListener> FBListeners =
-        new ArrayList<FBInfoListener>();
+    private Collection<FBInfoListener> FBListeners = new ArrayList<FBInfoListener>();
 
-    private Collection<GAInfoListener> GAListeners =
-        new ArrayList<GAInfoListener>();
+    private Collection<GAInfoListener> GAListeners = new ArrayList<GAInfoListener>();
 
-    private Collection<GLInfoListener> GLListeners =
-        new ArrayList<GLInfoListener>();
+    private Collection<GLInfoListener> GLListeners = new ArrayList<GLInfoListener>();
 
-    private Collection<LOCKInfoListener> LOCKListeners =
-        new ArrayList<LOCKInfoListener>();
+    private Collection<LOCKInfoListener> LOCKListeners = new ArrayList<LOCKInfoListener>();
 
-    private Collection<POWERInfoListener> POWERListeners =
-        new ArrayList<POWERInfoListener>();
+    private Collection<POWERInfoListener> POWERListeners = new ArrayList<POWERInfoListener>();
 
-    private Collection<SERVERInfoListener> SERVERListeners =
-        new ArrayList<SERVERInfoListener>();
+    private Collection<SERVERInfoListener> SERVERListeners = new ArrayList<SERVERInfoListener>();
 
-    private Collection<GMInfoListener> GMListeners =
-        new ArrayList<GMInfoListener>();
+    private Collection<GMInfoListener> GMListeners = new ArrayList<GMInfoListener>();
 
-    private Collection<CRCFInfoListener> CRCFListeners =
-        new ArrayList<CRCFInfoListener>();
+    private Collection<CRCFInfoListener> CRCFListeners = new ArrayList<CRCFInfoListener>();
 
     // private List<DESCRIPTIONInfoListener> DESCRIPTIONListeners;
     // private List<SESSIONInfoListener> SESSIONListeners;
-    private Collection<InfoDataListener> listeners =
-        new ArrayList<InfoDataListener>();
+    private Collection<InfoDataListener> listeners = new ArrayList<InfoDataListener>();
 
     private Thread infoThread;
 
@@ -117,21 +108,18 @@ public class InfoChannel implements Runnable {
                 if (sSplitted.length >= 5) {
                     id = Integer.parseInt(sSplitted[4]);
                 }
-            }
-            catch (NumberFormatException e) {
+            } catch (NumberFormatException e) {
                 System.err.println(s + ": cannot convert the 5. token from \""
-                    + s + "\" into an integer");
+                        + s + "\" into an integer");
             }
 
             // Now receive and handle messages continuously.
             infoThread = new Thread(this);
             infoThread.setDaemon(true);
             infoThread.start();
-        }
-        catch (UnknownHostException e) {
+        } catch (UnknownHostException e) {
             throw new SRCPHostNotFoundException();
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new SRCPIOException();
         }
     }
@@ -143,8 +131,7 @@ public class InfoChannel implements Runnable {
                 socket.close();
                 socket = null;
             }
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new SRCPIOException(e);
         }
     }
@@ -162,11 +149,9 @@ public class InfoChannel implements Runnable {
                     break;
                 informListenersReceived(s);
             }
-        }
-        catch (SocketException e) {
+        } catch (SocketException e) {
             return;
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             // what to do, if IOException on info channel?
         }
     }
@@ -182,52 +167,45 @@ public class InfoChannel implements Runnable {
     private void informListenersReceived(String s) {
         try {
             TokenizedLine tokenLine = new TokenizedLine(s);
-            double timestamp = tokenLine.nextDoubleToken();
-            int number = tokenLine.nextIntToken();
 
-            if (number < 200) {
-                tokenLine.nextStringToken();
-                int bus = tokenLine.nextIntToken();
-                String deviceGroup = tokenLine.nextStringToken().toUpperCase();
-                if (deviceGroup.equals("FB")) {
-                    handleFB(tokenLine, timestamp, number, bus);
-                }
-                else if (deviceGroup.equals("GA")) {
-                    handleGA(tokenLine, timestamp, number, bus);
-                }
-                else if (deviceGroup.equals("GL")) {
-                    handleGL(tokenLine, timestamp, number, bus);
-                }
-                else if (deviceGroup.equals("LOCK")) {
-                    handleLOCK(tokenLine, timestamp, number, bus);
-                }
-                else if (deviceGroup.equals("POWER")) {
-                    handlePOWER(tokenLine, timestamp, number, bus);
-                }
-                else if (deviceGroup.equals("SERVER")) {
-                    handleSERVER(tokenLine, timestamp, number);
-                }
-                else if (deviceGroup.equals("DESCRIPTION")) {
-                    // TODO: parse DESCRIPTION-Info
-                }
-                else if (deviceGroup.equals("SESSION")) {
-                    // TODO: parse SESSION-Info
-                }
-                else if (deviceGroup.equals("GM")) {
-                    handleGM(tokenLine, timestamp, number, bus);
+            if (tokenLine.hasMoreElements()) {
+                double timestamp = tokenLine.nextDoubleToken();
+                int number = tokenLine.nextIntToken();
+
+                if (number < 200) {
+                    tokenLine.nextStringToken();
+                    int bus = tokenLine.nextIntToken();
+                    String deviceGroup = tokenLine.nextStringToken()
+                            .toUpperCase();
+                    if (deviceGroup.equals("FB")) {
+                        handleFB(tokenLine, timestamp, number, bus);
+                    } else if (deviceGroup.equals("GA")) {
+                        handleGA(tokenLine, timestamp, number, bus);
+                    } else if (deviceGroup.equals("GL")) {
+                        handleGL(tokenLine, timestamp, number, bus);
+                    } else if (deviceGroup.equals("LOCK")) {
+                        handleLOCK(tokenLine, timestamp, number, bus);
+                    } else if (deviceGroup.equals("POWER")) {
+                        handlePOWER(tokenLine, timestamp, number, bus);
+                    } else if (deviceGroup.equals("SERVER")) {
+                        handleSERVER(tokenLine, timestamp, number);
+                    } else if (deviceGroup.equals("DESCRIPTION")) {
+                        // TODO: parse DESCRIPTION-Info
+                    } else if (deviceGroup.equals("SESSION")) {
+                        // TODO: parse SESSION-Info
+                    } else if (deviceGroup.equals("GM")) {
+                        handleGM(tokenLine, timestamp, number, bus);
+                    }
                 }
             }
-        }
-        catch (SRCPUnsufficientDataException e) {
+        } catch (SRCPUnsufficientDataException e) {
             System.err.println("cannot parse line \"" + s + "\"");
             e.printStackTrace();
-        }
-        catch (NumberFormatException e) {
+        } catch (NumberFormatException e) {
             System.err.println("cannot convert the next token from \"" + s
-                + "\" into an integer");
+                    + "\" into an integer");
             e.printStackTrace();
-        }
-        catch (SRCPWrongValueException e) {
+        } catch (SRCPWrongValueException e) {
             System.err.println("wrong value in line \"" + s + "\"");
             e.printStackTrace();
         }
@@ -243,9 +221,8 @@ public class InfoChannel implements Runnable {
         }
     }
 
-    private void handleFB(
-        TokenizedLine tokenLine, double timestamp, int number, int bus)
-        throws SRCPUnsufficientDataException {
+    private void handleFB(TokenizedLine tokenLine, double timestamp,
+            int number, int bus) throws SRCPUnsufficientDataException {
 
         if (number == INFO_SET) {
             int address = tokenLine.nextIntToken();
@@ -255,8 +232,7 @@ public class InfoChannel implements Runnable {
                     l.FBset(timestamp, bus, address, value);
                 }
             }
-        }
-        else if (number == INFO_TERM) {
+        } else if (number == INFO_TERM) {
             synchronized (FBListeners) {
                 for (FBInfoListener l : FBListeners) {
                     l.FBterm(timestamp, bus);
@@ -265,9 +241,8 @@ public class InfoChannel implements Runnable {
         }
     }
 
-    private void handleGL(
-        TokenizedLine tokenLine, double timestamp, int number, int bus)
-        throws SRCPUnsufficientDataException {
+    private void handleGL(TokenizedLine tokenLine, double timestamp,
+            int number, int bus) throws SRCPUnsufficientDataException {
         int address = tokenLine.nextIntToken();
 
         if (number == INFO_SET) {
@@ -291,8 +266,7 @@ public class InfoChannel implements Runnable {
                     l.GLset(timestamp, bus, address, drivemode, v, vMax, f);
                 }
             }
-        }
-        else if (number == INFO_INIT) {
+        } else if (number == INFO_INIT) {
             String protocol = tokenLine.nextStringToken();
             while (tokenLine.hasMoreElements()) {
                 // TODO: get params
@@ -303,8 +277,7 @@ public class InfoChannel implements Runnable {
                     l.GLinit(timestamp, bus, address, protocol, null);
                 }
             }
-        }
-        else if (number == INFO_TERM) {
+        } else if (number == INFO_TERM) {
             synchronized (GLListeners) {
                 for (GLInfoListener l : GLListeners) {
                     l.GLterm(timestamp, bus, address);
@@ -313,9 +286,8 @@ public class InfoChannel implements Runnable {
         }
     }
 
-    private void handleGA(
-        TokenizedLine tokenLine, double timestamp, int number, int bus)
-        throws SRCPUnsufficientDataException {
+    private void handleGA(TokenizedLine tokenLine, double timestamp,
+            int number, int bus) throws SRCPUnsufficientDataException {
         int address = tokenLine.nextIntToken();
         if (number == INFO_SET) {
             int port = tokenLine.nextIntToken();
@@ -325,8 +297,7 @@ public class InfoChannel implements Runnable {
                     l.GAset(timestamp, bus, address, port, value);
                 }
             }
-        }
-        else if (number == INFO_INIT) {
+        } else if (number == INFO_INIT) {
             String protocol = tokenLine.nextStringToken();
 
             while (tokenLine.hasMoreElements()) {
@@ -339,8 +310,7 @@ public class InfoChannel implements Runnable {
                     l.GAinit(timestamp, bus, address, protocol, null);
                 }
             }
-        }
-        else if (number == INFO_TERM) {
+        } else if (number == INFO_TERM) {
             synchronized (GAListeners) {
                 for (GAInfoListener l : GAListeners) {
                     l.GAterm(timestamp, bus, address);
@@ -349,9 +319,8 @@ public class InfoChannel implements Runnable {
         }
     }
 
-    private void handleLOCK(
-        TokenizedLine tokenLine, double timestamp, int number, int bus)
-        throws SRCPUnsufficientDataException {
+    private void handleLOCK(TokenizedLine tokenLine, double timestamp,
+            int number, int bus) throws SRCPUnsufficientDataException {
 
         String lockedDeviceGroup = tokenLine.nextStringToken();
         int address = tokenLine.nextIntToken();
@@ -361,11 +330,10 @@ public class InfoChannel implements Runnable {
             synchronized (LOCKListeners) {
                 for (LOCKInfoListener l : LOCKListeners) {
                     l.LOCKset(timestamp, bus, address, lockedDeviceGroup,
-                        duration, sessionID);
+                            duration, sessionID);
                 }
             }
-        }
-        else if (number == INFO_TERM) {
+        } else if (number == INFO_TERM) {
             synchronized (LOCKListeners) {
                 for (LOCKInfoListener l : LOCKListeners) {
                     l.LOCKterm(timestamp, bus, address, lockedDeviceGroup);
@@ -374,9 +342,8 @@ public class InfoChannel implements Runnable {
         }
     }
 
-    private void handlePOWER(
-        TokenizedLine tokenLine, double timestamp, int number, int bus)
-        throws SRCPUnsufficientDataException {
+    private void handlePOWER(TokenizedLine tokenLine, double timestamp,
+            int number, int bus) throws SRCPUnsufficientDataException {
 
         if (number == INFO_SET) {
             boolean powerOn = tokenLine.nextStringToken().equals("ON");
@@ -385,8 +352,7 @@ public class InfoChannel implements Runnable {
                     l.POWERset(timestamp, bus, powerOn);
                 }
             }
-        }
-        else if (number == INFO_TERM) {
+        } else if (number == INFO_TERM) {
             synchronized (POWERListeners) {
                 for (POWERInfoListener l : POWERListeners) {
                     l.POWERterm(timestamp, bus);
@@ -395,9 +361,8 @@ public class InfoChannel implements Runnable {
         }
     }
 
-    private void handleSERVER(
-        TokenizedLine tokenLine, double timestamp, int number)
-        throws SRCPUnsufficientDataException {
+    private void handleSERVER(TokenizedLine tokenLine, double timestamp,
+            int number) throws SRCPUnsufficientDataException {
 
         if (number == INFO_SET) {
             final String action = tokenLine.nextStringToken();
@@ -406,8 +371,7 @@ public class InfoChannel implements Runnable {
                 for (SERVERInfoListener l : SERVERListeners) {
                     if (action.equals("RESETTING")) {
                         l.SERVERreset(timestamp);
-                    }
-                    else if (action.equals("TERMINATING")) {
+                    } else if (action.equals("TERMINATING")) {
                         l.SERVERterm(timestamp);
                     }
                 }
@@ -426,10 +390,9 @@ public class InfoChannel implements Runnable {
      * @throws NumberFormatException
      * @throws SRCPWrongValueException
      */
-    private void handleGM(
-        TokenizedLine tokenLine, double timestamp, int number, int bus)
-        throws SRCPUnsufficientDataException, NumberFormatException,
-        SRCPWrongValueException {
+    private void handleGM(TokenizedLine tokenLine, double timestamp,
+            int number, int bus) throws SRCPUnsufficientDataException,
+            NumberFormatException, SRCPWrongValueException {
 
         if (number == INFO_SET) {
             int sendTo = tokenLine.nextIntToken();
@@ -438,7 +401,7 @@ public class InfoChannel implements Runnable {
             synchronized (GMListeners) {
                 for (GMInfoListener l : GMListeners) {
                     l.GMset(timestamp, bus, sendTo, replyTo, messageType,
-                        tokenLine);
+                            tokenLine);
                 }
             }
         }
@@ -527,11 +490,10 @@ public class InfoChannel implements Runnable {
          * @see de.dermoba.srcp.devices.GMInfoListener#GMset(double, int, int,
          * int, java.lang.String, de.dermoba.srcp.common.TokenizedLine)
          */
-        public void GMset(
-            double timestamp, int bus, int sendTo, int replyTo,
-            String messageType, TokenizedLine tokenLine)
-            throws SRCPUnsufficientDataException, NumberFormatException,
-            SRCPWrongValueException {
+        public void GMset(double timestamp, int bus, int sendTo, int replyTo,
+                String messageType, TokenizedLine tokenLine)
+                throws SRCPUnsufficientDataException, NumberFormatException,
+                SRCPWrongValueException {
             if (messageType.equals("CRCF")) {
                 String actor = tokenLine.nextURLStringToken();
                 UUID actor_id = UUID.fromString(tokenLine.nextURLStringToken());
@@ -545,19 +507,16 @@ public class InfoChannel implements Runnable {
                     for (CRCFInfoListener l : CRCFListeners) {
                         if (method.equals("GET")) {
                             l.CRCFget(timestamp, bus, sendTo, replyTo, actor,
-                                actor_id, attribute);
-                        }
-                        else if (method.equals("SET")) {
+                                    actor_id, attribute);
+                        } else if (method.equals("SET")) {
                             l.CRCFset(timestamp, bus, sendTo, replyTo, actor,
-                                actor_id, attribute, attribute_value);
-                        }
-                        else if (method.equals("INFO")) {
+                                    actor_id, attribute, attribute_value);
+                        } else if (method.equals("INFO")) {
                             l.CRCFinfo(timestamp, bus, sendTo, replyTo, actor,
-                                actor_id, attribute, attribute_value);
-                        }
-                        else if (method.equals("LIST")) {
+                                    actor_id, attribute, attribute_value);
+                        } else if (method.equals("LIST")) {
                             l.CRCFlist(timestamp, bus, sendTo, replyTo, actor,
-                                actor_id, attribute);
+                                    actor_id, attribute);
                         }
                     }
                 }
