@@ -8,39 +8,45 @@ import de.dermoba.srcp.client.SRCPSession;
 import de.dermoba.srcp.common.exception.SRCPException;
 
 public class DESCRIPTION {
-    private SRCPSession session;
-    private int bus = 0;
+    private final SRCPSession session;
+    private final int bus;
 
-    public DESCRIPTION(SRCPSession pSession) {
-        session = pSession;
+    public DESCRIPTION(SRCPSession pSession, int bus) {
+        this.session = pSession;
+        this.bus = bus;
     }
 
     /** SRCP syntax: GET &lt;bus&gt; DESCRIPTION */
-    public String get(int pBus) throws SRCPException {
-        bus = pBus;
-        if(!session.isOldProtocol()) {
+    public String get() throws SRCPException {
+        if (!session.isOldProtocol()) {
             return session.getCommandChannel().send(
-                "GET " + bus + " DESCRIPTION ");
+                    "GET " + bus + " DESCRIPTION ");
         }
         return "";
     }
 
-    /** SRCP syntax: GET &lt;bus&gt; DESCRIPTION &lt;devicegroup&gt; [&lt;address&gt;]*/
-    public String get(int pBus, String pDevicegroup) throws SRCPException {
-        if(!session.isOldProtocol()) {
-            return session.getCommandChannel().send("GET " + bus + " DESCRIPTION "
-                + pDevicegroup);
+    /**
+     * SRCP syntax: GET &lt;bus&gt; DESCRIPTION &lt;devicegroup&gt;
+     * [&lt;address&gt;]
+     */
+    public String get(String pDevicegroup) throws SRCPException {
+        if (!session.isOldProtocol()) {
+            return session.getCommandChannel().send(
+                    "GET " + bus + " DESCRIPTION " + pDevicegroup);
         }
         return "";
     }
 
-    /** SRCP syntax: GET &lt;bus&gt; DESCRIPTION &lt;devicegroup&gt; [&lt;address&gt;]*/
-    public String get(int pBus, String pDevicegroup, int pAddress) 
-        throws SRCPException {
-            if(!session.isOldProtocol()) {
-                return session.getCommandChannel().send("GET " + bus 
-                    + " DESCRIPTION " + pDevicegroup + " " + pAddress);
-            }
-        return "";
+    /**
+     * SRCP syntax: GET &lt;bus&gt; DESCRIPTION &lt;devicegroup&gt;
+     * [&lt;address&gt;]
+     */
+    public String get(String pDevicegroup, int pAddress) throws SRCPException {
+        if (!session.isOldProtocol()) {
+            return session.getCommandChannel().send(
+                    "GET " + bus + " DESCRIPTION " + pDevicegroup + " "
+                            + pAddress);
         }
+        return "";
+    }
 }

@@ -11,16 +11,16 @@ public class POWER {
     private static final String POWER_ON = "ON";
     private static final String POWER_OFF = "OFF";
 
-    private SRCPSession session;
-    private int bus;
+    private final SRCPSession session;
+    private final int bus;
 
-    public POWER(SRCPSession pSession) {
-        session = pSession;
+    public POWER(SRCPSession pSession, int bus) {
+        this.session = pSession;
+        this.bus = bus;
     }
 
     /** SRCP syntax: INIT &lt;bus&gt; POWER */
-    public String init(int pBus) throws SRCPException {
-        bus = pBus;
+    public String init() throws SRCPException {
         if (!session.isOldProtocol()) {
             return session.getCommandChannel().send("INIT " + bus + " POWER");
         }
@@ -73,9 +73,5 @@ public class POWER {
             return "";
         }
         return session.getCommandChannel().send("TERM " + bus + " POWER");
-    }
-
-    public void setBus(int bus) {
-        this.bus = bus;
     }
 }

@@ -3,7 +3,7 @@
  * copyright : (C) 2008 by Benjamin Mueller 
  * email     : news@fork.ch
  * website   : http://sourceforge.net/projects/adhocrailway
- * version   : $Id: SRCPLocomotiveControl.java,v 1.6 2011-12-18 09:15:44 andre_schenk Exp $
+ * version   : $Id: SRCPLocomotiveControl.java,v 1.7 2011-12-18 09:43:06 andre_schenk Exp $
  * 
  *----------------------------------------------------------------------*/
 
@@ -361,8 +361,7 @@ public class SRCPLocomotiveControl implements GLInfoListener, Constants {
 			locomotive.setSession(session);
 		}
 		if (locomotive.getGL() == null) {
-			GL gl = new GL(session);
-			gl.setBus(locomotive.getBus());
+			GL gl = new GL(session, locomotive.getBus());
 			gl.setAddress(locomotive.getAddress());
 			locomotive.setGL(gl);
 			lockControl.registerControlObject("GL", new SRCPAddress(locomotive
@@ -377,8 +376,7 @@ public class SRCPLocomotiveControl implements GLInfoListener, Constants {
 			throws SRCPLocomotiveException {
 		try {
 			String[] params = locomotive.getParams();
-			locomotive.getGL().init(locomotive.getBus(),
-					locomotive.getAddress(), locomotive.getProtocol(), params);
+			locomotive.getGL().init(locomotive.getAddress(), locomotive.getProtocol(), params);
 			locomotive.setInitialized(true);
 		} catch (SRCPException x) {
 			throw new SRCPLocomotiveException(ERR_INIT_FAILED, x);

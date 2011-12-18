@@ -8,8 +8,8 @@ import de.dermoba.srcp.client.SRCPSession;
 import de.dermoba.srcp.common.exception.SRCPException;
 
 public class LOCK {
-    private SRCPSession session;
-    private int bus;
+    private final SRCPSession session;
+    private final int bus;
 
     public LOCK(SRCPSession pSession, int pBus) {
         session = pSession;
@@ -18,29 +18,33 @@ public class LOCK {
 
     /** SRCP syntax GET &lt;bus&gt; LOCK &lt;devicegroup&gt; &lt;addr&gt; */
     public String get(String pDevicegroup, int pAddr) throws SRCPException {
-        if(!session.isOldProtocol()) {
-            return session.getCommandChannel().send("GET " + bus + " LOCK " 
-                + " " + pDevicegroup + " " + pAddr);
+        if (!session.isOldProtocol()) {
+            return session.getCommandChannel().send(
+                    "GET " + bus + " LOCK " + " " + pDevicegroup + " " + pAddr);
         }
         return "";
     }
 
-    /** SRCP syntax: SET &lt;bus&gt; LOCK &lt;device group&gt; &lt;addr&gt; &lt;duration&gt;*/
-    public String set(String pDevicegroup, int pAddr, int pDuration) 
-        throws SRCPException {
+    /**
+     * SRCP syntax: SET &lt;bus&gt; LOCK &lt;device group&gt; &lt;addr&gt;
+     * &lt;duration&gt;
+     */
+    public String set(String pDevicegroup, int pAddr, int pDuration)
+            throws SRCPException {
 
-        if(!session.isOldProtocol()) {
-            return session.getCommandChannel().send("SET " + bus + " LOCK " 
-                + pDevicegroup + " " + pAddr + " " + pDuration);
+        if (!session.isOldProtocol()) {
+            return session.getCommandChannel().send(
+                    "SET " + bus + " LOCK " + pDevicegroup + " " + pAddr + " "
+                            + pDuration);
         }
         return "";
     }
 
     /** SRCP syntax: TERM &lt;bus&gt; LOCK &lt;device group&gt; &lt;addr&gt; */
     public String term(String pDevicegroup, int pAddr) throws SRCPException {
-        if(!session.isOldProtocol()) {
-            return session.getCommandChannel().send("TERM " + bus + " LOCK " 
-                + pDevicegroup + " " + pAddr);
+        if (!session.isOldProtocol()) {
+            return session.getCommandChannel().send(
+                    "TERM " + bus + " LOCK " + pDevicegroup + " " + pAddr);
         }
         return "";
     }

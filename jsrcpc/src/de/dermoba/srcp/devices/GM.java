@@ -19,14 +19,13 @@ public class GM {
 
 	public static final int BROADCAST = 0;
 	
-    private SRCPSession session = null;
-    private int bus;
+    private final SRCPSession session;
+    private final int bus = 0;
     private int myInfoChannel;
 
     public GM(SRCPSession pSession){
         session = pSession;
         myInfoChannel = session.getInfoChannelID();
-        bus = 0;
     }
 
     /** SRCP syntax SET &lt;bus&gt; GM &lt;sendTo&gt; &lt;replyTo&gt; &lt;message&gt; */

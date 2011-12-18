@@ -100,8 +100,7 @@ public class SRCPPowerControl implements POWERInfoListener, Constants {
      */
     public void setState(SRCPPowerSupply powerSupply, SRCPPowerState state)
         throws SRCPPowerSupplyException {
-        POWER device = new POWER(session);
-        device.setBus(powerSupply.getBus());
+        POWER device = new POWER(session, powerSupply.getBus());
         try {
             device.set(state == SRCPPowerState.ON);
         } catch (SRCPException e) {
