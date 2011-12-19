@@ -29,6 +29,7 @@ import de.dermoba.srcp.devices.listener.GMInfoListener;
 import de.dermoba.srcp.devices.listener.LOCKInfoListener;
 import de.dermoba.srcp.devices.listener.POWERInfoListener;
 import de.dermoba.srcp.devices.listener.SERVERInfoListener;
+import de.dermoba.srcp.model.locomotives.SRCPLocomotiveDirection;
 
 public class InfoChannel implements Runnable {
 
@@ -246,7 +247,8 @@ public class InfoChannel implements Runnable {
         int address = tokenLine.nextIntToken();
 
         if (number == INFO_SET) {
-            String drivemode = tokenLine.nextStringToken();
+            SRCPLocomotiveDirection drivemode = SRCPLocomotiveDirection
+                    .valueOf(Integer.parseInt(tokenLine.nextStringToken()));
             int v = tokenLine.nextIntToken();
             int vMax = tokenLine.nextIntToken();
             Collection<Boolean> functions = new ArrayList<Boolean>();

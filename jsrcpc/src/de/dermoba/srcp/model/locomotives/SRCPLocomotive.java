@@ -3,7 +3,7 @@
  * copyright : (C) 2008 by Benjamin Mueller 
  * email     : news@fork.ch
  * website   : http://sourceforge.net/projects/adhocrailway
- * version   : $Id: SRCPLocomotive.java,v 1.4 2010-11-22 13:47:05 mlipp Exp $
+ * version   : $Id: SRCPLocomotive.java,v 1.5 2011-12-19 10:32:39 andre_schenk Exp $
  * 
  *----------------------------------------------------------------------*/
 
@@ -22,10 +22,6 @@ import de.dermoba.srcp.client.SRCPSession;
 import de.dermoba.srcp.devices.GL;
 
 public abstract class SRCPLocomotive {
-
-	public static final String			FORWARD_DIRECTION	= "1";
-
-	public static final String			REVERSE_DIRECTION	= "0";
 
 	protected boolean					initialized			= false;
 	

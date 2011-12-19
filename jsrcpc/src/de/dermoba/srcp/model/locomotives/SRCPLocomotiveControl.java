@@ -3,7 +3,7 @@
  * copyright : (C) 2008 by Benjamin Mueller 
  * email     : news@fork.ch
  * website   : http://sourceforge.net/projects/adhocrailway
- * version   : $Id: SRCPLocomotiveControl.java,v 1.7 2011-12-18 09:43:06 andre_schenk Exp $
+ * version   : $Id: SRCPLocomotiveControl.java,v 1.8 2011-12-19 10:32:39 andre_schenk Exp $
  * 
  *----------------------------------------------------------------------*/
 
@@ -163,15 +163,15 @@ public class SRCPLocomotiveControl implements GLInfoListener, Constants {
 			String resp = null;
 			switch (locomotive.direction) {
 			case FORWARD:
-				resp = gl.set(SRCPLocomotive.FORWARD_DIRECTION, speed, 
+				resp = gl.set(SRCPLocomotiveDirection.FORWARD, speed, 
 						      drivingSteps, functions);
 				break;
 			case REVERSE:
-				resp = gl.set(SRCPLocomotive.REVERSE_DIRECTION, speed, 
+				resp = gl.set(SRCPLocomotiveDirection.REVERSE, speed, 
 						      drivingSteps, functions);
 				break;
 			case UNDEF:
-				resp = gl.set(SRCPLocomotive.FORWARD_DIRECTION, speed,
+				resp = gl.set(SRCPLocomotiveDirection.FORWARD, speed,
 						      drivingSteps, functions);
 				locomotive.setDirection(SRCPLocomotiveDirection.FORWARD);
 				break;
@@ -279,7 +279,7 @@ public class SRCPLocomotiveControl implements GLInfoListener, Constants {
 		}
 	}
 
-	public void GLset(double timestamp, int bus, int address, String drivemode,
+	public void GLset(double timestamp, int bus, int address, SRCPLocomotiveDirection drivemode,
 			int v, int vMax, boolean[] functions) {
 
 		logger.debug("GLset( " + bus + " , " + address + " , " + drivemode
@@ -295,11 +295,7 @@ public class SRCPLocomotiveControl implements GLInfoListener, Constants {
 		// Update locomotive if known and if info is newer than our own.
 		if (locomotive != null 
 		    && timestamp > locomotive.getLastCommandAcknowledge()) {
-			if (drivemode.equals(SRCPLocomotive.FORWARD_DIRECTION)) {
-				locomotive.setDirection(SRCPLocomotiveDirection.FORWARD);
-			} else if (drivemode.equals(SRCPLocomotive.REVERSE_DIRECTION)) {
-				locomotive.setDirection(SRCPLocomotiveDirection.REVERSE);
-			}
+			locomotive.setDirection(drivemode);
 			locomotive.setCurrentSpeed(v);
 			locomotive.setFunctions(functions);
 			informListeners(locomotive);

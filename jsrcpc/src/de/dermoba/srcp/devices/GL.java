@@ -6,6 +6,7 @@ package de.dermoba.srcp.devices;
 
 import de.dermoba.srcp.client.SRCPSession;
 import de.dermoba.srcp.common.exception.SRCPException;
+import de.dermoba.srcp.model.locomotives.SRCPLocomotiveDirection;
 
 public class GL {
 
@@ -54,7 +55,7 @@ public class GL {
      * SRCP syntax SET &lt;bus&gt; GL &lt;addr&gt; &lt;drivemode&gt; &lt;V&gt;
      * &lt;V_max&gt; &lt;f1&gt; .. &lt;fn&gt;
      */
-    public String set(String drivemode, int v, int vmax, boolean[] f)
+    public String set(SRCPLocomotiveDirection drivemode, int v, int vmax, boolean[] f)
             throws SRCPException {
         StringBuffer functionBuf = new StringBuffer();
         if (f != null) {
@@ -64,12 +65,14 @@ public class GL {
         }
         if (session.isOldProtocol()) {
             return session.getCommandChannel().send(
-                    "SET GL " + protocol + " " + address + " " + drivemode
-                            + " " + v + " " + vmax + " " + functionBuf);
+                    "SET GL " + protocol + " " + address + " "
+                            + drivemode.getDirection() + " " + v + " " + vmax
+                            + " " + functionBuf);
         }
         return session.getCommandChannel().send(
-                "SET " + bus + " GL " + address + " " + drivemode + " " + v
-                        + " " + vmax + " " + functionBuf);
+                "SET " + bus + " GL " + address + " "
+                        + drivemode.getDirection() + " " + v + " " + vmax + " "
+                        + functionBuf);
     }
 
     /** SRCP syntax GET &lt;bus&gt; GL &lt;addr&gt; */
