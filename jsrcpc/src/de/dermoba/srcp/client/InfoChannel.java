@@ -29,6 +29,7 @@ import de.dermoba.srcp.devices.listener.GMInfoListener;
 import de.dermoba.srcp.devices.listener.LOCKInfoListener;
 import de.dermoba.srcp.devices.listener.POWERInfoListener;
 import de.dermoba.srcp.devices.listener.SERVERInfoListener;
+import de.dermoba.srcp.devices.listener.SMInfoListener;
 import de.dermoba.srcp.model.locomotives.SRCPLocomotiveDirection;
 
 public class InfoChannel implements Runnable {
@@ -62,6 +63,8 @@ public class InfoChannel implements Runnable {
     private Collection<POWERInfoListener> POWERListeners = new ArrayList<POWERInfoListener>();
 
     private Collection<SERVERInfoListener> SERVERListeners = new ArrayList<SERVERInfoListener>();
+
+    private Collection<SMInfoListener> SMListeners = new ArrayList<SMInfoListener>();
 
     private Collection<GMInfoListener> GMListeners = new ArrayList<GMInfoListener>();
 
@@ -196,6 +199,8 @@ public class InfoChannel implements Runnable {
                         // TODO: parse SESSION-Info
                     } else if (deviceGroup.equals("GM")) {
                         handleGM(tokenLine, timestamp, number, bus);
+                    } else if (deviceGroup.equals("SM")) {
+                        handleSM(tokenLine, timestamp, number, bus);
                     }
                 }
             }
@@ -381,6 +386,39 @@ public class InfoChannel implements Runnable {
         }
     }
 
+    private void handleSM(TokenizedLine tokenLine, double timestamp,
+            int number, int bus) throws SRCPUnsufficientDataException {
+        if (number == INFO_INIT) {
+            String protocol = tokenLine.nextStringToken();
+
+            synchronized (SMListeners) {
+                for (SMInfoListener l : SMListeners) {
+                    l.SMinit(timestamp, bus, protocol);
+                }
+            }
+        } else if (number == INFO_SET) {
+            int address = tokenLine.nextIntToken();
+            String type = tokenLine.nextStringToken();
+            Collection<String> values = new ArrayList<String>();
+
+            while (tokenLine.hasMoreElements()) {
+                values.add(tokenLine.nextStringToken());
+            }
+            synchronized (SMListeners) {
+                for (SMInfoListener l : SMListeners) {
+                    l.SMset(timestamp, bus, address, type,
+                            values.toArray(new String[0]));
+                }
+            }
+        } else if (number == INFO_TERM) {
+            synchronized (SMListeners) {
+                for (SMInfoListener l : SMListeners) {
+                    l.SMterm(timestamp, bus);
+                }
+            }
+        }
+    }
+
     /**
      * Handles GM Messages, calls all registered GMInfoListeners.
      * 
@@ -433,6 +471,10 @@ public class InfoChannel implements Runnable {
         SERVERListeners.add(l);
     }
 
+    public synchronized void addSMInfoListener(SMInfoListener l) {
+        SMListeners.add(l);
+    }
+
     public synchronized void addGMInfoListener(GMInfoListener l) {
         GMListeners.add(l);
     }
@@ -463,6 +505,10 @@ public class InfoChannel implements Runnable {
 
     public synchronized void removeSERVERInfoListener(SERVERInfoListener l) {
         SERVERListeners.remove(l);
+    }
+
+    public synchronized void removeSMInfoListener(SMInfoListener l) {
+        SMListeners.remove(l);
     }
 
     public synchronized void removeGMInfoListener(GMInfoListener l) {
