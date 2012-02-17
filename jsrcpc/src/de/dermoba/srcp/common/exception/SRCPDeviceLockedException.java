@@ -3,6 +3,9 @@
  *
  * History
  $Log: not supported by cvs2svn $
+ Revision 1.3  2007/12/30 13:54:04  andre_schenk
+ added serialVersionUID
+
  Revision 1.2  2006/04/16 11:14:17  fork_ch
  - added CommanChannelListener
  - updated Exceptions to also get the cause of the exception
@@ -29,7 +32,7 @@ package de.dermoba.srcp.common.exception;
 /**
  *
  * @author  osc
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
   */
 
 public class SRCPDeviceLockedException extends SRCPCommandException {
@@ -39,11 +42,11 @@ public class SRCPDeviceLockedException extends SRCPCommandException {
     public final static int NUMBER = 414;
 
     public SRCPDeviceLockedException () {
-        super(NUMBER,"forbidden");
+        super(NUMBER,"device locked");
     }
 
     public SRCPDeviceLockedException (Throwable cause) {
-        super(NUMBER,"forbidden", cause);
+        super(NUMBER,"device locked", cause);
     }
     public SRCPException cloneExc () {
     	return new SRCPDeviceLockedException();
