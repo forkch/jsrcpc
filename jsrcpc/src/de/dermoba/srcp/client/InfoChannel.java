@@ -354,9 +354,12 @@ public class InfoChannel implements Runnable {
 
         if (number == INFO_SET) {
             boolean powerOn = tokenLine.nextStringToken().equals("ON");
+            String freeText = "";
+            if(tokenLine.hasMoreElements())
+            freeText = tokenLine.nextStringToken();
             synchronized (POWERListeners) {
                 for (POWERInfoListener l : POWERListeners) {
-                    l.POWERset(timestamp, bus, powerOn);
+                    l.POWERset(timestamp, bus, powerOn, freeText);
                 }
             }
         } else if (number == INFO_TERM) {

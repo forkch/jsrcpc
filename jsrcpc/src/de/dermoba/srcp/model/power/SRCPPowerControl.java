@@ -146,7 +146,7 @@ public class SRCPPowerControl implements POWERInfoListener, Constants {
      * @see de.dermoba.srcp.devices.listener.POWERInfoListener
      * #POWERset(double, int, boolean)
      */
-    public void POWERset(double timestamp, int bus, boolean powerOn) {
+    public void POWERset(double timestamp, int bus, boolean powerOn, String freeText) {
         SRCPPowerSupply ps = null;
         for (SRCPPowerSupply iter : srcpPowerSupplies) {
             if (iter.getBus() == bus) {
@@ -163,7 +163,8 @@ public class SRCPPowerControl implements POWERInfoListener, Constants {
         } else {
             ps.setState(SRCPPowerState.OFF);
         }
-        informListeners(ps);
+        
+        informListeners(ps, freeText);
     }
 
     /* (non-Javadoc)
@@ -193,9 +194,9 @@ public class SRCPPowerControl implements POWERInfoListener, Constants {
         listeners.clear();
     }
 
-    private void informListeners(SRCPPowerSupply changedPowerSupply) {
+    private void informListeners(SRCPPowerSupply changedPowerSupply, String freeText) {
         for (SRCPPowerSupplyChangeListener l : listeners) {
-            l.powerSupplyChanged(changedPowerSupply);
+            l.powerSupplyChanged(changedPowerSupply, freeText);
         }
     }
 }

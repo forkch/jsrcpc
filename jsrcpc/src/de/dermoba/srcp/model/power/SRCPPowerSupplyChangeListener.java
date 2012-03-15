@@ -13,6 +13,7 @@ public interface SRCPPowerSupplyChangeListener {
      * Inform about a change of the given power supply.
      * 
      * @param powerSupply the power supply
+     * @param freeText 
      */
-    void powerSupplyChanged(SRCPPowerSupply powerSupply);
+    void powerSupplyChanged(SRCPPowerSupply powerSupply, String freeText);
 }
