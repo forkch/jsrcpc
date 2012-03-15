@@ -1,0 +1,217 @@
+/*Credits: Dynamic Drive CSS Library */
+/*URL: http://www.dynamicdrive.com/style/ */
+
+.menu{
+border-bottom: 1px solid gray;
+/* width: 90%; width of menu. Uncomment to change to a specific width */
+margin-bottom: 1em;
+}
+
+.menu ul{
+padding: 3px 0;
+margin-left: 0;
+margin-top: 1px;
+margin-bottom: 0;
+font: bold 12px Verdana;
+list-style-type: none;
+text-align: center; /*set to left, center, or right to align the menu as desired*/
+}
+
+.menu li{
+display: inline;
+margin: 0;
+}
+
+.menu li a{
+text-decoration: none;
+padding: 3px 7px;
+margin-right: 3px;
+border: 1px solid #778;
+color: #2d2b2b;
+background: white url(media/shade.gif) top left repeat-x;
+}
+
+.menu li a:visited{
+color: #2d2b2b;
+}
+
+.menu li a:hover{
+text-decoration: underline;
+color: #2d2b2b;
+}
+
+.menu li.menu_current{
+position: relative;
+top: 1px;
+}
+
+.menu li.menu_current a{ /*selected main tab style */
+background-image: url(media/shadeactive.gif);
+border-bottom-color: white;
+}
+
+.menu li.menu_current a:hover{ /*selected main tab style */
+text-decoration: none;
+}
+
+body {
+	margin:0;
+	padding:0;
+	font-family: sans-serif;
+	color:#000000;
+	background-color:white;
+	font-size: small;
+}
+
+p {
+	margin:0 0 1em 0;
+	padding-left:1em;
+}
+
+#Content>p {text-indent:0em; margin:0;}
+#Content>p+p {text-indent:0em; margin-top: 1ex;}
+
+h1 {
+	font-size: x-large;
+	margin-bottom: 0.75ex;
+    text-align: center;
+}
+h2 {
+	font-size: large;
+	margin-bottom: 0.5ex;
+    color: #2b8fc5;
+}
+
+h3 {
+	font-size: medium;
+	margin-bottom: 0.5ex;
+	color: #2b8fc5;
+}
+
+a {
+	text-decoration:none;
+	color: #4322FF;
+	}
+a:hover {
+	text-decoration:underline;
+	color: #c00;
+}
+
+/* For reference links in the middle of texts */
+.help {
+	border-bottom: 1px
+	dashed #333;
+	cursor: help;
+}
+			
+#Header {
+	font-weight:600;
+	font-size: x-large;	/* should be same as an h1 header */
+	margin:20px 0 10px 0;
+	padding:0.3ex 0 1.3ex 20px;
+	border-style:solid;
+	border-color:black;
+	border-width:1px 0;
+	background-color:#eee;
+
+/* Here is the ugly brilliant hack that protects IE5/Win from its own
+stupidity.  Thanks to Tantek Celik for the hack and to Eric Costello
+for publicizing it.  IE5/Win incorrectly parses the "\"}"" value,
+prematurely closing the style declaration. The incorrect IE5/Win value
+is above, while the correct value is below. See
+http://glish.com/css/hacks.asp for details. */
+
+	voice-family: "\"}\"";
+	voice-family:inherit;
+	height:14px;
+	text-align: center;
+	}
+/* I've heard this called the "be nice to Opera 5" rule. Basically, it
+feeds correct length values to user agents that exhibit the parsing
+error exploited above yet get the CSS box model right and understand
+the CSS2 parent-child selector. ALWAYS include a "be nice to Opera 5"
+rule every time you use the Tantek Celik hack (above). */
+body>#Header {height:14px;}
+
+#Content {
+	/* Left margin is menu width + 3em
+	 */
+	margin:0 50px 20px 15em;
+    padding-left:10px;
+}
+
+#Sidenote {
+	float: left;
+}
+
+/* Project Description */
+.ProjectDesc {
+	margin-left: 10px;
+}
+
+thead {
+	background-color:#FEFED2;
+	font-size:medium;
+}
+
+td {
+ font-size: x-small;
+}
+
+table {
+	width:75%;
+    border-collapse: collapse;
+    margin-left:30px;
+    margin-top:20px;
+    margin-bottom:20px;
+    border: 1px dashed #999;
+}
+
+/* For convenience */
+.centered {
+	text-align: center;
+	margin-left: auto;
+	margin-right: auto;
+	}
+
+.notebox {
+	background-color:#eee;
+	border:1px dashed #999;
+	margin: 15px;
+	font-size:small;
+	text-indent: 0;
+}
+
+.menu_current {
+	background-color:#a0a0a0;
+}
+.code {
+	color: #000;
+	font-weight: bold;
+	background:#eee;
+	width:500px;
+	margin-left:1em;
+	padding-left:10px;
+	padding-top:5px;
+	padding-bottom:5px;
+	padding-right:10px;
+	border:1px dashed #000;
+}
+
+.phrase {
+	font-size:x-small;
+}
+
+@media print {
+	#Content {
+		/* Left margin is menu width + 3em
+		 */
+		margin:0 50px 50px 0;
+		padding:10px;
+		}
+
+	#Menu {
+		  display: none;
+		}
+
+}

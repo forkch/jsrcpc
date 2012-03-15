@@ -1,0 +1,1578 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1"><title>Simple Railroad Command Protocol</title><meta name="GENERATOR" content="Modular DocBook HTML Stylesheet Version 1.79"><link rel="STYLESHEET" type="text/css" href="srcp-084-Dateien/srcpd.css"></head><body class="article" bgcolor="#FFFFFF" link="#0000FF" text="#000000" vlink="#840084" alink="#0000FF"><div class="ARTICLE"><div class="TITLEPAGE"><h1 class="title"><a name="AEN2">Simple Railroad Command Protocol</a></h1><h2 class="subtitle">Version 0.8.4</h2><div class="authorgroup"><a name="AEN8"></a><h4 class="EDITEDBY">Edited by</h4><h3 class="editor">Matthias Trute</h3></div><p class="pubdate">2000, 2010 (1.3.2010)<br></p><div><div class="abstract"><p></p><a name="AEN5"></a><p>                SRCP is an Internet protocol for controlling and
+                programming (digital) model railway systems.
+            </p><p></p></div></div><hr></div><div class="sect1"><h2 class="sect1"><a name="Introduction">Introduction</a></h2><p>            Operating digital model railway kits is to this day strongly
+            influenced by the used hard ware. There is an agreement
+            between some manufacturers in order to reach mutual
+            compatibility on the level of devices. This agreement is not
+            generally accepted though. There is no common operating
+            language, every system uses its own. To provide
+            high-performance programs software has to be adjusted and
+            tested separately for all used digital systems. In addition
+            a multi user operation is restricted if present at all. The
+            following equally important goals are pursued with the SRCP:
+        </p><p></p><table border="0"><tbody><tr><td>                Consideration of different digital systems with a common
+                operation language in multi user operation over a
+                (computer) network.
+            </td></tr><tr><td>                Further scaling capability in the range of spontaneously
+                built model railway systems, large stationary
+                constructions and operation at model train conventions
+                where individually created modules are to be put
+                together.
+            </td></tr><tr><td>                Paying attention to different safety strategies, from
+                none to my own one.
+            </td></tr><tr><td>                Software shall also be feasible by the interested
+                layman.
+            </td></tr><tr><td>                A SRCP server abstracts the control of the construction.
+                All information are provided either due to inquiring the
+                layout directly where ever possible or by the command
+                history.
+            </td></tr></tbody></table><p></p><div class="sect2"><hr><h3 class="sect2"><a name="Terms">Terms</a></h3><p>                The key words "MUST", "MUST NOT", "REQUIRED", "SHALL",
+                "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED",
+                "MAY", and "OPTIONAL" in this document are to be
+                interpreted as described in RFC 2119.
+            </p></div></div><div class="sect1"><hr><h2 class="sect1"><a name="Overview">Overview</a></h2><div class="sect2"><h3 class="sect2"><a name="BigPicture">The Big Picture</a></h3><p>                SRCP procures client server communication for operating
+                a model railway. The server is the component that is
+                connected with the layout. A client contacts the server
+                in order to send commands to the layout and to receive
+                information from there. The client can be run on the
+                same computer as the server. It can also be run via the
+                Internet from the other end of the world. The used model
+                railway system is of minor importance to the client. It
+                is the server's task to translate the commands of SRCP
+                into action.
+            </p><p>                A SRCP server has got no knowledge about the concrete
+                railway system. Neither it knows about the topology nor
+                (generally) is it informed about the installed
+                equipment. It conveys the commands intuitively. Its task
+                however is to collect all available information as
+                precisely as possible. Doing that it handles its
+                knowledge about the possibilities and limits of the
+                controlled layout. Its data have always to be understood
+                as the best knowledge about the state of the railway
+                system.
+            </p><p>                SRCP does not fulfill any formal real time demands.
+            </p></div><div class="sect2"><hr><h3 class="sect2"><a name="CentralUnits">SRCP Server and Central Units</a></h3><p>                A SRCP server SHALL represent exactly one central unit
+                (CU) in the usual sense (hardware or emulated in
+                software). Every CU disposes of at least one bus for
+                addressing devices. Over that bus information is read
+                and/or commands are executed. In case a CU has several
+                of these command channels to the model railway layout it
+                is valid in SRCP and leads to several busses.
+            </p><p>                If a SRCP server can manage and provide several CUs it
+                is valid. Separating the CUs is made by different bus
+                numbers. The SRCP servers have to be prosecuted on
+                different TCP ports if there are several CUs connected
+                to a computer but without a common SRCP server. Exactly
+                one of these servers HAS TO provide the standard port.
+            </p></div><div class="sect2"><hr><h3 class="sect2"><a name="NetworkConnections">Network Connection</a></h3><p>                The SRCP is based on the data transfer technologies of
+                TCP. One port is occupied. IANA has registered the port
+                4303 for both UDP and TCP. The assigned protocol name is
+                <font color="RED">srcp</font>
+                .
+            </p></div><div class="sect2"><hr><h3 class="sect2"><a name="LexicalUnits">Lexical Units</a></h3><p>                All character codes are described in their decimal form
+                as # followed by the numeric value of the character.
+            </p><p>                The entire communication consists of the characters of
+                the 7bit ASCII character set in the range from #32 to
+                #127 (including the borders). In addition the characters
+                #9 (TAB) for space, #10 and #13 (CR, LF) for end of line
+                are valid. All further characters (esp. with a code
+                value &gt;127) are ignored in incoming data and removed.
+                In outgoing data they can be included, but not used
+                within SRCP. The characters #9 and #13 are seen as white
+                space and count as one white space also if repeated
+                several times (also mixed).
+            </p><p>                Numbers are processed at least as signed 32bit integers.
+                This range of values can be extended in special cases.
+                Zeros in the leading position are not significant.
+                Floating point numbers are NOT used.
+            </p></div><div class="sect2"><hr><h3 class="sect2"><a name="Command">Command</a></h3><p>                Commands are sent in the command mode and in hand shake
+                from client to server. The SRCP server processes the
+                command and generates a respond that is to be sent to
+                the client.
+            </p><p>                Commands consist of a command word, followed by a
+                command parameter list separated by white space. The end
+                of a command is the end of line. It is not valid to
+                resume a command in the following line. If the list
+                consists of several elements they need to be separated
+                by white space. Elements containing white space are not
+                valid.
+            </p><p>                If a parameter list contains more elements than
+                specified for the command the supernumerary elements
+                HAVE TO be ignored, the command list has to be shortened
+                and then processed. If the parameter list contains too
+                few elements an error message needs to be generated. If
+                there are several parameter lists defines for one
+                command the list is always to be shortened if in doubt.
+            </p><p>                The end of line always consists of the character #10
+                (\n, LF). A prefixed #13 (\r, CR) is valid. The
+                character #13 is ignored. A single line including the
+                end of the line MUST NOT exceed over a length of 1000
+                characters. Information sent by the server is subject to
+                the same terms. The character #13 MAY be sent
+                immediately before #10.
+            </p><p>                All words are case-sensitive. Commands and replies of
+                the SRCP are always written in uppercase letters. The
+                only exceptions are explaining texts on error messages
+                and information sent by the devices.
+            </p></div><div class="sect2"><hr><h3 class="sect2"><a name="Replies">Replies</a></h3><p>                A server HAS TO reply to every command of a client. That
+                is to be sent to the client on the same connection. A
+                reply SHALL be single-line. With the sign \ (Backslash,
+                #92) immediately before the LF (resp CRLF) it is marked
+                that the reply contains another line. In this case the
+                character sequence \LF (resp. \CRLF) is equated with the
+                white space. That way a reply can be spread over several
+                lines. A single line including the end of the line MUST
+                NOT exceed the length of 1000 characters.
+            </p><p>                A reply is either an acknowledgement of receipt, an
+                error message or the result of a command. If the reply
+                is an error message the command MUST NOT be executed.
+            </p><p>                A reply is complete with the effective end of line.
+                Processing more than one answer in one line is not
+                valid.
+            </p><p>                Replies are always proceeded by a time stamp. The time
+                stamp is generated from a unique time source. It's
+                format is seconds.milliseconds. The following sources
+                can be used:
+                </p><p></p><div class="variablelist"><dl><dt><a name="TS_1"></a>TIME Device</dt><dd><p>                                Information from the TIME device on bus
+                                0 (preferred time source).
+                            </p></dd><dt><a name="TS_2"></a>System Time</dt><dd><p>                                System time of the server (e.g. since
+                                01/01/1970 00:00:00 (POSIX seconds)).
+                            </p></dd><dt><a name="TS_3"></a>Simple Time</dt><dd><p>                                The value of a regularly increasing
+                                counter (for embedded systems).
+                            </p></dd></dl></div>
+            <p></p><p>                After the server has sent its reply it processes the
+                next command. That way commands are handled by a
+                strictly two-way communication between the client and
+                the server in a changing order of commands and
+                reactions. The server HAS TO process the commands in the
+                chronological order of receiving them.
+            </p><p>                If the result of a command can be ascertained due to
+                communication with connected model railway devices this
+                opportunity SHALL be used. In case there are
+                insufficient results for a task the answer is
+                <span class="QUOTE">"
+                    <a href="#CM416">416 ERROR no data</a>
+                "</span>
+                .
+            </p></div></div><div class="sect1"><hr><h2 class="sect1"><a name="ServerStates">State of Server</a></h2><p>            A SRCP server is always in one of three possible states
+            towards the client: hand shake, command mode or info mode.
+        </p><p>            On connection the hand shake mode is activated. Further
+            operation parameters are determined by the client in this
+            mode. The connection changes from the hand shake mode to
+            either the command mode or the info mode according to the
+            client's demand. From all three modes the connection can be
+            closed any time.
+        </p><pre class="screen">
+                           open
+                             |
+                             V
+                       +-----------+
+                       | handshake |
+                       +-----------+
+                             |
+        +--------------------+--------------------+
+        |                    |                    |
+        V                    |                    V
+ +--------------+            |           +------------------+
+ | command mode |            |           | information mode |
+ +--------------+            |           +------------------+
+        |                    |                    |
+        |                    |                    |
+        V                    V                    V
+      close                close                close
+        </pre></div><div class="sect1"><hr><h2 class="sect1"><a name="Commands">Commands</a></h2><p>            Subsequently the SRCP commands and their corresponding
+            replies are described in detail. All have to be implemented
+            by an SRCP server.
+        </p><p>            Commands are processed in hand shake and command mode only.
+            They are not valid during info mode and MUST be ignored.
+        </p><p>            Commands MUST be processed by the server in the order of
+            receiving them. This involves especially the order while
+            conveying the devices of the layout.
+        </p><p>            Unknown or unrecognized commands MUST be replied with the
+            message
+            <span class="QUOTE">"
+                <a href="#CM410">410 ERROR unknown command</a>
+            "</span>
+            .
+        </p><div class="sect2"><hr><h3 class="sect2"><a name="AEN88">Establishing a Connection</a></h3><p>                A client establishes a TCP/IP connection with the
+                server. The server sends a single line welcome string.
+                Then the communication parameters and the desired
+                operation mode are negotiated between client and server.
+                The operation mode starts with the final command GO sent
+                by the client and it has to be confirmed by the server.
+            </p><p>                The server MUST differentiate all client sessions
+                internally. Once a identification number is assigned it
+                MUST NOT be used a second time for any other session
+                during the entire server runtime.
+            </p></div><div class="sect2"><hr><h3 class="sect2"><a name="AEN92">Welcome</a></h3><p>                After establishing a connection between server and
+                client the server sends a text line to the client: The
+                welcome. This string is composed of several server
+                information units, each separated by the character ;
+                (semicolon, #59). Every single information unit MUST be
+                seen as a key/value pair. The sequence of these keys is
+                not specified. It is also generally possible to use keys
+                with different values consecutively.
+                For every key exactly one single value is valid.
+                One value consists of one or more words separated by
+                white space. The end of line also counts as the end of
+                the value. A semicolon MAY be missing.
+            </p><p>                The welcome MAY be created as an error message when not
+                enough resources are available. In this case the server
+                MUST shut down the connection with the client after
+                sending the welcome message and MUST NOT accept and
+                execute commands send by the client.
+            </p><p>                The following keys MUST be refered to during normal
+                welcome:
+            </p><p></p><table border="0"><tbody><tr><td>                    SRCP &lt;version&gt;: supported SRCP version by the
+                    server. It MUST correspond exactly to one of the
+                    released version numbers. This data MUST be given
+                    exactly once. A repeated specification is not valid.
+                </td></tr></tbody></table><p></p><p>                The following keys MAY be given to show definite
+                information. A server is free to use further keys. Key
+                identifiers starting with the string SRCP MUST NOT be
+                used as long as they are not defined in SRCP.
+            </p><p></p><table border="0"><tbody><tr><td>                    SRCPother &lt;version&gt;: SRCP version additionally
+                    supported by the server. It must correspond exactly
+                    to a released version number and be different from
+                    the specification in the key SRCP. A client SHALL
+                    ignore this data.
+                </td></tr></tbody></table><p></p></div><div class="sect2"><hr><h3 class="sect2"><a name="AEN102">Hand Shake</a></h3><p>                After establishing a connection and sending the welcome
+                message the server waits for a command from the client.
+                The server executes it and sends a single line reply to
+                the client. Then the server waits for the next command.
+                That way information and commands are being exchanged.
+            </p><p>                The following commands are defined. If not executed the
+                determined default setting is valid. During the hand
+                shake phase no other commands than listed are valid.
+            </p><p>                SET PROTOCOL SRCP &lt;VERSION&gt; The desired protocol
+                to be used is arranged. If this command is
+                missing the SRCP version given during welcome is
+                accepted. Every released version number from and
+                including 0.8 is valid as &lt;VERSION&gt;. The server
+                sends as reply either
+                <a href="#HS201">201 OK PROTOCOL SRCP</a>
+                or the error message
+                <a href="#HS400">400 ERROR unsupported protocol</a>
+                . Please note that not every SRCP compliant server
+                does support all versions.
+            </p><p>                SET CONNECTIONMODE SRCP &lt;MODE&gt; Type of connection
+                the client likes to establish. Valid values are INFO for
+                the unidirectional information mode and COMMAND for the
+                bidirectional command mode. The server sends either
+                <a href="#HS202">202 OK</a>
+                or the error message
+                <a href="#HS401">401 ERROR unsupported connection mode</a>
+                back to the client. If this command is missing the mode
+                COMMAND is set as default connection mode.
+            </p><p>                GO This command terminates the hand shake phase and
+                activates the chosen operation mode. The server sends
+                <a href="#HS200">200 OK &lt;ID&gt;</a>
+                immediately before that to the client. If the command
+                cannot be executed the server sends the error message
+                <a href="#HS402">402 ERROR insufficient data</a>
+                and remains in the hand shake mode. This is intended for
+                future extensions and embedding SRCP in other protocols.
+                The field &lt;ID&gt; marks the numerical session ID
+                given by the server. This is clear to the server and as
+                long as the server is running it will never be given
+                twice. It MUST NOT be identical to zero.
+            </p><p>                Instead of a reply or the welcome the hand shake can be
+                cancelled by the error message
+                <a href="#HS500">500 ERROR out of resources</a>
+                in addition to closing the connection. Any further
+                communication is not possible then.
+            </p><p>                After completing the hand shake the agreed attributes
+                cannot be changed and are valid for the entire
+                connection.
+            </p><p>                The following messages are valid during hand shake:
+            </p><p></p><div class="variablelist"><dl><dt><a name="HS200"></a>200 OK GO &lt;ID&gt;</dt><dd><p>                            Command accepted and executed. The server
+                            leaves hand shake and changes to the
+                            selected connection mode. The session id is
+                            generated.
+                        </p></dd><dt><a name="HS201"></a>201 OK PROTOCOL SRCP</dt><dd><p>                            Protocol selection accepted and set.
+                        </p></dd><dt><a name="HS202"></a>202 OK CONNECTIONMODE</dt><dd><p>Connection mode accepted and set.</p></dd><dt><a name="HS400"></a>400 ERROR unsupported protocol</dt><dd><p>The protocol is not supported</p></dd><dt><a name="HS401"></a>401 ERROR unsupported connection mode</dt><dd><p>                            the connection mode is not supported.
+                        </p></dd><dt><a name="HS402"></a>402 ERROR insufficient data</dt><dd><p>Command executed.</p></dd><dt><a name="HS500"></a>500 ERROR out of resources</dt><dd><p>no resources left.</p></dd></dl></div><p>                To cancel hand shake the TCP connection needs to be
+                closed without further comments.
+            </p></div></div><div class="sect1"><hr><h2 class="sect1"><a name="CommandMode">Command Mode</a></h2><p>            During command mode the server waits for commands from the
+            client and executes these. As the result of the execution
+            the server always creates a reply to be sent to the client
+            in the same TCP session. Subsequently the next command is
+            executed. An overlapping or otherwise divergent execution of
+            commands is not valid. The following commands are defined:
+        </p><p></p><div class="variablelist"><dl><dt><a name="CM_GET"></a>GET</dt><dd><p>request of values</p></dd><dt><a name="CM_SET"></a>SET</dt><dd><p>setting values</p></dd><dt><a name="CM_CHECK"></a>CHECK</dt><dd><p>checks a command</p></dd><dt><a name="CM_WAIT"></a>WAIT</dt><dd><p>waiting for values</p></dd><dt><a name="CM_INIT"></a>INIT</dt><dd><p>Initializing of elements</p></dd><dt><a name="CM_TERM"></a>TERM</dt><dd><p>Quits elements initialized by INIT</p></dd><dt><a name="CM_RESET"></a>RESET</dt><dd><p>reinitialise an element</p></dd><dt><a name="CM_VERIFY"></a>VERIFY</dt><dd><p>verifying the adjustment of an element</p></dd></dl></div><p>            The server`s replies to the client in the command mode
+            always consist of a time stamp at the beginning, a numerical
+            answer code and further data. The numerical answer code is
+            structured in groups. 100-199 marks information and results,
+            200-299 includes receipts confirming the processing
+            according to the rules, 400-499 marks error while executing
+            commands, 500-599 errors by the server itself, 600-699
+            specific error codes in implementation.
+        </p><p></p><table border="0"><tbody><tr><td>1xx INFO: Information, results</td></tr><tr><td>                2xx OK: Command is accepted and brought to execution.
+                Attention: This is no confirmation for actually
+                executing the command.
+            </td></tr><tr><td>                4xx/5xx ERROR: An error condition has occurred. The
+                command is ignored and not executed.
+            </td></tr><tr><td>                6xx ERROR: A server specific error has occurred. The
+                processed command is not executed.
+            </td></tr></tbody></table><p></p><p>            The significance of the time stamp arises from the kind of
+            reply: For quittance (OK, ERROR) it specifies the point in
+            time when the command is processed and the receipt OK or
+            ERROR is generated. During INFO the time stamp defines the
+            point in time when the SRCP server first gets knowledge
+            about the reported result or when the reported operation
+            takes place if the server can detect that. If the subject is
+            only a partial change of parameters in a parameter list this
+            is the point in time of the last change. In this text the
+            specification of the time stamp is generally assumed but for
+            reasons of clarity not indicated if it is not necessary for
+            explaining an issue.
+        </p><p>            While starting the server program internally commands MAY
+            already be executed without the definite assignment from the
+            client. In any case all changes from the determined default
+            state by this norm have to be made available during INFO
+            mode.
+        </p><p>            The end of the server program is ensured by the command
+            <span class="QUOTE">"
+                <a href="#CM_TERM_SERVER">the Section called <i>TERM</i></a>
+            "</span>
+            . A receipt (
+            <span class="QUOTE">"
+                <a href="#CM200">200 OK</a>
+            "</span>
+            ) follows in this case, too but before its execution.
+            Subsequently the connection to the server is closed. This is
+            valid for all connected clients. During INFO mode SESSIONS
+            are informed at least one second before about the subsequent
+            program end.
+        </p><div class="sect2"><hr><h3 class="sect2"><a name="AEN198">Commands</a></h3><p>                Valid commands MUST always be executed. Verifying a
+                command with the current knowledge of the server in
+                order to suppress commands that i.e. would not make a
+                change is not valid (prohibition of optimization). The
+                command INIT generally is used for initialization and
+                configuration of the indicated device or group of
+                device. After processing the INIT command the indicated
+                element is in default state. During INFO mode a message
+                in the form of 101 INFO INIT &lt;devicegroup&gt;
+                &lt;addr&gt; is sent for the affected element.
+            </p><p>                By the command TERM the initialization is cancelled and
+                the effected element is in default state. Before using
+                it again the affected element has to be reinitialized.
+                During INFO mode a message in the form of 102 INFO
+                &lt;devicegroup&gt; &lt;addr&gt; is sent for the
+                affected element.
+            </p><p>                After INIT any write access to the affected device by
+                SET or INIT for all active sessions is invalid until
+                reading access is processed by the commands GET or
+                VERIFY (depending on the device group) or TERM. This
+                includes the session executing the INIT.
+            </p><p>                The command SET changes certain parameters of the
+                element in question. By the SET command the element MAY
+                be initialized implicitly. The reply to SET is a
+                <span class="QUOTE">"
+                    <a href="#CM200">200 OK</a>
+                "</span>
+                if successful. The command CHECK corresponds with the
+                command SET in all aspects except for that the actual
+                execution of the command is suppressed. The aim of this
+                command is to support the debugging of clients.
+            </p><p>                The command GET detects the current parameters. This
+                includes programmed parameters as well that can only be
+                set by INIT. The result is 100 INFO or an appropriate
+                error message. The information represent the best
+                knowledge. If a server can find out about the data by
+                requesting the layout components it SHALL do so. If the
+                current situation or the system based upon does not
+                permit that the server MAY go back to own information
+                i.e. resulting from the last SET. In no case the
+                information can be seen as completely identical to the
+                actual state of the layout.
+            </p><p>                The command WAIT awaits the arrival of a certain match
+                in the state of a device for a determined time span.
+                Waiting blocks the client session. If the time span is
+                exceeded the error message
+                <span class="QUOTE">"
+                    <a href="#CM417">417 ERROR timeout</a>
+                "</span>
+                is generated. If the expected state happens within the
+                determined time an
+                <span class="QUOTE">"
+                    <a href="#CM200">200 OK</a>
+                "</span>
+                is generated.
+            </p><p>                The command RESET is for reinitializing an element. This
+                command SHALL be a shortened order of TERM/INIT. The
+                result is either a
+                <span class="QUOTE">"
+                    <a href="#CM200">200 OK</a>
+                "</span>
+                in the case of success or an error message. The affected
+                element MUST be in the default state subsequently.
+            </p><p>                The command VERIFY is for checking whether an element
+                state corresponds with a determined sample. The reply is
+                either a
+                <span class="QUOTE">"
+                    <a href="#CM200">200 OK</a>
+                "</span>
+                in the case of success or an error message. This has to
+                be applied especially with programmable devices if the
+                affected parameters cannot be influenced by SET.
+            </p></div><div class="sect2"><hr><h3 class="sect2"><a name="AEN218">Response Messages</a></h3><p>                Response messages are generated by the server as reply
+                to commands from the client.
+            </p><p>                Response messages always start with the time stamp like
+                all replies, followed by the response code and the
+                remaining words according to the response code. One of
+                the messages listed in the following overview MUST be
+                used.
+            </p><p></p><div class="variablelist"><dl><dt><a name="CM100"></a>100 INFO &lt;more data&gt;</dt><dd><p>                            The server generates information about a
+                            device.
+                        </p></dd><dt><a name="CM101"></a>101 INFO &lt;more data&gt;</dt><dd><p>                            The server generates information about the
+                            initialisation of a device.
+                        </p></dd><dt><a name="CM102"></a>102 INFO &lt;more data&gt;</dt><dd><p>                            The server generates information about the
+                            termination of a device.
+                        </p></dd><dt><a name="CM200"></a>200 OK</dt><dd><p>                            The command accepted and brought to
+                            execution. It does not mean, that the
+                            command was executed at all, it may be
+                            delayed for various reason!
+                        </p></dd><dt><a name="CM410"></a>410 ERROR unknown command</dt><dd><p>                            The command part of the line could be
+                            understood by the server.
+                        </p></dd><dt><a name="CM411"></a>411 ERROR unknown value</dt><dd><p>The actual value is unknown.</p></dd><dt><a name="CM412"></a>412 ERROR wrong value</dt><dd><p>                            a parameter is outside the valid range.
+                        </p></dd><dt><a name="CM413"></a></dt><dd><p>                            The command cannot execute currently. Please
+                            try again later.
+                        </p></dd><dt><a name="CM414"></a>414 ERROR device locked</dt><dd><p>                            The device is currently locked by another
+                            session. The session id of this session can
+                            only perform read operations.
+                        </p></dd><dt><a name="CM415"></a>415 ERROR forbidden</dt><dd><p>                            the command is categorically forbidden.
+                        </p></dd><dt><a name="CM416"></a>416 ERROR no data</dt><dd><p>no information at all is available.</p></dd><dt><a name="CM417"></a>417 ERROR timeout</dt><dd><p>a time limit is exceeded.</p></dd><dt><a name="CM418"></a>418 ERROR list too long</dt><dd><p>the parameter list is too long.</p></dd><dt><a name="CM419"></a>419 ERROR list too short</dt><dd><p>the parameter list is too short.</p></dd><dt><a name="CM420"></a>420 ERROR unsupported device protocol</dt><dd><p>                            The device does not support the given
+                            protocol.
+                        </p></dd><dt><a name="CM421"></a>421 ERROR unsupported device</dt><dd><p>                            This device is not supported on the
+                            specified bus.
+                        </p></dd><dt><a name="CM422"></a>422 ERROR unsupported device group</dt><dd><p>                            The device group is not supported on the
+                            specified bus.
+                        </p></dd><dt><a name="CM423"></a>423 ERROR unsupported operation</dt><dd><p>                            the requested action is not supported by
+                            this device.
+                        </p></dd><dt><a name="CM424"></a>424 ERROR device reinitialized</dt><dd><p>                            The affected device is reinitialized. The
+                            command GET has to be processed first.
+                        </p></dd><dt><a name="CM425"></a>425 ERROR not supported</dt><dd><p>The operation is not supported.</p></dd><dt><a name="CM499"></a>499 ERROR unspecified error</dt><dd><p>                            an error has occurred but cannot be
+                            specified. This error message SHALL be
+                            avoided.
+                        </p></dd></dl></div><p>                Using further error messages SHALL be avoided. In any
+                case the defined message text is to be used when the
+                named error situation occurs. If there are further data
+                about the determined error these can be attached to the
+                message. A client MAY ignore these.
+            </p></div><div class="sect2"><hr><h3 class="sect2"><a name="AEN308">Addressing and Parameters</a></h3><p>                Parameters are to be given as a list. Single parameters
+                are separated by white space.The position of the
+                parameter within the list indicates its significance
+                (position correlated parametrization). This is valid for
+                all groups of devices. A single parameter MUST NOT
+                contain a white space. For single commands there can be
+                defined different parameter lists that differ by the
+                number of parameters and semantics.
+            </p><p>                Addressing elements of a construction is based on the
+                following elements: the bus the group of devices and the
+                device address if several devices are possible.
+            </p><p>                A bus is categorically the abstraction of a concrete
+                hard ware communication string. A bus is generally
+                represented by a central unit. A bus SHALL be used to
+                map parallel address spaces on a real system.
+            </p><p>                A bus is determined and initialized by the configuration
+                of the server. While running changing the buses is only
+                possible by resetting a server.
+            </p><p>                A bus is named by a running number starting with zero
+                and counted upwards without a break. Bus 0 is reserved
+                for the server itself. There always MUST be at least one
+                additional bus connected with the CU. It is not relevant
+                whether the CU is implemented by hard or soft ware.
+            </p><p>                In all commands the number of the bus must be given
+                right after the command word as the first parameter and
+                is used during all replies and informations.
+            </p><p>                Device groups are the topic of the next paragraph.
+            </p><p>                The aim of addressing are the devices: decoders and
+                encoders (in the following it is spoken of decoders
+                only; encoders are applied by analogy). Every decoder is
+                an element of at least one bus and a device group, the
+                affiliation of a decoder with several buses at one time
+                is valid but SHALL be avoided. If the bus affiliation
+                (i.e. with locomotives) changes the data are not adopted
+                automatically. It is the client`s task to carry out this
+                transfer. Devices belonging to several device groups at
+                the same time are also valid.
+            </p><p>                If devices with an identical hard ware address but
+                different control protocols coexist on one bus the SRCP
+                server MUST make sure that the specified device acts
+                comprehensibly. If necessary several buses have to be
+                provided to support addressing.
+            </p><p>                For an SRCP server all devices count as known that have
+                been addressed before and are not deleted by TERM. A
+                device in the default state MAY also be known. In some
+                hard ware systems broad casts are mapped by certain
+                attributes of the processed data. An SRCP server MAY use
+                them internally In systems not supporting any REQUIRED
+                feature the server MUST emulate those functions.
+            </p></div><div class="sect2"><hr><h3 class="sect2"><a name="DeviceGroups">Device Groups</a></h3><p>                Device groups are sets of similar devices. The following
+                device groups are defined:
+            </p><p></p><div class="variablelist"><dl><dt>DESCRIPTION</dt><dd><p>                            Devices describing other devices or busses.
+                        </p><p>                            DESCRIPTION devices can describe other
+                            devices with their attributes. Replies by a
+                            server MAY be formulated on several lines.
+                            It is distinguished between the DESCRIPTION
+                            of buses and the DESCRIPTION of device
+                            groups.
+                        </p></dd><dt>FB</dt><dd><p>Feedback sensors.</p><p>                            Feedback devices FB are encoders that signal
+                            an occurrence on the construction. They have
+                            exactly one way in that is identified by an
+                            address and has at least two distinguishable
+                            states. If single encoders are pooled in one
+                            device group it has no impact on the
+                            identification. The group not valid under
+                            the bus number 0.
+                        </p></dd><dt>GA</dt><dd><p>Generic Accessory.</p><p>                            The device group GA is provided for decoders
+                            that make one or more ports with two or more
+                            possible values at a time available under
+                            one address. Usually these are stationary
+                            construction elements like switches or
+                            decouplers. The group GA is not valid in the
+                            bus number 0.
+                        </p></dd><dt>GL</dt><dd><p>Generic Loco.</p><p>                            The device group GL indicates engine
+                            decoders in the engine address room of the
+                            hard ware. The group GL is not valid in the
+                            bus number 0.
+                        </p></dd><dt>GM</dt><dd><p>Generic Message.</p><p>                            The device group GM is used to transfer a
+                            text message from one session to another.
+                            The destination session MUST BE an INFO
+                            session.
+                        </p></dd><dt>LOCK</dt><dd><p>Devices locking other devices.</p><p>                            The LOCK devices are devices providing a
+                            lock over another device. They are optional.
+                            If present the server MUST contact the LOCK
+                            devices before any actions on the lockable
+                            devices. They are ALLOWED to exist on
+                            particular buses but not on all buses.
+                            Providing lock devices for all buses of a
+                            server should be aspired.
+                        </p></dd><dt>POWER</dt><dd><p>Energy Supply.</p><p>                            POWER signifies the state of the energy
+                            supply of the particular bus. POWER is
+                            invalid on bus number 0. Activating the
+                            energy supply on one bus can activate other
+                            buses implicitly. This MUST be considered in
+                            INFO mode.
+                        </p></dd><dt>SERVER</dt><dd><p>SRCP Server.</p><p>                            SERVER together with the bus 0 signifies
+                            activities concerning the server (esp. TERM
+                            and RESET). The use with other buses is not
+                            valid. The SRCP server is the only element
+                            of this device group.
+                        </p></dd><dt>SESSION</dt><dd><p>SRCP Client Session.</p><p>                            SESSION together with the bus 0 signifies
+                            the amount of active client connections.
+                            Using other buses than 0 is not valid.
+                        </p></dd><dt>SM</dt><dd><p>Service Mode.</p><p>                            The service mode SM effects decoders used in
+                            the program mode. Therefore it MAY be
+                            necessary to displace the decoder on another
+                            bus (programming track) or that a bus has to
+                            be suspended for other commands. On this bus
+                            commands MAY be refused with the error
+                            message temporarily prohibited or forbidden.
+                            This group is invalid on the bus 0.
+                            Technical implementation can include direct
+                            access on the used digital systems.
+                        </p></dd><dt>TIME</dt><dd><p>Time Norm.</p><p>                            The time normal TIME is only valid with the
+                            bus number 0. It is for providing a uniform
+                            model time. This is counted faster or slower
+                            than real time going out from a starting
+                            point but exactly like real time monotone
+                            with model second precision. During INFO
+                            mode the model time is processed at every
+                            full model minute. The time normal is
+                            optional. Only one device is valid in this
+                            device group.
+                        </p></dd></dl></div><p>                Some device groups correspond with the specified layout
+                elements. They are initialized by default on the lowest
+                common denominator in the case of different
+                implementations. Using further features requires an
+                initialization where information about the hard ware is
+                necessary. An overview about what hard ware can (resp.
+                must) be initialized and how it is supposed to be done
+                can be found in the separate document SRCP Devices . The
+                data given there are as binding as the SRCP itself.
+            </p><p>                Every SRCP server MUST support the device groups SERVER,
+                SESSION and DESCRIPTION in bus 0. The device groups
+                POWER and DESCRIPTION MUST be available for every
+                further bus. All other device groups are optional. If
+                they are supported it MUST be specified in the
+                DESCRIPTION of the bus. Supporting DESCRIPTION for
+                device groups is optional and can be supported
+                separately for every device group.
+            </p><p>                The following overview is supposed to show the
+                allocation of device groups and commands on the busses.
+            </p><pre class="screen">
+            |  SET  GET  WAIT  INIT TERM  RESET VERIFY
+            | CHECK
+------------+------------------------------------------
+            |
+         GA |  1..  1..  --   1..  1..   --    --
+            |
+         GL |  1..  1..  --   1..  1..   --    --
+            |
+         FB |  1..  1..  1..  1..  1..   --    --
+            |
+         SM |  1..  1..  --   1..  1..   --    1..
+            |
+      POWER |  1..  1..  --   1..  1..   --    --
+            |
+       LOCK |  0..  0..  --   --   0..   --    --
+            |
+DESCRIPTION |  --   0..  --   --   --    --    --
+            |
+         GM |  0    --   --   --   --    --    --
+            |
+     SERVER |  --   0    --   --   0     0     --
+            |
+    SESSION |  --   --   --   --   0     --    --
+            |
+       TIME |  0    0    0    0    0     --    --
+            </pre><p>                Entries signed with the -- tag denote combinations that
+                MUST NOT be used.
+            </p><div class="sect3"><hr><h4 class="sect3"><a name="Feedbacks">FB: Feed back</a></h4><p>                    Feedback sensors have an address where exactly one
+                    current value is recorded. In its simplest case a
+                    feedback is a binary signal. A default state that
+                    can be influenced by the server is not present.
+                </p><div class="sect4"><hr><h5 class="sect4"><a name="AEN387">GET</a></h5><p>                        <b class="command">                            GET &lt;bus&gt; FB &lt;addr&gt;
+                        </b>
+                    </p><p>                        It supplies the current value of a single
+                        feedback sensor as a
+                        <span class="QUOTE">"
+                            <a href="#CM_FB_100"><i class="term">                                    100 INFO &lt;bus&gt; FB &lt;addr&gt;
+                                    &lt;value&gt;
+                                </i></a>
+                        "</span>
+                        If no data is available, the error message
+                        <span class="QUOTE">"
+                            <a href="#CM416">416 ERROR no data</a>
+                        "</span>
+                        is generated.
+                    </p></div><div class="sect4"><hr><h5 class="sect4"><a name="AEN396">SET</a></h5><p>                        <b class="command">                            SET &lt;bus&gt; FB &lt;addr&gt;
+                            &lt;value&gt;
+                        </b>
+                    </p><p>Sets the value for the FB specified.</p></div><div class="sect4"><hr><h5 class="sect4"><a name="AEN401">INIT</a></h5><p>                        <b class="command">                            INIT &lt;bus&gt; FB &lt;optional parameters
+                            for initialization&gt;
+                        </b>
+                    </p><p>                        An already existing feedback bus is initialized.
+                        The exact parameters are known to the server
+                        only from its configuration.
+                    </p></div><div class="sect4"><hr><h5 class="sect4"><a name="AEN406">TERM</a></h5><p>                        <b class="command">TERM &lt;bus&gt; FB</b>
+                    </p><p>                        By TERM the specified bus is taken out of the
+                        running communication without deleting it from
+                        the list of present buses. The attached hard
+                        ware SHALL be turned off if all buses taking
+                        hold of it are terminated. Running WAITs MUST be
+                        closed by time out as long as the WAIT
+                        requirement is not met.
+                    </p></div><div class="sect4"><hr><h5 class="sect4"><a name="AEN411">WAIT</a></h5><p>                        <b class="command">                            WAIT &lt;bus&gt; FB &lt;addr&gt;
+                            &lt;value&gt; &lt;timeout&gt;
+                        </b>
+                    </p><p>                        Waiting until &lt;timeout&gt; seconds (real
+                        time) for reaching the specified value. In case
+                        the value is already there its eventuation is
+                        reported instantly without waiting.
+                    </p><p>                        The session blocks further operation until
+                        either an error message (
+                        <a href="#CM417">417 ERROR timeout</a>
+                        ) or the value specified occurs (
+                        <a href="#CM_FB_100"><i class="term">                                    100 INFO &lt;bus&gt; FB &lt;addr&gt;
+                                    &lt;value&gt;
+                                </i></a>
+                        ).
+                    </p></div><div class="sect4"><hr><h5 class="sect4"><a name="AEN419">INFO</a></h5><p>                        </p><p></p><div class="variablelist"><dl><dt><a name="CM_FB_100"></a>100 INFO &lt;bus&gt; FB &lt;addr&gt;
+                                    &lt;value&gt;</dt><dd><p>                                        Value of feedback sensor
+                                        &lt;addr&gt; on the specified
+                                        bus.
+                                    </p></dd><dt><a name="CM_FB_101"></a>101 INFO &lt;bus&gt; FB</dt><dd><p>                                        Initialisation of the FB devices
+                                        of the specified bus.
+                                    </p></dd><dt><a name="CM_FB_102"></a>102 INFO &lt;bus&gt; FB</dt><dd><p>                                        Termination of the FB devices of
+                                        the specified bus.
+                                    </p></dd></dl></div>
+                    <p></p></div></div><div class="sect3"><hr><h4 class="sect3"><a name="GA">GA: Generic Accessory</a></h4><p>                    A Generic Accessory generally indicates a decoder
+                    that can serve one or more ports under one address.
+                    Often these are switch decoders or signal decoders
+                    working as impulse decoders. One must note that
+                    there are restrictions during simultaneous
+                    activation and/or deactivation of ports. These are
+                    to be taken from the description of the decoder if
+                    necessary. An SRCP server cannot always indicate and
+                    report these features itself.
+                </p><p>                    The default state of a device is indicated by zero
+                    on all ports.
+                </p><div class="sect4"><hr><h5 class="sect4"><a name="AEN439">GET</a></h5><p>                        <b class="command">                            GET &lt;bus&gt; GA &lt;addr&gt; &lt;port&gt;
+                        </b>
+                    </p><p>                        The server sends all available information about
+                        the current state of the switch decoder
+                        specified by &lt;addr&gt; to the client as
+                        <span class="QUOTE">"
+                            <a href="#CM_GA_100"><i class="term">                                    100 INFO &lt;bus&gt; GA &lt;addr&gt;
+                                    &lt;port&gt; &lt;value&gt;
+                                </i></a>
+                        "</span>
+                        If no data is available, the error message
+                        <span class="QUOTE">"
+                            <a href="#CM416">416 ERROR no data</a>
+                        "</span>
+                        is generated. Other error message may occur if
+                        the parameters given (addr, port) are out of
+                        range.
+                    </p></div><div class="sect4"><hr><h5 class="sect4"><a name="AEN448">INIT</a></h5><p>                        <b class="command">                            INIT &lt;bus&gt; GA &lt;addr&gt;
+                            &lt;protocol&gt; &lt;optional further
+                            parameters&gt;
+                        </b>
+                    </p><p>                        This command initializes a GA at address
+                        &lt;addr&gt; in the server. The following
+                        parameters are permitted:
+                    </p><p></p><div class="variablelist"><dl><dt><a name="CM_GA_INIT_M"></a>M</dt><dd><p>Maerklin/Motorola Format</p><p>                                    Valid addresses are from 1 to 324,
+                                    valid ports are 0 or 1, valid values
+                                    are: 0 and 1
+                                </p></dd><dt><a name="CM_GA_INIT_N"></a>N</dt><dd><p>NMRA-DCC Format</p><p>                                    Valid addresses are from 1 to 511,
+                                    valid ports are 0 or 1, valid values
+                                    are: 0 and 1
+                                </p></dd><dt><a name="CM_GA_INIT_S"></a>S</dt><dd><p>Selectrix Format</p><p>                                    Valid addresses are from 0 to 111,
+                                    valid ports are 1 to 8, valid values
+                                    are: 0 and 1
+                                </p></dd><dt><a name="CM_GA_INIT_P"></a>P</dt><dd><p>Protocol by server</p><p>                                    The server uses the initialisation
+                                    parameters from its own
+                                    configuration. The parameter list
+                                    MAY give some parameters. Address,
+                                    port and value are not limited.
+                                </p></dd></dl></div></div><div class="sect4"><hr><h5 class="sect4"><a name="AEN474">SET</a></h5><p>                        <b class="command">                            SET &lt;bus&gt; GA &lt;addr&gt; &lt;port&gt;
+                            &lt;value&gt; &lt;delay&gt;
+                        </b>
+                    </p><p>                        The port &lt;port&gt; of the decoder with the
+                        address &lt;addr&gt; is set to the value
+                        &lt;value&gt; for &lt;delay&gt; milliseconds.
+                        After time has expired the server automatically
+                        sends the value 0 to the decoder. In case the
+                        delay is -1 the automatic deactivation remains
+                        undone and the port remains active until it is
+                        deactivated by a further SET command. An SRCP
+                        server MAY execute momentary deactivations and
+                        reactivations of the port during this time. If
+                        applicable this is a demand of the hardware that
+                        does not permit certain maximum power durations
+                        to be exceeded. A delay of 0 is not valid.
+                    </p><p>Meaning of the arguments</p><p></p><ul><li><p>                                <code class="parameter">addr</code>
+                                must be valid number.
+                            </p></li><li><p>                                <code class="parameter">port</code>
+                                must be valid. In case an unsupported
+                                port is given, an error message
+                                <span class="QUOTE">"
+                                    <a href="#CM412">412 ERROR wrong value</a>
+                                "</span>
+                                is created.
+                            </p></li><li><p>                                <code class="parameter">value</code>
+                                must be valid (0=&gt;deactivated,
+                                &gt;1=&gt;activated) If an invalid value
+                                is given an error message
+                                <span class="QUOTE">"
+                                    <a href="#CM412">412 ERROR wrong value</a>
+                                "</span>
+                                is created.
+                            </p></li><li><p>                                <code class="parameter">delay</code>
+                                value in milliseconds (1.000th seconds).
+                                It indicates after what time the server
+                                shall deactivate an active port
+                                automatically (i.e. set port value to
+                                0). If
+                                <code class="parameter">delay</code>
+                                is -1 the port is not automatically
+                                deactivated. If
+                                <code class="parameter">value</code>
+                                =0 is given (deactivation) the
+                                <code class="parameter">delay</code>
+                                parameter is ignored but it must be
+                                given (useful value is 1). A port counts
+                                as active if its state is not equal
+                                zero. A delay of 0 is not valid. An
+                                error message
+                                <span class="QUOTE">"
+                                    <a href="#CM412">412 ERROR wrong value</a>
+                                "</span>
+                                is created.
+                            </p></li></ul></div><div class="sect4"><hr><h5 class="sect4"><a name="AEN502">INFO</a></h5><p>                        </p><p></p><div class="variablelist"><dl><dt><a name="CM_GA_100"></a>100 INFO &lt;bus&gt; GA &lt;addr&gt;
+                                    &lt;port&gt; &lt;value&gt;</dt><dd><p>                                        Value of GA port at addr on the
+                                        specified bus.
+                                    </p></dd><dt><a name="CM_GA_101"></a>101 INFO &lt;bus&gt; GA &lt;addr&gt;
+                                    &lt;device protocol&gt; ....</dt><dd><p>                                        Initialisation of a GA device of
+                                        the specified bus.
+                                    </p></dd><dt><a name="CM_GA_102"></a>102 INFO &lt;bus&gt; GA &lt;addr&gt;</dt><dd><p>                                        Termination of a GA device of
+                                        the specified bus.
+                                    </p></dd></dl></div>
+                    <p></p></div></div><div class="sect3"><hr><h4 class="sect3"><a name="GL">GL: Generic loco</a></h4><p>                    A generic loco generally indicates all engine
+                    decoders. The default state is zero with all
+                    parameters.
+                </p><div class="sect4"><hr><h5 class="sect4"><a name="AEN521">GET</a></h5><p>                        <b class="command">                            GET &lt;bus&gt; GL &lt;addr&gt;
+                        </b>
+                    </p><p>                        The reply is a complete
+                        <span class="QUOTE">"
+                            <a href="#CM_GL_100"><i class="term">                                100 INFO &lt;bus&gt; GL &lt;addr&gt;
+                                &lt;drivemode&gt; &lt;V&gt;
+                                &lt;V_max&gt; &lt;f1&gt; . . &lt;fn&gt;
+                            </i></a>
+                        "</span>
+                        line.
+                    </p></div><div class="sect4"><hr><h5 class="sect4"><a name="AEN528">INIT</a></h5><p>                        <b class="command">                            INIT &lt;bus&gt; GL &lt;addr&gt;
+                            &lt;protocol&gt; &lt;optional further
+                            parameters&gt;
+                        </b>
+                    </p><p>                        By INIT the kind of data transfers and
+                        fundamental features of the decoder is reported
+                        to the server. Changing the decoder features on
+                        programmable decoders is not permitted (for this
+                        the device group SM is to be called upon).
+                        Exception: If decoders are programmable by a
+                        sequence of normal commands the device group SM
+                        MUST NOT be used.
+                    </p><p></p><ul><li><p>                                <code class="parameter">addr</code>
+                                must be valid.
+                            </p></li><li><p>                                <code class="parameter">protocol</code>
+                                must be one of the following. In case an
+                                unsupported protocol is given, an error
+                                message
+                                <span class="QUOTE">"
+                                    <a href="#CM412">412 ERROR wrong value</a>
+                                "</span>
+                                is created.
+                            </p><p></p><div class="variablelist"><dl><dt><a name="CM_GL_INIT_A"></a>A</dt><dd><p>analog operation.</p><p>                                            addr: 0, no functions and no
+                                            speed steps
+                                        </p></dd><dt><a name="CM_GL_INIT_F"></a>F</dt><dd><p>                                            reserved for native
+                                            Fleischmann.
+                                        </p></dd><dt><a name="CM_GL_INIT_L"></a>L</dt><dd><p>                                            reserved for Loconet.
+                                        </p></dd><dt><a name="CM_GL_INIT_M"></a>M &lt;protocolversion&gt;
+                                        &lt;decoderspeedsteps&gt;
+                                        &lt;numberofdecoderfunctions&gt;</dt><dd><p>                                            reserved for
+                                            Maerklin/Motorola MM.
+                                        </p><p>                                            </p><p></p><ul><li><p>                                                        <code class="parameter">                                                            protocolversion
+                                                        </code>
+                                                        The protocol
+                                                        version is 1 for
+                                                        the old MM
+                                                        protocol (e.g.
+                                                        delta decoder),
+                                                        2 for the new
+                                                        protocol
+                                                        (additionally
+                                                        four functions).
+                                                    </p></li><li><p>                                                        <code class="parameter">                                                            decoderspeedsteps
+                                                        </code>
+                                                        The decoder
+                                                        speed steps
+                                                        comply with
+                                                        those supported
+                                                        by the decoder
+                                                        (if applicable
+                                                        under attention
+                                                        for the number
+                                                        of the decoder
+                                                        functions).
+                                                    </p></li><li><p>                                                        <code class="parameter">                                                            numberofdecoderfunctions
+                                                        </code>
+                                                        The number of
+                                                        decoder features
+                                                        results in the
+                                                        number of the
+                                                        addressable
+                                                        functions
+                                                        without
+                                                        attention for a
+                                                        possibly unused
+                                                        function. They
+                                                        are always to be
+                                                        seen
+                                                        consecutively
+                                                        without
+                                                        interception.
+                                                    </p></li></ul>
+                                        <p></p></dd><dt><a name="CM_GL_INIT_N"></a>N &lt;protocolversion&gt;
+                                        &lt;decoderspeed steps&gt;
+                                        &lt;numberofdecoderfunctions&gt;</dt><dd><p>                                            reserved for NMRA/DCC.
+                                        </p><p>                                            </p><p></p><ul><li><p>                                                        <code class="parameter">                                                            protocolversion
+                                                        </code>
+                                                        The protocol
+                                                        version is 1 for
+                                                        the short
+                                                        address format
+                                                        and 2 for the
+                                                        long address
+                                                        format.
+                                                    </p></li><li><p>                                                        <code class="parameter">                                                            decoderspeedsteps
+                                                        </code>
+                                                        The decoder
+                                                        speed steps
+                                                        comply with
+                                                        those supported
+                                                        by the decoder
+                                                        (if applicable
+                                                        under attention
+                                                        for the number
+                                                        of the decoder
+                                                        functions).
+                                                    </p></li><li><p>                                                        <code class="parameter">                                                            numberofdecoderfunctions
+                                                        </code>
+                                                        The number of
+                                                        decoder features
+                                                        results in the
+                                                        number of the
+                                                        addressable
+                                                        functions
+                                                        without
+                                                        attention for a
+                                                        possibly unused
+                                                        function. They
+                                                        are always to be
+                                                        seen
+                                                        consecutively
+                                                        without
+                                                        interception.
+                                                    </p></li></ul>
+                                        <p></p></dd><dt><a name="CM_GL_INIT_P"></a>P</dt><dd><p>protocol by server.</p><p>                                            any address, any number of
+                                            functions (additional
+                                            information: any number of
+                                            speed steps). The server
+                                            specifies the type of
+                                            decoder by itself.
+                                        </p></dd><dt><a name="CM_GL_INIT_S"></a>S</dt><dd><p>                                            reserved for native
+                                            Selectrix.
+                                        </p></dd><dt><a name="CM_GL_INIT_Z"></a>Z</dt><dd><p>                                            reserved for native Zimo.
+                                        </p></dd></dl></div></li></ul><p>                        A server MAY NOT support one or more of these
+                        specifications. Specifications that are not
+                        given MUST NOT be used. These specifications
+                        will be put in concrete terms in later revisions
+                        of the SRCP.
+                    </p><p>                        Hint: In some protocols there are several scopes
+                        for functions. Usually there is one depending on
+                        the riding direction and several not depending
+                        on the riding direction. A server MUST provide
+                        the first as the first function and the others
+                        as second, third etc. function.
+                    </p></div><div class="sect4"><hr><h5 class="sect4"><a name="AEN601">SET</a></h5><p>                        <b class="command">                            SET &lt;bus&gt; GL &lt;addr&gt;
+                            &lt;drivemode&gt; &lt;V&gt; &lt;V_max&gt;
+                            &lt;f1&gt; . . &lt;fn&gt;
+                        </b>
+                    </p><p>                        The given values are allocated to the decoder.
+                        The default state is indicated by the value 0
+                        for all parameters (apart from the address). The
+                        meanings of the parameters are as follows:
+                    </p><p></p><ul><li><p>                                <code class="parameter">addr</code>
+                                must be valid address.
+                            </p></li><li><p>                                <code class="parameter">drivemode</code>
+                                must be one of the following values or
+                                an error message
+                                <span class="QUOTE">"
+                                    <a href="#CM412">412 ERROR wrong value</a>
+                                "</span>
+                                will be sent:
+                                </p><p></p><table border="0"><tbody><tr><td>0 backward</td></tr><tr><td>1 forward</td></tr><tr><td>2 emergency stop</td></tr></tbody></table><p></p>
+                            <p></p></li><li><p>                                <code class="parameter">V, V_max</code>
+                                speed level and maximum speed level. 0
+                                is standstill. A value &gt;0 means
+                                movement of the engine (i.e. a real
+                                speed level &gt;0). V&lt;0 is not valid
+                                as well as V&gt;V_max. The speed raises
+                                from 0 to V_max so that a speed V2&gt;V1
+                                causes the engine not to go slower on V2
+                                than on V1. In all error situations an
+                                error message
+                                <span class="QUOTE">"
+                                    <a href="#CM412">412 ERROR wrong value</a>
+                                "</span>
+                                is created.
+                            </p></li><li><p>                                <code class="parameter">f1 . . fn</code>
+                                0 (off), 1 (on). If applicable F1 is
+                                dependent on the direction. The SRCP
+                                server rejects invalid values with the
+                                error message
+                                <span class="QUOTE">"
+                                    <a href="#CM412">412 ERROR wrong value</a>
+                                "</span>
+                                . Other values are valid too.
+                            </p></li></ul><p>Example:</p><p>                        INIT 1 GL 1 N 1 128 5 SET 1 GL 1 1 4 100 1 0 1 0
+                        0
+                    </p><p>                        The engine 1 (NMRA decoder, 128 decoder speed
+                        steps, 1+4 functions) addressed via bus 1 goes
+                        forward with speed step 4 (of 100 possible).
+                        From the five functions there are only FUNCTION
+                        and F2 active.
+                    </p></div><div class="sect4"><hr><h5 class="sect4"><a name="AEN632">TERM</a></h5><p>                        <b class="command">                            TERM &lt;bus&gt; GL &lt;addr&gt;
+                        </b>
+                    </p><p>                        Sets the engine to default mode and removes the
+                        engine from the knowledge of the server.
+                    </p></div><div class="sect4"><hr><h5 class="sect4"><a name="AEN637">INFO</a></h5><p>                        An INFO covers the reaction of the GET as well
+                        as the output in INFO mode as a reaction to the
+                        SET and INIT commands. It MUST include all
+                        current values no matter whether they are
+                        currently changed or not. The format is as
+                        follows:
+                    </p><p></p><div class="variablelist"><dl><dt><a name="CM_GL_100"></a>100 INFO &lt;bus&gt; GL &lt;addr&gt;
+                                &lt;drivemode&gt; &lt;V&gt;
+                                &lt;V_max&gt; &lt;f1&gt; . . &lt;fn&gt;</dt><dd><p>                                    parameters of GL address on the
+                                    specified bus.
+                                </p></dd><dt><a name="CM_GL_101"></a>101 INFO &lt;bus&gt; GL &lt;addr&gt;
+                                &lt;protocol&gt; &lt;optional further
+                                parameters&gt;</dt><dd><p>                                    Initialisation of a GL device of the
+                                    specified bus.
+                                </p></dd><dt><a name="CM_GL_102"></a>102 INFO &lt;bus&gt; GL &lt;addr&gt;</dt><dd><p>                                    Termination of a GL device of the
+                                    specified bus.
+                                </p></dd></dl></div><p>                        Here the parameter V is not the speed step
+                        transmitted by the client, but the real speed
+                        step sent to the engine by the server lacking
+                        possible special indications: The speed step 0
+                        indicates standstill. The speed steps from 1 to
+                        conclusively V_max indicate the movement of the
+                        engine in the given &lt;drivemode&gt;
+                    </p></div></div><div class="sect3"><hr><h4 class="sect3"><a name="GM">GM: Generic Message</a></h4><p>                    Generic Messages support a client-client
+                    communication. This communication can be 1:1 or
+                    1:all.
+                </p><div class="sect4"><hr><h5 class="sect4"><a name="AEN657">SET</a></h5><p>                        <b class="command">                            SET &lt;bus&gt; GM &lt;send_to&gt;
+                            &lt;reply_to&gt; &lt;MSGTYPE&gt; [freetext]
+                        </b>
+                    </p><p>                        <font color="RED">bus</font>
+                        is allways 0 (Null). The server bus is the only
+                        instance to process the Generic Messages device.
+                    </p><p>                        The
+                        <font color="RED">send_to</font>
+                        is the sessionid of an INFO session the message
+                        MUST BE delivered to or 0 (null) if delivery is
+                        done to all INFO sessions.
+                    </p><p>                        The
+                        <font color="RED">reply_to</font>
+                        parameter is the sessionid of an INFO session to
+                        which message replies SHOULD be directed (if
+                        any). Alternatively the 0 (Null) MUST be used to
+                        direct the reply to all INFO sessions.
+                    </p><p>                        The
+                        <font color="RED">MSGTYPE</font>
+                        is an type specifier. These are registered at
+                        some URL and describe the following message. Any
+                        MSGTYPE starting with SRCP is reserved for
+                        future use.
+                    </p><p>                        The
+                        <font color="RED">freetext</font>
+                        is the message being transferred. The message
+                        MUST be a valid SRCP string (hints: ASCII, max
+                        1000 character line length)
+                    </p><p>                        An error message
+                        <a href="#CM412">412 ERROR wrong value</a>
+                        is sent if the session number for the
+                        &lt;send_to&gt; or &lt;reply_to&gt; parameters
+                        does not specify a valid INFO session.
+                    </p></div><div class="sect4"><hr><h5 class="sect4"><a name="AEN673">INFO</a></h5><p></p><div class="variablelist"><dl><dt><a name="CM_GM_100"></a>100 INFO &lt;bus&gt; GM &lt;send_to&gt;
+                                &lt;reply_to&gt; MSGTYPE
+                                &lt;freetext&gt;</dt><dd><p>.</p></dd></dl></div></div></div><div class="sect3"><hr><h4 class="sect3"><a name="SM">SM: Service Mode</a></h4><p>                    The devices of the service mode are provided for the
+                    permanent change of devices. They are an optional
+                    component. If they are not supported an error
+                    message
+                    <span class="QUOTE">"
+                        <a href="#CM425">425 ERROR not supported</a>
+                    "</span>
+                    must be created. They are intended to be used for
+                    decoder programming. A default state is not
+                    specified.
+                </p><div class="sect4"><hr><h5 class="sect4"><a name="AEN685">GET</a></h5><p>                        GET MUST consult the decoder directly. A reply
+                        MUST not be detected from information on the
+                        server.
+                    </p><p>                        <b class="command">                            GET &lt;bus&gt; SM &lt;decoderaddress&gt;
+                            &lt;type&gt; &lt;1 or more values&gt;
+                        </b>
+                    </p><p>                        The meaning of the parameter is as with SET. The
+                        result is an 100 INFO, that renders the
+                        particular value. A GET results in the error
+                        message
+                        <span class="QUOTE">"
+                            <a href="#CM416">416 ERROR no data</a>
+                        "</span>
+                        , if there is no possibility to read out the
+                        decoder.
+                    </p></div><div class="sect4"><hr><h5 class="sect4"><a name="AEN693">INIT</a></h5><p>                        <b class="command">                            INIT &lt;bus&gt; SM &lt;protocol&gt;
+                        </b>
+                    </p><p>                        It initializes the specified bus for programming
+                        decoders in the given protocol. Consequently the
+                        bus MAY be suspended for other tasks. Valid
+                        protocols are:
+                    </p><p></p><div class="variablelist"><dl><dt><a name="CM_SM_INIT_N"></a>NMRA</dt><dd><p>Decoder for NMRA standard.</p></dd></dl></div></div><div class="sect4"><hr><h5 class="sect4"><a name="AEN703">SET</a></h5><p>                        <b class="command">                            SET &lt;bus&gt; SM &lt;decoderaddress&gt;
+                            &lt;type&gt; &lt;1 or more values&gt;
+                        </b>
+                    </p><p>                        The following Types and &lt;more values&gt; are
+                        defined:
+                    </p><p></p><div class="variablelist"><dl><dt><a name="CM_SM_SET_N_CV"></a>CV &lt;cvaddress&gt; &lt;value&gt;</dt><dd><p>                                    Configuration Variable: The first
+                                    parameter of the remainder list
+                                    indicates the address of an NMRA
+                                    decoder variable
+                                    (&lt;cvaddress&gt;). It receives the
+                                    value described in the second
+                                    parameter &lt;value&gt;. Limitations
+                                    in the value area of the parameters
+                                    arise from the specifications of the
+                                    decoder. A server cannot validate
+                                    decoder specific value ranges.
+                                </p></dd><dt><a name="CM_SM_SET_N_CVBIT"></a>CVBIT &lt;cvaddress&gt; &lt;bit&gt;
+                                &lt;value&gt;</dt><dd><p>                                    Write Configuration Variable bitwise
+                                    with three parameters. The bit
+                                    &lt;bit&gt; of the address
+                                    &lt;cvaddress&gt; is set on the
+                                    value &lt;value&gt;. &lt;bit&gt;
+                                    is valid from 0 to 7. &lt;value&gt;
+                                    is 0 or 1.
+                                </p></dd><dt><a name="CM_SM_SET_N_REG"></a>REG &lt;regaddress&gt; &lt;value&gt;</dt><dd><p>Register mode programming.
+                                    &lt;regaddress&gt; is valid from
+                                    1 to 8.</p></dd><dt><a name="CM_SM_SET_N_PAGE"></a>PAGE &lt;cvaddress&gt; &lt;value&gt;</dt><dd><p>Page mode programming.</p></dd></dl></div></div><div class="sect4"><hr><h5 class="sect4"><a name="AEN725">TERM</a></h5><p>                        Quits the program mode on the specified bus.
+                        Possibly incomplete programming cycles are
+                        suited for quitting.
+                    </p><p>                        <b class="command">TERM &lt;bus&gt; SM</b>
+                    </p><p>                        <span class="QUOTE">"
+                            <a href="#CM_SM_100"><i class="term">                                100 INFO &lt;bus&gt; SM
+                                &lt;decoderaddress&gt; &lt;type&gt;
+                                &lt;1 or more values&gt;
+                            </i></a>
+                        "</span>
+                        .
+                    </p></div><div class="sect4"><hr><h5 class="sect4"><a name="AEN733">VERIFY</a></h5><p>                        VERIFY MUST consult the decoder directly. A
+                        reply MUST not be detected from information on
+                        the server.
+                    </p><p>                        <b class="command">                            VERIFY &lt;bus&gt; SM &lt;decoderaddress&gt;
+                            &lt;type&gt; &lt;1 or more values&gt;
+                        </b>
+                    </p><p>                        As with GET the decoder must be consulted
+                        directly. The meaning of the parameters is as
+                        with SET. The result is either a 200 OK if the
+                        parameter in the decoder complies with the given
+                        one or the error message
+                        <span class="QUOTE">"
+                            <a href="#CM412">412 ERROR wrong value</a>
+                        "</span>
+                        .
+                    </p></div><div class="sect4"><hr><h5 class="sect4"><a name="AEN741">INFO</a></h5><p>                        An INFO covers the reaction of the GET as well
+                        as the output in INFO mode as a reaction to the
+                        SET and INIT commands. It MUST include all
+                        current values no matter whether they are
+                        currently changed or not. The format is as
+                        follows:
+                    </p><p></p><div class="variablelist"><dl><dt><a name="CM_SM_100"></a>100 INFO &lt;bus&gt; SM
+                                &lt;decoderaddress&gt; &lt;type&gt;
+                                &lt;1 or more values&gt;</dt><dd><p>                                    parameters of SM decoderaddr on the
+                                    specified bus.
+                                </p></dd><dt><a name="CM_SM_101"></a>101 INFO &lt;bus&gt; GL &lt;addr&gt;
+                                &lt;protocol&gt; &lt;optional further
+                                parameters&gt;</dt><dd><p>                                    Initialisation of a GL device of the
+                                    specified bus.
+                                </p></dd><dt><a name="CM_SM_102"></a>102 INFO &lt;bus&gt; GL &lt;addr&gt;</dt><dd><p>                                    Termination of a GL device of the
+                                    specified bus.
+                                </p></dd></dl></div></div></div><div class="sect3"><hr><h4 class="sect3"><a name="LOCK">LOCK: write lock</a></h4><p>                    By locking a client can suspend a device exclusively
+                    for a current session. This is also valid for
+                    physically identical devices addressable in several
+                    device groups: A LOCK on a decoder in the device
+                    group GL also prevents write access to the same
+                    decoder in the device group SM! Other sessions, also
+                    from the same client, get an error message
+                    <span class="QUOTE">"
+                        <a href="#CM414">414 ERROR device locked</a>
+                    "</span>
+                    during write access (SET, INIT, TERM). Executing
+                    these commands is allowed to the client session
+                    holding the lock only. Read access (GET) is still
+                    accepted from all clients and is functional without
+                    limitations. Locking a device from the LOCK group,
+                    also of another bus, is not valid. A bus cannot be
+                    locked as a whole.
+                </p><p>The default state is not locked.</p><p>                    For the devices of the group GL an emergency stop is
+                    ALWAYS valid for all clients. A lock by another
+                    session is without effect in this case. Here the
+                    engine MUST execute the emergency stop only, all
+                    other parameters, in case they are given, MUST
+                    remain unchanged. Particularly the LOCK remains.
+                </p><p>                    A lock is automatically cancelled during the end of
+                    the client connection and run-out of the lock time.
+                </p><p>                    The locks are an optional part. If they are
+                    unsupported an error message
+                    <span class="QUOTE">"
+                        <a href="#CM425">425 ERROR not supported</a>
+                    "</span>
+                    MUST be created.
+                </p><div class="sect4"><hr><h5 class="sect4"><a name="AEN768">GET</a></h5><p>                        <b class="command">                            GET &lt;bus&gt; LOCK &lt;devicegroup&gt;
+                            &lt;addr&gt;
+                        </b>
+                    </p><p>                        Here the session ID is the only clear
+                        identification of the session containing the
+                        lock.
+                    </p><p>                        This command reports the current lock status of
+                        a device as 100 INFO line. If the given device
+                        is not locked the session ID 0 is reported.
+                    </p></div><div class="sect4"><hr><h5 class="sect4"><a name="AEN774">SET</a></h5><p>                        <b class="command">                            SET &lt;bus&gt; LOCK &lt;device group&gt;
+                            &lt;addr&gt; &lt;duration&gt;
+                        </b>
+                    </p><p>                        Puts a lock on the addressed device. One must
+                        pay attention that LOCK devices do not have an
+                        own address. They are identified via the device
+                        locked by themselves only.
+                    </p><p>                        Other clients still have access for reading and
+                        writing in areas relevant for safety only. The
+                        LOCK is held for &lt;duration&gt; seconds. After
+                        this time span runs out the LOCK is
+                        automatically terminated by the server. The time
+                        starts with the last SET command. A duration of
+                        0 means an unlimited time span. A repeated stop
+                        of the SET command restarts the timer each time.
+                    </p></div><div class="sect4"><hr><h5 class="sect4"><a name="AEN780">TERM</a></h5><p>                        <b class="command">                            TERM &lt;bus&gt; LOCK &lt;devicegroup&gt;
+                            &lt;addr&gt;
+                        </b>
+                    </p><p>                        A lock on the device &lt;devicegroup&gt;
+                        &lt;addr&gt; of the bus &lt;bus&gt; is removed.
+                    </p></div><div class="sect4"><hr><h5 class="sect4"><a name="AEN785">INFO</a></h5><p></p><div class="variablelist"><dl><dt><a name="CM_LOCK_100"></a>100 INFO &lt;bus&gt; LOCK
+                                &lt;devicegroup&gt; &lt;addr&gt;
+                                &lt;duration&gt; &lt; sessionid&gt;</dt><dd><p>                                    parameters of GL addr on the
+                                    specified bus.
+                                </p></dd><dt><a name="CM_LOCK_101"></a>102 INFO &lt;bus&gt; LOCK &lt;
+                                devicegroup&gt; &lt;addr&gt;</dt><dd><p>                                    Initialisation of a LOCK on a device
+                                    of the specified bus.
+                                </p></dd><dt><a name="CM_LOCK_102"></a>102 INFO &lt;bus&gt; LOCK &lt;
+                                devicegroup&gt; &lt;addr&gt;</dt><dd><p>                                    Termination of a LOCK in a device of
+                                    the specified bus.
+                                </p></dd></dl></div></div></div><div class="sect3"><hr><h4 class="sect3"><a name="POWER">POWER: Energy Supply</a></h4><p>                    The energy supply is enabled for every bus
+                    separately. The default state is OFF.
+                </p><p>                    If the server learns about changes in the energy
+                    supply from the construction itself (e.g.
+                    recognizing a short circuit), it means the same like
+                    a corresponding command and MUST be reported in info
+                    mode.
+                </p><div class="sect4"><hr><h5 class="sect4"><a name="AEN804">GET</a></h5><p>                        <b class="command">GET &lt;bus&gt; POWER</b>
+                    </p><p>                        Reports the current state of the energy supply
+                        as 100 INFO.
+                    </p></div><div class="sect4"><hr><h5 class="sect4"><a name="AEN809">INIT</a></h5><p>                        <b class="command">INIT &lt;bus&gt; POWER</b>
+                    </p><p>                        It initializes the power supply but it is not
+                        turned on!
+                    </p></div><div class="sect4"><hr><h5 class="sect4"><a name="AEN814">SET</a></h5><p>                        <b class="command">                            SET &lt;bus&gt; POWER [ON|OFF] [freetext]
+                        </b>
+                    </p><p>                        Activates (ON) or deactivates (OFF) the energy
+                        supply on the affected bus. The &lt;freetext&gt;
+                        is an optional addition allowing up to 100
+                        characters. It is reported to other clients in
+                        INFO. An SRCP server does not evaluate this
+                        parameter.
+                    </p></div><div class="sect4"><hr><h5 class="sect4"><a name="AEN819">TERM</a></h5><p>                        <b class="command">TERM &lt;bus&gt; POWER</b>
+                    </p><p>                        Quits the power supply and turns it off.
+                    </p><p>                        Informs about the current state of the power
+                        supply and possible additional data.
+                    </p></div><div class="sect4"><hr><h5 class="sect4"><a name="AEN825">INFO</a></h5><p></p><div class="variablelist"><dl><dt><a name="CM_POWER_100"></a>100 INFO &lt;bus&gt; POWER [ON|OFF]
+                                &lt;freetext&gt;</dt><dd><p>                                    parameters of POWER on the specified
+                                    bus.
+                                </p></dd><dt><a name="CM_POWER_101"></a>101 INFO &lt;bus&gt; POWER</dt><dd><p>                                    Initialisation of POWER on the
+                                    specified bus.
+                                </p></dd><dt><a name="CM_POWER_102"></a>102 INFO &lt;bus&gt; POWER</dt><dd><p>                                    Termination of POWER of the
+                                    specified bus.
+                                </p></dd></dl></div></div></div><div class="sect3"><hr><h4 class="sect3"><a name="TIME">TIME: Time Normal</a></h4><p>                    The model time is opposed to the normal time a time
+                    distorted by a constant factor. The time distortion
+                    is specified by a multiplier and a divisor to this
+                    normal time. The timer is only allowed on bus 0.
+                    There is only one timer.
+                </p><p>In the default state the timer is stopped.</p><p>                    The timer is an optional part. If it is not
+                    supported an error message
+                    <span class="QUOTE">"
+                        <a href="#CM425">425 ERROR not supported</a>
+                    "</span>
+                    MUST be created at all commands.
+                </p><p>                    Time coverage consists of the data: day, hour,
+                    minute and second. A minute is 60 seconds, an hour
+                    is 60 minutes and a day is 24 hours. The days are
+                    counted consecutively. A separation into larger time
+                    intervals (calendar function) is the client`s task.
+                </p><p>                    If a full model minute is reached the current model
+                    time is given in INFO mode. The commands WAIT and
+                    GET additionally valuate the model seconds.
+                </p><p>The model time is generated as follows:</p><p>                    (Delta) model time = (delta) real time * FX/FY
+                </p><p>                    Examples:
+                    </p><p></p><table border="0"><tbody><tr><td>                            FX=10 FY=1 -&gt; In every real minute 10
+                            model minutes are generated (one every six
+                            seconds)
+                        </td></tr><tr><td>                            FX=1 FY=10 -&gt; Every 10 real minutes are
+                            one model minute.
+                        </td></tr><tr><td>                            FX=1 FY=1 -&gt; In every real minute there
+                            is one model minute.
+                        </td></tr></tbody></table><p></p>
+                <p></p><div class="sect4"><hr><h5 class="sect4"><a name="AEN856">GET</a></h5><p>                        <b class="command">GET 0 TIME</b>
+                    </p><p>                        Reports the current model time as
+                        <span class="QUOTE">"
+                            <a href="#CM_TIME_100"><i class="term">                                100 INFO 0 TIME &lt;JulDay&gt;
+                                &lt;Hour&gt; &lt;Minute&gt;
+                                &lt;Second&gt;
+                            </i></a>
+                        "</span>
+                        .
+                    </p></div><div class="sect4"><hr><h5 class="sect4"><a name="AEN863">INIT</a></h5><p>                        <b class="command">                            INIT 0 TIME &lt;fx&gt; &lt;fy&gt;
+                        </b>
+                    </p><p>                        It initializes the timer with the given
+                        distortion. The timer is not started
+                        automatically. The parameters must be positive
+                        numbers different from zero. A server MAY limit
+                        the value range to a bounded scope (e.g. 1 ..
+                        10). These values MUST be given in the
+                        documentation.
+                    </p></div><div class="sect4"><hr><h5 class="sect4"><a name="AEN868">SET</a></h5><p>                        <b class="command">                            SET 0 TIME &lt;JulDay&gt; &lt;Hour&gt;
+                            &lt;Minute&gt; &lt;Second&gt;
+                        </b>
+                    </p><p>                        It sets the timer on the defined point of time
+                        and starts it. With a running timer the new time
+                        starts when the running model second ends so
+                        that the new beginning model second corresponds
+                        with the new time.
+                    </p></div><div class="sect4"><hr><h5 class="sect4"><a name="AEN873">TERM</a></h5><p>                        <b class="command">TERM 0 TIME</b>
+                    </p><p>                        Stops and removes the timer. All running WAITs
+                        are cancelled by TIME OUT with
+                        <span class="QUOTE">"
+                            <a href="#CM417">417 ERROR timeout</a>
+                        "</span>
+                        .
+                    </p></div><div class="sect4"><hr><h5 class="sect4"><a name="AEN880">WAIT</a></h5><p>                        <b class="command">                            WAIT 0 TIME &lt;JulDay&gt; &lt;Hour&gt;
+                            &lt;Minute&gt; &lt;Second&gt;
+                        </b>
+                    </p><p>                        It waits until the model time reaches or outruns
+                        the given point and reports an INFO string with
+                        the then active model time.
+                    </p><p>                        If the timer is not running the error message
+                        <span class="QUOTE">"
+                            <a href="#CM416">416 ERROR no data</a>
+                        "</span>
+                        is generated. If the current model time is later
+                        than the given time already the condition is
+                        fulfilled without further waiting time.
+                        Obviously wrong time data are reported to the
+                        calling client by
+                        <span class="QUOTE">"
+                            <a href="#CM412">412 ERROR wrong value</a>
+                        "</span>
+                        or ignored. The WAIT MUST always evaluate the
+                        currently valid model time that can be changed
+                        by SET if applicable.
+                    </p></div><div class="sect4"><hr><h5 class="sect4"><a name="AEN890">INFO</a></h5><p></p><div class="variablelist"><dl><dt><a name="CM_TIME_100"></a>100 INFO 0 TIME &lt;JulDay&gt;
+                                &lt;Hour&gt; &lt;Minute&gt;
+                                &lt;Second&gt;</dt><dd><p>                                    Reports all parameters and current
+                                    data from the timer.
+                                </p></dd><dt><a name="CM_TIME_101"></a>101 INFO 0 TIME fx fy</dt><dd><p>Initialisation of TIME.</p></dd><dt><a name="CM_TIME_102"></a>102 INFO 0 TIME</dt><dd><p>Termination of TIME.</p></dd></dl></div></div></div><div class="sect3"><hr><h4 class="sect3"><a name="SESSION">SESSION</a></h4><p>                    Sessions are active connections from a client to a
+                    server. A client MAY have multiple sessions with a
+                    server. For the server these are independent of each
+                    other. A session is distinguished from others by a
+                    session ID. This session ID is generated by the
+                    server during hand shake and is unique for the
+                    uptime of the server. A session ID given out once
+                    cannot be used a second time.
+                    
+                    A session id is a positive numeric value.
+                </p><p>                    Sessions are only valid on the bus 0. There is no
+                    defined default state.
+                </p><div class="sect4"><hr><h5 class="sect4"><a name="AEN909">GET</a></h5><p>                        <b class="command">                            GET 0 SESSION &lt;SESSIONID&gt;
+                        </b>
+                    </p><p>                        Reports data about the session as 100 INFO.
+                    </p></div><div class="sect4"><hr><h5 class="sect4"><a name="AEN914">TERM</a></h5><p>                        <b class="command">                            TERM 0 SESSION [&lt;SESSIONID&gt;]
+                        </b>
+                    </p><p>                        Terminates the currently running session and
+                        the adequate socket connection. The last message
+                        the server sends to this session is an
+                        appropriate acknowledgement.
+                    </p></div><div class="sect4"><hr><h5 class="sect4"><a name="AEN919">INFO</a></h5><p></p><div class="variablelist"><dl><dt><a name="CM_SESSION_100"></a>100 INFO 0 SESSION &lt;SESSIONID&gt;
+                                [further optional parameters]</dt><dd><p>                                    The data for the session are
+                                    transmitted. Further parameters can
+                                    consist of the IP address, the port
+                                    number and other details.
+                                </p></dd><dt><a name="CM_SESSION_101"></a>101 INFO 0 SESSION &lt;SESSIONID&gt;</dt><dd><p>Initialisation of TIME.</p></dd><dt><a name="CM_SESSION_102"></a>101 INFO 0 SESSION &lt;SESSIONID&gt;</dt><dd><p>Termination of SESSION.</p></dd></dl></div></div></div><div class="sect3"><hr><h4 class="sect3"><a name="DESCRIPTION">DESCRIPTION</a></h4><p>                    The DESCRIPTION device groups describes other device
+                    groups and buses. They inform the client about the
+                    fundamental features.
+                </p><div class="sect4"><hr><h5 class="sect4"><a name="AEN937">GET</a></h5><p>                        This command occurs in two versions: with a
+                        parameter list and without. If the parameter
+                        list is left out the server informs the client
+                        about the specified bus. With a parameter list
+                        the specified device is described regarding its
+                        initialization.
+                    </p><div class="sect5"><hr><h6 class="sect5"><a name="AEN940">Bus description</a></h6><p>                            <b class="command">                                GET &lt;bus&gt; DESCRIPTION
+                            </b>
+                        </p><p>                            --&gt; INFO &lt;bus&gt; DESCRIPTION &lt;list
+                            of device groups&gt;
+                        </p><p>                            The INFO covers all device groups supported
+                            by the specified server in one line.
+                            Example:
+                            </p><p></p><table border="0"><tbody><tr><td>                                    GET 0 DESCRIPTION - -&gt; INFO 0
+                                    DESCRIPTION SERVER SESSION TIME
+                                </td></tr><tr><td>                                    GET 1 DESCRIPTION - -&gt; INFO 1
+                                    DESCRIPTION FB
+                                </td></tr></tbody></table><p></p>
+                        <p></p><p>                            The bus 0 supports the device groups SERVER,
+                            SESSION and TIME. The bus 1 only supports
+                            feedback.
+                        </p><p>                            In the second variant the address of the
+                            specified device and as reply the parameters
+                            defined during initialization are given.
+                        </p></div><div class="sect5"><hr><h6 class="sect5"><a name="AEN951">Device description</a></h6><p>                            <b class="command">                                GET &lt;bus&gt; DESCRIPTION
+                                &lt;devicegroup&gt; [&lt;address&gt;]
+                            </b>
+                        </p><p>                            The address is only ALLOWED to be left out
+                            with device groups without an address. The
+                            parameter list is identical with the one
+                            from the INIT command in this case. Example:
+                        </p><p>                            GET 1 DESCRIPTION GL 1 --&gt; INFO 1
+                            DESCRIPTION GL 1 N 128 5
+                        </p><p>                            i.e. the engine with the address 1 is an
+                            NMRA compatible decoder with 128 real speed
+                            steps and five functions.
+                        </p></div></div></div><div class="sect3"><hr><h4 class="sect3"><a name="SERVER">SERVER</a></h4><p>                    The server as a whole. This device group is only
+                    defined on bus 0. Valid are the commands TERM and
+                    RESET. The default state is RUNNING.
+                </p><div class="sect4"><hr><h5 class="sect4"><a name="AEN961">GET</a></h5><p>                        <b class="command">GET 0 SERVER</b>
+                    </p><p>                        Informs the current state of the server. The
+                        following messages are defined:
+                    </p><p>                        The last two messages are particularly important
+                        in INFO mode.
+                    </p></div><div class="sect4"><hr><h5 class="sect4"><a name="AEN967">RESET</a></h5><p>                        <b class="command">RESET 0 SERVER</b>
+                    </p><p>                        Re-initializes the server. All devices are set
+                        to the default state. A RESET during a RESET
+                        MUST be refused (
+                        <span class="QUOTE">"
+                            <a href="#CM413">413 ERROR temporarily prohibited</a>
+                        "</span>
+                        ). Existing client sessions remain untouched
+                        also during hand shake.
+                    </p></div><div class="sect4"><hr><h5 class="sect4"><a name="CM_TERM_SERVER">TERM</a></h5><p>                        <b class="command">TERM 0 SERVER</b>
+                    </p><p>                        Quits the running server and closes all
+                        connections. The connected buses SHALL be turned
+                        off and the active devices set to default mode.
+                        For the calling client the quitting
+                        <span class="QUOTE">"
+                            <a href="#CM200">200 OK</a>
+                        "</span>
+                        ) is transmitted. Sessions in INFO mode are
+                        informed about the running TERM. A TERM MUST NOT
+                        be cancelled.
+                    </p></div><div class="sect4"><hr><h5 class="sect4"><a name="AEN981">INFO</a></h5><p></p><div class="variablelist"><dl><dt><a name="CM_SERVER_100"></a>100 INFO 0 SERVER &lt;status info&gt;</dt><dd><p>                                    </p><p></p><table border="0"><tbody><tr><td>                                            RUNNING: server in normal
+                                            commission
+                                        </td></tr><tr><td>                                            RESETTING: server executes a
+                                            reset
+                                        </td></tr><tr><td>                                            TERMINATING: server is
+                                            terminated.
+                                        </td></tr></tbody></table><p></p>
+                                <p></p></dd><dt><a name="CM_SERVER_101"></a>101 INFO 0 SERVER</dt><dd><p>Initialisation of TIME.</p></dd><dt><a name="CM_SERVER_102"></a>102 INFO 0 SERVER</dt><dd><p>Termination of SERVER.</p></dd></dl></div></div></div></div></div><div class="sect1"><hr><h2 class="sect1"><a name="InfoMode">Information Mode</a></h2><p>            In information mode all changes of all devices are sent
+            unidirectionally to the connected client. The client is
+            PROHIBITED from sending commands or other data to the
+            server. The server must ensure that data sent anyhow does
+            not have consequences. The server is free to quit the
+            connection.
+        </p><p>            The info mode part of the server sends all data as they
+            become known on the installation. Like with data given
+            during command mode (see replies to GET commands) they are
+            always supplemented with a time stamp. INFO data are sent
+            only. Especially results of commands are sent only after
+            they have been validated by the actor (decoder) or when they
+            have been transmitted to the construction successfully (in
+            case there cannot be a validation from the construction).
+            There are no changes or interpretations to the data. This
+            particularly concerns the train engine speed that is
+            virtually sent by the client but converted according to the
+            real conditions of the decoder.
+        </p><p>            When activating the info mode in a session the DESCRIPTIONS
+            for all buses and all active devices known to the server in
+            their current state are transmitted. Subsequently all
+            changes are sent. If there is a clear default state for some
+            device groups, all devices in this default state SHALL not
+            be transmitted. Optional device groups are only ALLOWED to
+            be given if they are supported.
+        </p><p>            Specifics of the device groups during activation of the info
+            mode:
+        </p><p></p><div class="variablelist"><dl><dt>FB</dt><dd><p>                        All devices with the status 0 are not
+                        transmitted. All others are in form of
+                        <span class="QUOTE">"
+                            <a href="#CM_FB_100"><i class="term">                                    100 INFO &lt;bus&gt; FB &lt;addr&gt;
+                                    &lt;value&gt;
+                                </i></a>
+                        "</span>
+                        .
+                    </p></dd><dt>GA</dt><dd><p>                        The individual ports of the devices known to the
+                        server are separated and transmitted each with
+                        their last activity in form of
+                        <span class="QUOTE">"
+                            <a href="#CM_GA_100"><i class="term">                                    100 INFO &lt;bus&gt; GA &lt;addr&gt;
+                                    &lt;port&gt; &lt;value&gt;
+                                </i></a>
+                        "</span>
+                        .
+                    </p></dd><dt>GL,SM</dt><dd><p>                        All engines moving or standing with an active
+                        function are reported. Engines in standstill
+                        MUST be reported (as
+                        <span class="QUOTE">"
+                            <a href="#CM_GL_100"><i class="term">                                100 INFO &lt;bus&gt; GL &lt;addr&gt;
+                                &lt;drivemode&gt; &lt;V&gt;
+                                &lt;V_max&gt; &lt;f1&gt; . . &lt;fn&gt;
+                            </i></a>
+                        "</span>
+                        or
+                        <span class="QUOTE">"
+                            <a href="#CM_SM_100"><i class="term">                                100 INFO &lt;bus&gt; SM
+                                &lt;decoderaddress&gt; &lt;type&gt;
+                                &lt;1 or more values&gt;
+                            </i></a>
+                        "</span>
+                        .) if they have been addressed at least once and
+                        not removed by TERM. Likewise changes are
+                        reported by INIT. During SM all programming
+                        activities are reported. A concluded programming
+                        action MUST NOT be sent with new connections.
+                    </p></dd><dt>POWER</dt><dd><p>                        The state of the energy supply MUST be given as
+                        <span class="QUOTE">"
+                            <a href="#CM_POWER_100"><i class="term">                                100 INFO &lt;bus&gt; POWER [ON|OFF]
+                                &lt;freetext&gt;
+                            </i></a>
+                        "</span>
+                        .
+                    </p></dd><dt>TIME</dt><dd><p>                        The current model time MUST be transmitted (as
+                        <span class="QUOTE">"
+                            <a href="#CM_TIME_100"><i class="term">                                100 INFO 0 TIME &lt;JulDay&gt;
+                                &lt;Hour&gt; &lt;Minute&gt;
+                                &lt;Second&gt;
+                            </i></a>
+                        "</span>
+                        and
+                        <span class="QUOTE">"
+                            <a href="#CM_TIME_101"><i class="term">101 INFO 0 TIME fx fy</i></a>
+                        "</span>
+                        .) as long as this feature is supported and the
+                        timer is running.
+                    </p></dd><dt>SESSION</dt><dd><p>                        The identification of all currently active
+                        client sessions is sent
+                        <span class="QUOTE">"
+                            <a href="#CM_SESSION_100"><i class="term">                                100 INFO 0 SESSION &lt;SESSIONID&gt;
+                                [further optional parameters]
+                            </i></a>
+                        "</span>
+                        . All further information MUST be detected in
+                        command mode.
+                    </p></dd><dt>LOCK</dt><dd><p>                        All current device locks are reported as
+                        <span class="QUOTE">"
+                            <a href="#CM_LOCK_100"><i class="term">                                100 INFO &lt;bus&gt; LOCK
+                                &lt;devicegroup&gt; &lt;addr&gt;
+                                &lt;duration&gt; &lt; sessionid&gt;
+                            </i></a>
+                        "</span>
+                        .
+                    </p></dd></dl></div><p>            From the initial transmission of all states all changes on
+            the installation and the server MUST be transmitted also
+            those into the default state. An exception is the device
+            group TIME: It reports every beginning of a new model minute
+            but not of model seconds.
+        </p><p>            These information contain only the defined INFO messages
+            (response code 100..199).
+        </p></div><div class="sect1"><hr><h2 class="sect1"><a name="Glossary">Glossary</a></h2><p>            The terms itemized here form interfaces to other documents.
+        </p><p>            Julian Date The Julian Date is a simple day count without
+            any further structures (like weeks, months, years).
+            According to the arbitrary origin (beginning of the year,
+            fixed point of time in the past) there are different
+            possibilities to convert into other calendars (basis:
+            1.1.4713 BC 12-00 GMT: see Collected Algorithms from CACM
+            #199)
+        </p><p>            XRCP A supplement to the SRCP in order to form a higher
+            level of abstraction. Apart from connecting the clients to
+            the server it is there for the communication of the clients
+            among each other. An XRCP system is created as middle ware
+            between clients and SRCP servers.
+        </p></div><div class="sect1"><hr><h2 class="sect1"><a name="Thanks">Thanks go to...</a></h2><p>            The following people did major or minor contributions:
+        </p><p></p><table border="0"><tbody><tr><td>Torsten Vogt</td></tr><tr><td>Martin Ostermann</td></tr><tr><td>Kurt Harders</td></tr><tr><td>Olaf Schlachter</td></tr><tr><td>Tobias Schlottke</td></tr><tr><td>Edbert van Eimeren</td></tr><tr><td>Stefan Bormann</td></tr><tr><td>Michael Reukauff</td></tr><tr><td>Martin Wolf</td></tr><tr><td>Matthias Peick</td></tr><tr><td>Martin Schönbeck</td></tr></tbody></table><p></p></div></div>
+</body></html>
