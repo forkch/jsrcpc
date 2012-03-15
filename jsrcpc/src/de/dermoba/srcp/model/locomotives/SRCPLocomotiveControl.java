@@ -3,7 +3,7 @@
  * copyright : (C) 2008 by Benjamin Mueller 
  * email     : news@fork.ch
  * website   : http://sourceforge.net/projects/adhocrailway
- * version   : $Id: SRCPLocomotiveControl.java,v 1.8 2011-12-19 10:32:39 andre_schenk Exp $
+ * version   : $Id: SRCPLocomotiveControl.java,v 1.9 2012-03-15 06:22:50 fork_ch Exp $
  * 
  *----------------------------------------------------------------------*/
 
@@ -121,6 +121,7 @@ public class SRCPLocomotiveControl implements GLInfoListener, Constants {
 			locomotive.setDirection(SRCPLocomotiveDirection.FORWARD);
 			break;
 		}
+		setSpeed(locomotive, getCurrentSpeed(locomotive), getFunctions(locomotive));
 	}
 
 	public SRCPLocomotiveDirection getDirection(SRCPLocomotive locomotive) {
@@ -298,7 +299,7 @@ public class SRCPLocomotiveControl implements GLInfoListener, Constants {
 			locomotive.setDirection(drivemode);
 			locomotive.setCurrentSpeed(v);
 			locomotive.setFunctions(functions);
-			informListeners(locomotive);
+			//informListeners(locomotive);
 		}
 	}
 

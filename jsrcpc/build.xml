@@ -88,11 +88,14 @@
 	<!-- =================================================================== -->
 	<!-- Zip targets                                                         -->
 	<!-- =================================================================== -->
-	<target name="bin" depends="clean-all, jar"
+	<target name="bin" depends="clean-all, jar, javadoc"
 		description="Builds the ZIP file containing all stuff">
 		<property name="bindir" value="${release.dir}/jsrcpc-${release}-bin"/>
 		<delete file="jsrcpc-${release}-bin.zip"/>
 		<mkdir dir=""/>
+		<copy todir="${bindir}/javadoc">
+			<fileset dir="${javadoc.dir}"/>
+		</copy>
 		<copy todir="${bindir}">
 			<fileset dir="">
 				<filename name="jsrcpc-${release}.jar" />
@@ -115,7 +118,10 @@
 		description="Builds the ZIP file containing all stuff">
 		<property name="srcdir" value="${release.dir}/jsrcpc-${release}-src"/>
 		<delete file="jsrcpc-${release}-src.zip"/>
-		
+
+		<copy todir="${srcdir}/javadoc">
+			<fileset dir="${javadoc.dir}"/>
+		</copy>
 		<copy todir="${srcdir}">
 			<fileset dir="."
 				includes="build.xml, build.properties"

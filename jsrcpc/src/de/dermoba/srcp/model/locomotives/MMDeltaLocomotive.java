@@ -12,6 +12,8 @@ public class MMDeltaLocomotive extends MMLocomotive {
 	
 	public MMDeltaLocomotive(int bus, int address) {
 		super(bus, address);
+		protocol = "M";
+		params[0] = "1";
 		params[1] = "" + DRIVING_STEPS;
 		params[2] = "" + FUNCTION_COUNT;
 		functions = new boolean[FUNCTION_COUNT];
