@@ -19,7 +19,11 @@ public class POWER {
         this.bus = bus;
     }
 
-    /** SRCP syntax: INIT &lt;bus&gt; POWER */
+    public SRCPSession getSession() {
+		return session;
+	}
+
+	/** SRCP syntax: INIT &lt;bus&gt; POWER */
     public String init() throws SRCPException {
         if (!session.isOldProtocol()) {
             return session.getCommandChannel().send("INIT " + bus + " POWER");
