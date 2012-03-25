@@ -262,6 +262,12 @@ public class SRCPLocomotiveControl implements GLInfoListener, Constants {
 		return locomotive.getFunctions();
 	}
 
+	public void emergencyStop(SRCPLocomotive locomotive) throws SRCPLocomotiveException, SRCPModelException {
+		checkLocomotive(locomotive);
+		setFunctions(locomotive, new boolean[]{true,false,false,false,true});
+		setSpeed(locomotive, 0, null);
+	}
+
 	public void GLinit(double timestamp, int bus, int address, String protocol,
 			String[] params) {
 		logger.debug("GLinit( " + bus + " , " + address + " , " + protocol
