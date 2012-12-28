@@ -154,6 +154,7 @@ public class SRCPLocomotiveControl implements GLInfoListener, Constants {
 		checkLocomotive(locomotive);
 		try {
 			if (functions == null) {
+			
 				functions = locomotive.getFunctions();
 			}
 			int drivingSteps = locomotive.getDrivingSteps();
@@ -177,9 +178,10 @@ public class SRCPLocomotiveControl implements GLInfoListener, Constants {
 				locomotive.setDirection(SRCPLocomotiveDirection.FORWARD);
 				break;
 			}
-			locomotive.setLastCommandAcknowledge
-				((new Response(resp)).getTimestamp());
 			Response r = new Response(resp);
+			locomotive.setLastCommandAcknowledge
+				(r.getTimestamp());
+			
 			locomotive.setCurrentSpeed(speed);
 			locomotive.setFunctions(functions);
 			informListeners(locomotive);
@@ -375,7 +377,7 @@ public class SRCPLocomotiveControl implements GLInfoListener, Constants {
 		}
 	}
 
-	private void initLocomotive(SRCPLocomotive locomotive)
+	private void initLocomotive(SRCPLocomotive locomotive) 
 			throws SRCPLocomotiveException {
 		try {
 			String[] params = locomotive.getParams();

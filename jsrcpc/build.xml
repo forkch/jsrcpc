@@ -48,7 +48,7 @@
   <!-- =================================================================== -->
   <target name="compile" depends="init" description="Compiles all Java sources">
 		<javac destdir="${build.dir}" classpathref="compile.class.path"
-			deprecation="off" debug="true">
+			deprecation="off" debug="true" source="1.5" target="1.5">
 			<src path="${src.dir}"/>
 			<include name="**/*.java"/>
 		</javac>
@@ -82,7 +82,9 @@
 			manifest="./src/manifest.mf">
 			<fileset dir="${build.dir}/" includes="**/*.class"/>
 			<fileset dir="${build.dir}/" includes="**/*.properties"/>
-		</jar>
+		</jar><copy file="jsrcpc-${release}.jar" todir="../../../adhocrailway/trunk/AdHoc-Railway-GUI/lib">
+		
+	</copy>
 	</target>
 	
 	<!-- =================================================================== -->
