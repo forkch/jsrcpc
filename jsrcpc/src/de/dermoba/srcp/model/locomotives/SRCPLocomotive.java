@@ -23,35 +23,37 @@ import de.dermoba.srcp.devices.GL;
 
 public abstract class SRCPLocomotive {
 
-	protected boolean					initialized			= false;
-	
-	protected SRCPLocomotiveDirection	direction			= SRCPLocomotiveDirection.FORWARD;
+	protected boolean initialized = false;
 
-	protected int						currentSpeed		= 0;
+	protected SRCPLocomotiveDirection direction = SRCPLocomotiveDirection.FORWARD;
 
-	private GL							gl;
+	protected int currentSpeed = 0;
 
-	private SRCPSession					session;
+	private GL gl;
 
-	protected boolean[]					functions;
+	private SRCPSession session;
 
-	protected String[]					params;
+	protected boolean[] functions;
 
-	protected String					protocol;
+	protected String[] params;
 
-	protected int						drivingSteps;
+	protected String protocol;
 
-	protected int						bus;
+	protected int drivingSteps;
 
-	protected int						address;
-	
+	protected int bus;
+
+	protected int address;
+
 	private double lastCommandAcknowledge;
 
+	private SRCPLocomotive extendingLocomotive;
+
 	public SRCPLocomotive() {
-		this(0,0);
+		this(0, 0);
 	}
-	
-	public SRCPLocomotive(int bus, int address) {
+
+	public SRCPLocomotive(final int bus, final int address) {
 		super();
 		this.bus = bus;
 		this.address = address;
@@ -71,7 +73,7 @@ public abstract class SRCPLocomotive {
 		return bus;
 	}
 
-	public void setBus(int bus) {
+	public void setBus(final int bus) {
 		this.bus = bus;
 	}
 
@@ -79,7 +81,7 @@ public abstract class SRCPLocomotive {
 		return address;
 	}
 
-	public void setAddress(int address) {
+	public void setAddress(final int address) {
 		this.address = address;
 	}
 
@@ -87,7 +89,7 @@ public abstract class SRCPLocomotive {
 		return currentSpeed;
 	}
 
-	protected void setCurrentSpeed(int currentSpeed) {
+	protected void setCurrentSpeed(final int currentSpeed) {
 		this.currentSpeed = currentSpeed;
 	}
 
@@ -95,7 +97,7 @@ public abstract class SRCPLocomotive {
 		return direction;
 	}
 
-	protected void setDirection(SRCPLocomotiveDirection direction) {
+	protected void setDirection(final SRCPLocomotiveDirection direction) {
 		this.direction = direction;
 	}
 
@@ -103,7 +105,7 @@ public abstract class SRCPLocomotive {
 		return functions;
 	}
 
-	public void setFunctions(boolean[] functions) {
+	public void setFunctions(final boolean[] functions) {
 		this.functions = functions;
 	}
 
@@ -111,7 +113,7 @@ public abstract class SRCPLocomotive {
 		return this.gl;
 	}
 
-	protected void setGL(GL gl) {
+	protected void setGL(final GL gl) {
 		this.gl = gl;
 	}
 
@@ -119,11 +121,11 @@ public abstract class SRCPLocomotive {
 		return this.session;
 	}
 
-	protected void setSession(SRCPSession session) {
-        if (session != this.session) {
-            setGL(null);
-            setInitialized(false);
-        }
+	protected void setSession(final SRCPSession session) {
+		if (session != this.session) {
+			setGL(null);
+			setInitialized(false);
+		}
 		this.session = session;
 	}
 
@@ -131,7 +133,7 @@ public abstract class SRCPLocomotive {
 		return initialized;
 	}
 
-	public void setInitialized(boolean init) {
+	public void setInitialized(final boolean init) {
 		initialized = init;
 	}
 
@@ -155,12 +157,22 @@ public abstract class SRCPLocomotive {
 	}
 
 	/**
-	 * Set (usually by the {@link SRCPLocomotiveControl}) to the time stamp
-	 * that the SRCP server returns as part of the command acknowledge message.
+	 * Set (usually by the {@link SRCPLocomotiveControl}) to the time stamp that
+	 * the SRCP server returns as part of the command acknowledge message.
 	 * 
-	 * @param lastCommandAcknowledge the lastCommandAcknowledge to set
+	 * @param lastCommandAcknowledge
+	 *            the lastCommandAcknowledge to set
 	 */
-	public void setLastCommandAcknowledge(double lastCommandAcknowledge) {
+	public void setLastCommandAcknowledge(final double lastCommandAcknowledge) {
 		this.lastCommandAcknowledge = lastCommandAcknowledge;
+	}
+
+	public void setExtendingLocomotive(final SRCPLocomotive extendingLocomotive) {
+		this.extendingLocomotive = extendingLocomotive;
+
+	}
+
+	public SRCPLocomotive getExtendingLocomotive() {
+		return extendingLocomotive;
 	}
 }

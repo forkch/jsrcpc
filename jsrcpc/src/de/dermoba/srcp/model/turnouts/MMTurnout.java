@@ -2,25 +2,26 @@ package de.dermoba.srcp.model.turnouts;
 
 public class MMTurnout extends SRCPTurnout {
 
-	public final static int		MAX_MM_TURNOUT_ADDRESS	= 324;
+	public final static int MAX_MM_TURNOUT_ADDRESS = 324;
 
-	public final static String	PROTOCOL				= "M";
+	public final static String PROTOCOL = "M";
 
 	public MMTurnout() {
-		this(0,false,0,SRCPTurnoutState.UNDEF, SRCPTurnoutTypes.UNKNOWN);
+		this(0, false, 0, SRCPTurnoutState.UNDEF, SRCPTurnoutTypes.DEFAULT);
 	}
 
-	public MMTurnout(int address1, boolean address1Switched, int address2,
-			boolean address2Switched, int bus1, int bus2,
-			SRCPTurnoutState defaultState, SRCPTurnoutTypes turnoutType) {
+	public MMTurnout(final int address1, final boolean address1Switched,
+			final int address2, final boolean address2Switched, final int bus1,
+			final int bus2, final SRCPTurnoutState defaultState,
+			final SRCPTurnoutTypes turnoutType) {
 		super(address1, address1Switched, address2, address2Switched, bus1,
 				bus2, defaultState, turnoutType);
 		protocol = PROTOCOL;
 	}
 
-	public MMTurnout(int address1, boolean address1Switched, int bus1,
-			SRCPTurnoutState defaultState,
-			SRCPTurnoutTypes turnoutType) {
+	public MMTurnout(final int address1, final boolean address1Switched,
+			final int bus1, final SRCPTurnoutState defaultState,
+			final SRCPTurnoutTypes turnoutType) {
 		this(address1, address1Switched, 0, false, 0, 0, defaultState,
 				turnoutType);
 
@@ -43,7 +44,7 @@ public class MMTurnout extends SRCPTurnout {
 
 	@Override
 	public Object clone() {
-		MMTurnout newTurnout = new MMTurnout(address1, address1Switched,
+		final MMTurnout newTurnout = new MMTurnout(address1, address1Switched,
 				address2, address2Switched, bus1, bus2, defaultState,
 				turnoutType);
 		return newTurnout;
