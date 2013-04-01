@@ -65,7 +65,7 @@ public class DefaultLocomotiveStrategy extends LocomotiveStrategy {
 	public boolean[] getEmergencyStopFunctions(final SRCPLocomotive locomotive,
 			final int emergencyStopFunction) {
 		if (locomotive instanceof MMDigitalLocomotive) {
-			final boolean[] functions = new boolean[] { true, false, false,
+			final boolean[] functions = new boolean[] { false, false, false,
 					false, false };
 			functions[emergencyStopFunction] = true;
 			return functions;

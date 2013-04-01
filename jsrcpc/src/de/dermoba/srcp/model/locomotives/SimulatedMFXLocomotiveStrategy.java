@@ -89,7 +89,7 @@ public class SimulatedMFXLocomotiveStrategy extends LocomotiveStrategy {
 	@Override
 	public boolean[] getEmergencyStopFunctions(final SRCPLocomotive locomotive,
 			final int emergencyStopFunction) {
-		final boolean[] functions = new boolean[] { true, false, false, false,
+		final boolean[] functions = new boolean[] { false, false, false, false,
 				false, false, false, false, false };
 		if (emergencyStopFunction != -1) {
 			functions[emergencyStopFunction] = true;

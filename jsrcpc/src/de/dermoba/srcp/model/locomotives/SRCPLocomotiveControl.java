@@ -132,6 +132,9 @@ public class SRCPLocomotiveControl implements GLInfoListener, Constants {
 		try {
 			final LocomotiveStrategy strategy = locomotiveStrategies
 					.get(locomotive.getClass());
+			if (speed > 0) {
+				functions[0] = true;
+			}
 			strategy.setSpeed(locomotive, speed, functions);
 			informListeners(locomotive);
 		} catch (final SRCPDeviceLockedException x) {
@@ -198,8 +201,7 @@ public class SRCPLocomotiveControl implements GLInfoListener, Constants {
 		final boolean[] functions = locomotiveStrategy
 				.getEmergencyStopFunctions(locomotive, emergencyStopFunction);
 
-		setFunctions(locomotive, functions);
-		setSpeed(locomotive, 0, null);
+		setSpeed(locomotive, 0, functions);
 	}
 
 	public void GLinit(final double timestamp, final int bus,
