@@ -63,6 +63,15 @@ public class SRCPRouteControl {
 		return instance;
 	}
 
+	public void toggle(final SRCPRoute route) throws SRCPTurnoutException,
+			SRCPRouteException {
+		if (route.getRouteState().equals(SRCPRouteState.ENABLED)) {
+			disableRoute(route);
+		} else {
+			enableRoute(route);
+		}
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
