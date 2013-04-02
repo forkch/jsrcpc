@@ -6,6 +6,8 @@
 package de.dermoba.srcp.client;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
@@ -96,7 +98,9 @@ public class InfoChannel implements Runnable {
 
 	public void connect() throws SRCPException {
 		try {
-			socket = new Socket(serverName, serverPort);
+			
+			socket = new Socket();
+			socket.connect(new InetSocketAddress(serverName, serverPort), 5);
 			out = new SocketWriter(socket);
 			in = new SocketReader(socket);
 

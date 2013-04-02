@@ -5,6 +5,7 @@
 package de.dermoba.srcp.client;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.HashSet;
@@ -51,7 +52,8 @@ public class CommandChannel {
 
     public void connect() throws SRCPException {
         try {
-            socket = new Socket(serverName, serverPort);
+            socket = new Socket();
+			socket.connect(new InetSocketAddress(serverName, serverPort), 5);
             out = new SocketWriter(socket);
             in = new SocketReader(socket);
             String incoming = in.read();
