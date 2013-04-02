@@ -29,25 +29,26 @@ import de.dermoba.srcp.model.turnouts.SRCPTurnoutState;
 
 public class SRCPRouter extends Thread implements SRCPTurnoutChangeListener {
 
-	private boolean							enableRoute;
-	private int								waitTime;
-	private List<SRCPRouteChangeListener>	listener;
-	private SRCPModelException				switchException;
-	private SRCPRoute						sRoute;
+	private final boolean enableRoute;
+	private final int waitTime;
+	private final List<SRCPRouteChangeListener> listener;
+	private SRCPModelException switchException;
+	private final SRCPRoute sRoute;
 
-	public SRCPRouter(SRCPRoute sRoute, boolean enableRoute, int waitTime,
-			List<SRCPRouteChangeListener> listener) {
+	public SRCPRouter(final SRCPRoute sRoute, final boolean enableRoute,
+			final int waitTime, final List<SRCPRouteChangeListener> listener) {
 		this.sRoute = sRoute;
 		this.enableRoute = enableRoute;
 		this.waitTime = waitTime;
 		this.listener = listener;
 	}
 
+	@Override
 	public void run() {
 		try {
 			sRoute.setRouteState(SRCPRouteState.ROUTING);
 
-			SRCPTurnoutControl sc = SRCPTurnoutControl.getInstance();
+			final SRCPTurnoutControl sc = SRCPTurnoutControl.getInstance();
 			sc.addTurnoutChangeListener(this);
 			if (enableRoute) {
 				enableRoute();
@@ -55,34 +56,36 @@ public class SRCPRouter extends Thread implements SRCPTurnoutChangeListener {
 				disableRoute();
 			}
 			sc.removeTurnoutChangeListener(this);
-		} catch (SRCPModelException e) {
+		} catch (final SRCPModelException e) {
 			this.switchException = e;
-		} catch (InterruptedException e) {
+		} catch (final InterruptedException e) {
 			e.printStackTrace();
 		}
 	}
 
-	private void disableRoute() throws SRCPTurnoutException, SRCPModelException, InterruptedException {
-		List<SRCPRouteItem> routeItems = sRoute.getRouteItems();
-		SRCPTurnoutControl sc = SRCPTurnoutControl.getInstance();
-		for (SRCPRouteItem ri : routeItems) {
-			SRCPTurnout turnoutToRoute = ri.getTurnout();
+	private void disableRoute() throws SRCPTurnoutException,
+			SRCPModelException, InterruptedException {
+		final List<SRCPRouteItem> routeItems = sRoute.getRouteItems();
+		final SRCPTurnoutControl sc = SRCPTurnoutControl.getInstance();
+		for (final SRCPRouteItem ri : routeItems) {
+			final SRCPTurnout turnoutToRoute = ri.getTurnout();
 
 			sc.setDefaultState(turnoutToRoute);
-			
+
 			Thread.sleep(waitTime);
 		}
 		sRoute.setRouteState(SRCPRouteState.DISABLED);
-		for (SRCPRouteChangeListener l : listener) {
+		for (final SRCPRouteChangeListener l : listener) {
 			l.routeChanged(sRoute);
 		}
 	}
 
-	private void enableRoute() throws SRCPTurnoutException, SRCPModelException, InterruptedException {
-		List<SRCPRouteItem> routeItems = sRoute.getRouteItems();
-		SRCPTurnoutControl sc = SRCPTurnoutControl.getInstance();
-		for (SRCPRouteItem ri : routeItems) {
-			SRCPTurnout turnoutToRoute = ri.getTurnout();
+	private void enableRoute() throws SRCPTurnoutException, SRCPModelException,
+			InterruptedException {
+		final List<SRCPRouteItem> routeItems = sRoute.getRouteItems();
+		final SRCPTurnoutControl sc = SRCPTurnoutControl.getInstance();
+		for (final SRCPRouteItem ri : routeItems) {
+			final SRCPTurnout turnoutToRoute = ri.getTurnout();
 			switch (ri.getRoutedState()) {
 			case STRAIGHT:
 				sc.setStraight(turnoutToRoute);
@@ -93,11 +96,14 @@ public class SRCPRouter extends Thread implements SRCPTurnoutChangeListener {
 			case RIGHT:
 				sc.setCurvedRight(turnoutToRoute);
 				break;
+			case UNDEF:
+			default:
+				break;
 			}
 			Thread.sleep(waitTime);
 		}
 		sRoute.setRouteState(SRCPRouteState.ENABLED);
-		for (SRCPRouteChangeListener l : listener) {
+		for (final SRCPRouteChangeListener l : listener) {
 			l.routeChanged(sRoute);
 		}
 	}
@@ -106,19 +112,19 @@ public class SRCPRouter extends Thread implements SRCPTurnoutChangeListener {
 		return switchException;
 	}
 
-	public void turnoutChanged(SRCPTurnout changedTurnout,
-			SRCPTurnoutState newState) {
-		for(SRCPRouteItem item : sRoute.getRouteItems()) {
-			if(item.getTurnout().equals(changedTurnout)) {
-				for (SRCPRouteChangeListener l : listener) {
-					if(enableRoute) 
+	public void turnoutChanged(final SRCPTurnout changedTurnout,
+			final SRCPTurnoutState newState) {
+		for (final SRCPRouteItem item : sRoute.getRouteItems()) {
+			if (item.getTurnout().equals(changedTurnout)) {
+				for (final SRCPRouteChangeListener l : listener) {
+					if (enableRoute) {
 						l.nextTurnoutRouted(sRoute);
-					else
+					} else {
 						l.nextTurnoutDerouted(sRoute);
+					}
 				}
 			}
 		}
-		
-		
+
 	}
 }

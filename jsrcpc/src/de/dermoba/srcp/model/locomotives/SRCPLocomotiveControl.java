@@ -57,6 +57,7 @@ public class SRCPLocomotiveControl implements GLInfoListener, Constants {
 	private final Map<SRCPAddress, SRCPLocomotive> addressLocomotiveCache;
 	private SRCPSession session;
 
+	@SuppressWarnings("rawtypes")
 	private static final Map<Class, LocomotiveStrategy> locomotiveStrategies = new HashMap<Class, LocomotiveStrategy>();
 	static {
 		final DefaultLocomotiveStrategy defaultStrategy = new DefaultLocomotiveStrategy();

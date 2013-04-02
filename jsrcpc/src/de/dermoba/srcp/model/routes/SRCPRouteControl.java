@@ -29,26 +29,25 @@ import de.dermoba.srcp.model.NoSessionException;
 import de.dermoba.srcp.model.turnouts.SRCPTurnoutException;
 
 public class SRCPRouteControl {
-	private static Logger					logger				= Logger
-																		.getLogger(SRCPRouteControl.class);
-	private static SRCPRouteControl			instance;
+	private static Logger logger = Logger.getLogger(SRCPRouteControl.class);
+	private static SRCPRouteControl instance;
 
-	private List<SRCPRouteChangeListener>	listeners;
+	private final List<SRCPRouteChangeListener> listeners;
 
-	private SRCPRouteState					lastRouteState;
+	private SRCPRouteState lastRouteState;
 
-	private SRCPRoute						lastChangedRoute;
+	private SRCPRoute lastChangedRoute;
 
-	protected String						ERR_TOGGLE_FAILED	= "Toggle of switch failed";
+	protected String ERR_TOGGLE_FAILED = "Toggle of switch failed";
 
-	protected SRCPSession					session;
-	private int								routingDelay		= Constants.DEFAULT_ROUTING_DELAY;
+	protected SRCPSession session;
+	private int routingDelay = Constants.DEFAULT_ROUTING_DELAY;
 
 	public SRCPSession getSession() {
 		return session;
 	}
 
-	public void setSession(SRCPSession session) {
+	public void setSession(final SRCPSession session) {
 		this.session = session;
 	}
 
@@ -67,13 +66,17 @@ public class SRCPRouteControl {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see ch.fork.AdHocRailway.domain.routes.RouteControlIface#enableRoute(ch.fork.AdHocRailway.domain.routes.Route)
+	 * @see
+	 * ch.fork.AdHocRailway.domain.routes.RouteControlIface#enableRoute(ch.fork
+	 * .AdHocRailway.domain.routes.Route)
 	 */
-	public void enableRoute(SRCPRoute route) throws SRCPTurnoutException, SRCPRouteException {
+	public void enableRoute(final SRCPRoute route) throws SRCPTurnoutException,
+			SRCPRouteException {
 		checkRoute(route);
 		logger.debug("enabling route: " + route);
 
-		SRCPRouter switchRouter = new SRCPRouter(route, true, routingDelay, listeners);
+		final SRCPRouter switchRouter = new SRCPRouter(route, true,
+				routingDelay, listeners);
 		switchRouter.start();
 		lastChangedRoute = route;
 		lastRouteState = SRCPRouteState.ENABLED;
@@ -82,31 +85,38 @@ public class SRCPRouteControl {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see ch.fork.AdHocRailway.domain.routes.RouteControlIface#disableRoute(ch.fork.AdHocRailway.domain.routes.Route)
+	 * @see
+	 * ch.fork.AdHocRailway.domain.routes.RouteControlIface#disableRoute(ch.
+	 * fork.AdHocRailway.domain.routes.Route)
 	 */
-	public void disableRoute(SRCPRoute route) throws SRCPTurnoutException , SRCPRouteException{
+	public void disableRoute(final SRCPRoute route)
+			throws SRCPTurnoutException, SRCPRouteException {
 		checkRoute(route);
 		logger.debug("disabling route: " + route);
-		
-		SRCPRouter switchRouter = new SRCPRouter(route, false, routingDelay, listeners);
+
+		final SRCPRouter switchRouter = new SRCPRouter(route, false,
+				routingDelay, listeners);
 		switchRouter.start();
 		lastChangedRoute = route;
 		lastRouteState = SRCPRouteState.DISABLED;
 	}
 
-	private void checkRoute(SRCPRoute r) throws SRCPRouteException {
-		if (session == null)
+	private void checkRoute(final SRCPRoute r) throws SRCPRouteException {
+		if (session == null) {
 			throw new SRCPRouteException(Constants.ERR_NOT_CONNECTED,
 					new NoSessionException());
+		}
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see ch.fork.AdHocRailway.domain.routes.RouteControlIface#addRouteChangeListener(ch.fork.AdHocRailway.domain.routes.Route,
-	 *      ch.fork.AdHocRailway.domain.routes.RouteChangeListener)
+	 * @see
+	 * ch.fork.AdHocRailway.domain.routes.RouteControlIface#addRouteChangeListener
+	 * (ch.fork.AdHocRailway.domain.routes.Route,
+	 * ch.fork.AdHocRailway.domain.routes.RouteChangeListener)
 	 */
-	public void addRouteChangeListener(SRCPRouteChangeListener listener) {
+	public void addRouteChangeListener(final SRCPRouteChangeListener listener) {
 
 		listeners.add(listener);
 	}
@@ -114,7 +124,8 @@ public class SRCPRouteControl {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see ch.fork.AdHocRailway.domain.routes.RouteControlIface#removeAllRouteChangeListeners()
+	 * @see ch.fork.AdHocRailway.domain.routes.RouteControlIface#
+	 * removeAllRouteChangeListeners()
 	 */
 	public void removeAllRouteChangeListeners() {
 		listeners.clear();
@@ -123,46 +134,53 @@ public class SRCPRouteControl {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see ch.fork.AdHocRailway.domain.routes.RouteControlIface#removeRouteChangeListener(ch.fork.AdHocRailway.domain.routes.Route)
+	 * @see ch.fork.AdHocRailway.domain.routes.RouteControlIface#
+	 * removeRouteChangeListener(ch.fork.AdHocRailway.domain.routes.Route)
 	 */
-	public void removeRouteChangeListener(SRCPRouteChangeListener listener) {
+	public void removeRouteChangeListener(final SRCPRouteChangeListener listener) {
 		listeners.remove(listener);
 	}
 
 	public void undoLastChange() throws SRCPRouteException {
-		if (lastChangedRoute == null)
+		if (lastChangedRoute == null) {
 			return;
+		}
 		try {
 			switch (lastRouteState) {
 			case ENABLED:
-
 				disableRoute(lastChangedRoute);
-
 				break;
 			case DISABLED:
 				enableRoute(lastChangedRoute);
 				break;
+			case ROUTING:
+				break;
+			case UNDEF:
+				break;
+			default:
+				break;
 			}
 			lastChangedRoute = null;
 			lastRouteState = null;
-		} catch (SRCPTurnoutException e) {
+		} catch (final SRCPTurnoutException e) {
 			throw new SRCPRouteException(e);
 		}
 	}
 
 	public void previousDeviceToDefault() throws SRCPRouteException {
-		if (lastChangedRoute == null)
+		if (lastChangedRoute == null) {
 			return;
+		}
 		try {
 			disableRoute(lastChangedRoute);
-		} catch (SRCPTurnoutException e) {
+		} catch (final SRCPTurnoutException e) {
 			throw new SRCPRouteException(e);
 		}
 		lastChangedRoute = null;
 		lastRouteState = null;
 	}
 
-	public void setRoutingDelay(int routingDelay) {
+	public void setRoutingDelay(final int routingDelay) {
 		this.routingDelay = routingDelay;
 	}
 
