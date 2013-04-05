@@ -53,31 +53,31 @@ public class InfoChannel implements Runnable {
 
 	private int id;
 
-	private Collection<FBInfoListener> FBListeners = new ArrayList<FBInfoListener>();
+	private final Collection<FBInfoListener> FBListeners = new ArrayList<FBInfoListener>();
 
-	private Collection<GAInfoListener> GAListeners = new ArrayList<GAInfoListener>();
+	private final Collection<GAInfoListener> GAListeners = new ArrayList<GAInfoListener>();
 
-	private Collection<GLInfoListener> GLListeners = new ArrayList<GLInfoListener>();
+	private final Collection<GLInfoListener> GLListeners = new ArrayList<GLInfoListener>();
 
-	private Collection<LOCKInfoListener> LOCKListeners = new ArrayList<LOCKInfoListener>();
+	private final Collection<LOCKInfoListener> LOCKListeners = new ArrayList<LOCKInfoListener>();
 
-	private Collection<POWERInfoListener> POWERListeners = new ArrayList<POWERInfoListener>();
+	private final Collection<POWERInfoListener> POWERListeners = new ArrayList<POWERInfoListener>();
 
-	private Collection<SERVERInfoListener> SERVERListeners = new ArrayList<SERVERInfoListener>();
+	private final Collection<SERVERInfoListener> SERVERListeners = new ArrayList<SERVERInfoListener>();
 
-	private Collection<SMInfoListener> SMListeners = new ArrayList<SMInfoListener>();
+	private final Collection<SMInfoListener> SMListeners = new ArrayList<SMInfoListener>();
 
-	private Collection<GMInfoListener> GMListeners = new ArrayList<GMInfoListener>();
+	private final Collection<GMInfoListener> GMListeners = new ArrayList<GMInfoListener>();
 
-	private Collection<CRCFInfoListener> CRCFListeners = new ArrayList<CRCFInfoListener>();
+	private final Collection<CRCFInfoListener> CRCFListeners = new ArrayList<CRCFInfoListener>();
 
 	// private List<DESCRIPTIONInfoListener> DESCRIPTIONListeners;
 	// private List<SESSIONInfoListener> SESSIONListeners;
-	private Collection<InfoDataListener> listeners = new ArrayList<InfoDataListener>();
+	private final Collection<InfoDataListener> listeners = new ArrayList<InfoDataListener>();
 
 	private Thread infoThread;
 
-	private CRCFHandler CRCFHandle = new CRCFHandler();
+	private final CRCFHandler CRCFHandle = new CRCFHandler();
 
 	/**
 	 * creates a new SRCP connection on the info channel to handle all info
@@ -89,7 +89,7 @@ public class InfoChannel implements Runnable {
 	 *            TCP port number
 	 * @throws SRCPException
 	 */
-	public InfoChannel(String pServerName, int pServerPort) {
+	public InfoChannel(final String pServerName, final int pServerPort) {
 		serverName = pServerName;
 		serverPort = pServerPort;
 		GMListeners.add(CRCFHandle);
@@ -110,12 +110,12 @@ public class InfoChannel implements Runnable {
 			send("GO");
 			s = in.read();
 			try {
-				String[] sSplitted = s.split(" ");
+				final String[] sSplitted = s.split(" ");
 
 				if (sSplitted.length >= 5) {
 					id = Integer.parseInt(sSplitted[4]);
 				}
-			} catch (NumberFormatException e) {
+			} catch (final NumberFormatException e) {
 				System.err.println(s + ": cannot convert the 5. token from \""
 						+ s + "\" into an integer");
 			}
@@ -124,9 +124,9 @@ public class InfoChannel implements Runnable {
 			infoThread = new Thread(this);
 			infoThread.setDaemon(true);
 			infoThread.start();
-		} catch (UnknownHostException e) {
+		} catch (final UnknownHostException e) {
 			throw new SRCPHostNotFoundException();
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			throw new SRCPIOException();
 		}
 	}
@@ -138,12 +138,12 @@ public class InfoChannel implements Runnable {
 				socket.close();
 				socket = null;
 			}
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			throw new SRCPIOException(e);
 		}
 	}
 
-	private void send(String s) throws IOException {
+	private void send(final String s) throws IOException {
 		informListenersSent(s);
 		out.write(s + "\n");
 	}
@@ -151,38 +151,39 @@ public class InfoChannel implements Runnable {
 	public void run() {
 		try {
 			while (true) {
-				String s = in.read();
-				if (s == null)
+				final String s = in.read();
+				if (s == null) {
 					break;
+				}
 				informListenersReceived(s);
 			}
-		} catch (SocketException e) {
+		} catch (final SocketException e) {
 			return;
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			// what to do, if IOException on info channel?
 		}
 	}
 
-	public void addInfoDataListener(InfoDataListener listener) {
+	public void addInfoDataListener(final InfoDataListener listener) {
 		listeners.add(listener);
 	}
 
-	public void removeInfoDataListener(InfoDataListener listener) {
+	public void removeInfoDataListener(final InfoDataListener listener) {
 		listeners.remove(listener);
 	}
 
-	private void informListenersReceived(String s) {
+	private void informListenersReceived(final String s) {
 		try {
-			TokenizedLine tokenLine = new TokenizedLine(s);
+			final TokenizedLine tokenLine = new TokenizedLine(s);
 
 			if (tokenLine.hasMoreElements()) {
-				double timestamp = tokenLine.nextDoubleToken();
-				int number = tokenLine.nextIntToken();
+				final double timestamp = tokenLine.nextDoubleToken();
+				final int number = tokenLine.nextIntToken();
 
 				if (number < 200) {
 					tokenLine.nextStringToken();
-					int bus = tokenLine.nextIntToken();
-					String deviceGroup = tokenLine.nextStringToken()
+					final int bus = tokenLine.nextIntToken();
+					final String deviceGroup = tokenLine.nextStringToken()
 							.toUpperCase();
 					if (deviceGroup.equals("FB")) {
 						handleFB(tokenLine, timestamp, number, bus);
@@ -207,108 +208,111 @@ public class InfoChannel implements Runnable {
 					}
 				}
 			}
-		} catch (SRCPUnsufficientDataException e) {
+		} catch (final SRCPUnsufficientDataException e) {
 			System.err.println("cannot parse line \"" + s + "\"");
 			e.printStackTrace();
-		} catch (NumberFormatException e) {
+		} catch (final NumberFormatException e) {
 			System.err.println("cannot convert the next token from \"" + s
 					+ "\" into an integer");
 			e.printStackTrace();
-		} catch (SRCPWrongValueException e) {
+		} catch (final SRCPWrongValueException e) {
 			System.err.println("wrong value in line \"" + s + "\"");
 			e.printStackTrace();
 		}
 
-		for (InfoDataListener listener : listeners) {
+		for (final InfoDataListener listener : listeners) {
 			listener.infoDataReceived(s);
 		}
 	}
 
-	private void informListenersSent(String s) {
-		for (InfoDataListener listener : listeners) {
+	private void informListenersSent(final String s) {
+		for (final InfoDataListener listener : listeners) {
 			listener.infoDataSent(s);
 		}
 	}
 
-	private void handleFB(TokenizedLine tokenLine, double timestamp,
-			int number, int bus) throws SRCPUnsufficientDataException {
+	private void handleFB(final TokenizedLine tokenLine,
+			final double timestamp, final int number, final int bus)
+			throws SRCPUnsufficientDataException {
 
 		if (number == INFO_SET) {
-			int address = tokenLine.nextIntToken();
-			int value = tokenLine.nextIntToken();
+			final int address = tokenLine.nextIntToken();
+			final int value = tokenLine.nextIntToken();
 			synchronized (FBListeners) {
-				for (FBInfoListener l : FBListeners) {
+				for (final FBInfoListener l : FBListeners) {
 					l.FBset(timestamp, bus, address, value);
 				}
 			}
 		} else if (number == INFO_TERM) {
 			synchronized (FBListeners) {
-				for (FBInfoListener l : FBListeners) {
+				for (final FBInfoListener l : FBListeners) {
 					l.FBterm(timestamp, bus);
 				}
 			}
 		}
 	}
 
-	private void handleGL(TokenizedLine tokenLine, double timestamp,
-			int number, int bus) throws SRCPUnsufficientDataException {
-		int address = tokenLine.nextIntToken();
+	private void handleGL(final TokenizedLine tokenLine,
+			final double timestamp, final int number, final int bus)
+			throws SRCPUnsufficientDataException {
+		final int address = tokenLine.nextIntToken();
 
 		if (number == INFO_SET) {
-			SRCPLocomotiveDirection drivemode = SRCPLocomotiveDirection
+			final SRCPLocomotiveDirection drivemode = SRCPLocomotiveDirection
 					.valueOf(Integer.parseInt(tokenLine.nextStringToken()));
-			int v = tokenLine.nextIntToken();
-			int vMax = tokenLine.nextIntToken();
-			Collection<Boolean> functions = new ArrayList<Boolean>();
+			final int v = tokenLine.nextIntToken();
+			final int vMax = tokenLine.nextIntToken();
+			final Collection<Boolean> functions = new ArrayList<Boolean>();
 
 			while (tokenLine.hasMoreElements()) {
 				functions.add(tokenLine.nextStringToken().equals("1"));
 			}
 
-			boolean[] f = new boolean[functions.size()];
+			final boolean[] f = new boolean[functions.size()];
 			int i = 0;
 
-			for (Boolean function : functions) {
+			for (final Boolean function : functions) {
 				f[i++] = function.booleanValue();
 			}
 			synchronized (GLListeners) {
-				for (GLInfoListener l : GLListeners) {
+				for (final GLInfoListener l : GLListeners) {
 					l.GLset(timestamp, bus, address, drivemode, v, vMax, f);
 				}
 			}
 		} else if (number == INFO_INIT) {
-			String protocol = tokenLine.nextStringToken();
+			final String protocol = tokenLine.nextStringToken();
 			while (tokenLine.hasMoreElements()) {
 				// TODO: get params
 				tokenLine.nextStringToken();
 			}
 			synchronized (GLListeners) {
-				for (GLInfoListener l : GLListeners) {
+				for (final GLInfoListener l : GLListeners) {
 					l.GLinit(timestamp, bus, address, protocol, null);
 				}
 			}
 		} else if (number == INFO_TERM) {
 			synchronized (GLListeners) {
-				for (GLInfoListener l : GLListeners) {
+				for (final GLInfoListener l : GLListeners) {
 					l.GLterm(timestamp, bus, address);
 				}
 			}
 		}
 	}
 
-	private void handleGA(TokenizedLine tokenLine, double timestamp,
-			int number, int bus) throws SRCPUnsufficientDataException {
-		int address = tokenLine.nextIntToken();
+	private void handleGA(final TokenizedLine tokenLine,
+			final double timestamp, final int number, final int bus)
+			throws SRCPUnsufficientDataException {
+		final int address = tokenLine.nextIntToken();
 		if (number == INFO_SET) {
-			int port = tokenLine.nextIntToken();
-			int value = tokenLine.nextIntToken();
+			final int port = tokenLine.nextIntToken();
+			final int value = tokenLine.nextIntToken();
 			synchronized (GAListeners) {
-				for (GAInfoListener l : GAListeners) {
+				for (final GAInfoListener l : GAListeners) {
 					l.GAset(timestamp, bus, address, port, value);
 				}
 			}
 		} else if (number == INFO_INIT) {
-			String protocol = tokenLine.nextStringToken();
+			final String protocol = tokenLine.nextStringToken();
 
 			while (tokenLine.hasMoreElements()) {
 				// TODO: get params
@@ -316,73 +320,76 @@ public class InfoChannel implements Runnable {
 				tokenLine.nextStringToken();
 			}
 			synchronized (GAListeners) {
-				for (GAInfoListener l : GAListeners) {
+				for (final GAInfoListener l : GAListeners) {
 					l.GAinit(timestamp, bus, address, protocol, null);
 				}
 			}
 		} else if (number == INFO_TERM) {
 			synchronized (GAListeners) {
-				for (GAInfoListener l : GAListeners) {
+				for (final GAInfoListener l : GAListeners) {
 					l.GAterm(timestamp, bus, address);
 				}
 			}
 		}
 	}
 
-	private void handleLOCK(TokenizedLine tokenLine, double timestamp,
-			int number, int bus) throws SRCPUnsufficientDataException {
+	private void handleLOCK(final TokenizedLine tokenLine,
+			final double timestamp, final int number, final int bus)
+			throws SRCPUnsufficientDataException {
 
-		String lockedDeviceGroup = tokenLine.nextStringToken();
-		int address = tokenLine.nextIntToken();
+		final String lockedDeviceGroup = tokenLine.nextStringToken();
+		final int address = tokenLine.nextIntToken();
 		if (number == INFO_SET) {
-			int duration = tokenLine.nextIntToken();
-			int sessionID = tokenLine.nextIntToken();
+			final int duration = tokenLine.nextIntToken();
+			final int sessionID = tokenLine.nextIntToken();
 			synchronized (LOCKListeners) {
-				for (LOCKInfoListener l : LOCKListeners) {
+				for (final LOCKInfoListener l : LOCKListeners) {
 					l.LOCKset(timestamp, bus, address, lockedDeviceGroup,
 							duration, sessionID);
 				}
 			}
 		} else if (number == INFO_TERM) {
 			synchronized (LOCKListeners) {
-				for (LOCKInfoListener l : LOCKListeners) {
+				for (final LOCKInfoListener l : LOCKListeners) {
 					l.LOCKterm(timestamp, bus, address, lockedDeviceGroup);
 				}
 			}
 		}
 	}
 
-	private void handlePOWER(TokenizedLine tokenLine, double timestamp,
-			int number, int bus) throws SRCPUnsufficientDataException {
+	private void handlePOWER(final TokenizedLine tokenLine,
+			final double timestamp, final int number, final int bus)
+			throws SRCPUnsufficientDataException {
 
 		if (number == INFO_SET) {
-			boolean powerOn = tokenLine.nextStringToken().equals("ON");
+			final boolean powerOn = tokenLine.nextStringToken().equals("ON");
 			String freeText = "";
 			while (tokenLine.hasMoreElements()) {
 				freeText += tokenLine.nextStringToken() + " ";
 			}
 			synchronized (POWERListeners) {
-				for (POWERInfoListener l : POWERListeners) {
+				for (final POWERInfoListener l : POWERListeners) {
 					l.POWERset(timestamp, bus, powerOn, freeText);
 				}
 			}
 		} else if (number == INFO_TERM) {
 			synchronized (POWERListeners) {
-				for (POWERInfoListener l : POWERListeners) {
+				for (final POWERInfoListener l : POWERListeners) {
 					l.POWERterm(timestamp, bus);
 				}
 			}
 		}
 	}
 
-	private void handleSERVER(TokenizedLine tokenLine, double timestamp,
-			int number) throws SRCPUnsufficientDataException {
+	private void handleSERVER(final TokenizedLine tokenLine,
+			final double timestamp, final int number)
+			throws SRCPUnsufficientDataException {
 
 		if (number == INFO_SET) {
 			final String action = tokenLine.nextStringToken();
 
 			synchronized (SERVERListeners) {
-				for (SERVERInfoListener l : SERVERListeners) {
+				for (final SERVERInfoListener l : SERVERListeners) {
 					if (action.equals("RESETTING")) {
 						l.SERVERreset(timestamp);
 					} else if (action.equals("TERMINATING")) {
@@ -393,33 +400,34 @@ public class InfoChannel implements Runnable {
 		}
 	}
 
-	private void handleSM(TokenizedLine tokenLine, double timestamp,
-			int number, int bus) throws SRCPUnsufficientDataException {
+	private void handleSM(final TokenizedLine tokenLine,
+			final double timestamp, final int number, final int bus)
+			throws SRCPUnsufficientDataException {
 		if (number == INFO_INIT) {
-			String protocol = tokenLine.nextStringToken();
+			final String protocol = tokenLine.nextStringToken();
 
 			synchronized (SMListeners) {
-				for (SMInfoListener l : SMListeners) {
+				for (final SMInfoListener l : SMListeners) {
 					l.SMinit(timestamp, bus, protocol);
 				}
 			}
 		} else if (number == INFO_SET) {
-			int address = tokenLine.nextIntToken();
-			String type = tokenLine.nextStringToken();
-			Collection<String> values = new ArrayList<String>();
+			final int address = tokenLine.nextIntToken();
+			final String type = tokenLine.nextStringToken();
+			final Collection<String> values = new ArrayList<String>();
 
 			while (tokenLine.hasMoreElements()) {
 				values.add(tokenLine.nextStringToken());
 			}
 			synchronized (SMListeners) {
-				for (SMInfoListener l : SMListeners) {
+				for (final SMInfoListener l : SMListeners) {
 					l.SMset(timestamp, bus, address, type,
 							values.toArray(new String[0]));
 				}
 			}
 		} else if (number == INFO_TERM) {
 			synchronized (SMListeners) {
-				for (SMInfoListener l : SMListeners) {
+				for (final SMInfoListener l : SMListeners) {
 					l.SMterm(timestamp, bus);
 				}
 			}
@@ -437,16 +445,17 @@ public class InfoChannel implements Runnable {
 	 * @throws NumberFormatException
 	 * @throws SRCPWrongValueException
 	 */
-	private void handleGM(TokenizedLine tokenLine, double timestamp,
-			int number, int bus) throws SRCPUnsufficientDataException,
-			NumberFormatException, SRCPWrongValueException {
+	private void handleGM(final TokenizedLine tokenLine,
+			final double timestamp, final int number, final int bus)
+			throws SRCPUnsufficientDataException, NumberFormatException,
+			SRCPWrongValueException {
 
 		if (number == INFO_SET) {
-			int sendTo = tokenLine.nextIntToken();
-			int replyTo = tokenLine.nextIntToken();
-			String messageType = tokenLine.nextStringToken();
+			final int sendTo = tokenLine.nextIntToken();
+			final int replyTo = tokenLine.nextIntToken();
+			final String messageType = tokenLine.nextStringToken();
 			synchronized (GMListeners) {
-				for (GMInfoListener l : GMListeners) {
+				for (final GMInfoListener l : GMListeners) {
 					l.GMset(timestamp, bus, sendTo, replyTo, messageType,
 							tokenLine);
 				}
@@ -454,75 +463,75 @@ public class InfoChannel implements Runnable {
 		}
 	}
 
-	public synchronized void addFBInfoListener(FBInfoListener l) {
+	public synchronized void addFBInfoListener(final FBInfoListener l) {
 		FBListeners.add(l);
 	}
 
-	public synchronized void addGAInfoListener(GAInfoListener l) {
+	public synchronized void addGAInfoListener(final GAInfoListener l) {
 		GAListeners.add(l);
 	}
 
-	public synchronized void addGLInfoListener(GLInfoListener l) {
+	public synchronized void addGLInfoListener(final GLInfoListener l) {
 		GLListeners.add(l);
 	}
 
-	public synchronized void addLOCKInfoListener(LOCKInfoListener l) {
+	public synchronized void addLOCKInfoListener(final LOCKInfoListener l) {
 		LOCKListeners.add(l);
 	}
 
-	public synchronized void addPOWERInfoListener(POWERInfoListener l) {
+	public synchronized void addPOWERInfoListener(final POWERInfoListener l) {
 		POWERListeners.add(l);
 	}
 
-	public synchronized void addSERVERInfoListener(SERVERInfoListener l) {
+	public synchronized void addSERVERInfoListener(final SERVERInfoListener l) {
 		SERVERListeners.add(l);
 	}
 
-	public synchronized void addSMInfoListener(SMInfoListener l) {
+	public synchronized void addSMInfoListener(final SMInfoListener l) {
 		SMListeners.add(l);
 	}
 
-	public synchronized void addGMInfoListener(GMInfoListener l) {
+	public synchronized void addGMInfoListener(final GMInfoListener l) {
 		GMListeners.add(l);
 	}
 
-	public synchronized void addCRCFInfoListener(CRCFInfoListener l) {
+	public synchronized void addCRCFInfoListener(final CRCFInfoListener l) {
 		CRCFListeners.add(l);
 	}
 
-	public synchronized void removeFBInfoListener(FBInfoListener l) {
+	public synchronized void removeFBInfoListener(final FBInfoListener l) {
 		FBListeners.remove(l);
 	}
 
-	public synchronized void removeGAInfoListener(GAInfoListener l) {
+	public synchronized void removeGAInfoListener(final GAInfoListener l) {
 		GAListeners.remove(l);
 	}
 
-	public synchronized void removeGLInfoListener(GLInfoListener l) {
+	public synchronized void removeGLInfoListener(final GLInfoListener l) {
 		GLListeners.remove(l);
 	}
 
-	public synchronized void removeLOCKInfoListener(LOCKInfoListener l) {
+	public synchronized void removeLOCKInfoListener(final LOCKInfoListener l) {
 		LOCKListeners.remove(l);
 	}
 
-	public synchronized void removePOWERInfoListener(POWERInfoListener l) {
+	public synchronized void removePOWERInfoListener(final POWERInfoListener l) {
 		POWERListeners.remove(l);
 	}
 
-	public synchronized void removeSERVERInfoListener(SERVERInfoListener l) {
+	public synchronized void removeSERVERInfoListener(final SERVERInfoListener l) {
 		SERVERListeners.remove(l);
 	}
 
-	public synchronized void removeSMInfoListener(SMInfoListener l) {
+	public synchronized void removeSMInfoListener(final SMInfoListener l) {
 		SMListeners.remove(l);
 	}
 
-	public synchronized void removeGMInfoListener(GMInfoListener l) {
+	public synchronized void removeGMInfoListener(final GMInfoListener l) {
 		GMListeners.remove(l);
 	}
 
-	public synchronized void removeCRCFInfoListener(CRCFInfoListener l) {
+	public synchronized void removeCRCFInfoListener(final CRCFInfoListener l) {
 		CRCFListeners.remove(l);
 	}
 
@@ -545,21 +554,23 @@ public class InfoChannel implements Runnable {
 		 * @see de.dermoba.srcp.devices.GMInfoListener#GMset(double, int, int,
 		 * int, java.lang.String, de.dermoba.srcp.common.TokenizedLine)
 		 */
-		public void GMset(double timestamp, int bus, int sendTo, int replyTo,
-				String messageType, TokenizedLine tokenLine)
+		public void GMset(final double timestamp, final int bus,
+				final int sendTo, final int replyTo, final String messageType,
+				final TokenizedLine tokenLine)
 				throws SRCPUnsufficientDataException, NumberFormatException,
 				SRCPWrongValueException {
 			if (messageType.equals("CRCF")) {
-				String actor = tokenLine.nextURLStringToken();
-				UUID actor_id = UUID.fromString(tokenLine.nextURLStringToken());
-				String method = tokenLine.nextStringToken();
-				String attribute = tokenLine.nextURLStringToken();
+				final String actor = tokenLine.nextURLStringToken();
+				final UUID actor_id = UUID.fromString(tokenLine
+						.nextURLStringToken());
+				final String method = tokenLine.nextStringToken();
+				final String attribute = tokenLine.nextURLStringToken();
 				String attribute_value = "";
 				if (tokenLine.hasMoreElements()) {
 					attribute_value = tokenLine.nextURLStringToken();
 				}
 				synchronized (CRCFListeners) {
-					for (CRCFInfoListener l : CRCFListeners) {
+					for (final CRCFInfoListener l : CRCFListeners) {
 						if (method.equals("GET")) {
 							l.CRCFget(timestamp, bus, sendTo, replyTo, actor,
 									actor_id, attribute);
