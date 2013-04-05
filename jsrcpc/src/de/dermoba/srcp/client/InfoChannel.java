@@ -97,9 +97,9 @@ public class InfoChannel implements Runnable {
 
 	public void connect() throws SRCPException {
 		try {
-			
+
 			socket = new Socket();
-			socket.connect(new InetSocketAddress(serverName, serverPort), 5);
+			socket.connect(new InetSocketAddress(serverName, serverPort), 5000);
 			out = new SocketWriter(socket);
 			in = new SocketReader(socket);
 

@@ -50,24 +50,22 @@ public class CommandChannel {
 		listeners = new HashSet<CommandDataListener>();
 	}
 
-    public void connect() throws SRCPException {
-        try {
-            socket = new Socket();
-			socket.connect(new InetSocketAddress(serverName, serverPort), 5);
-            out = new SocketWriter(socket);
-            in = new SocketReader(socket);
-            String incoming = in.read();
-            informListenersReceived(incoming);
-        }
-        catch (UnknownHostException e) {
-            throw new SRCPHostNotFoundException();
-        }
-        catch (IOException e) {
-            throw new SRCPIOException(e);
-        }
-        send("SET CONNECTIONMODE SRCP COMMAND");
-        String output = sendReceive("GO");
-        String[] outputSplitted = output.split(" ");
+	public void connect() throws SRCPException {
+		try {
+			socket = new Socket();
+			socket.connect(new InetSocketAddress(serverName, serverPort), 5000);
+			out = new SocketWriter(socket);
+			in = new SocketReader(socket);
+			final String incoming = in.read();
+			informListenersReceived(incoming);
+		} catch (final UnknownHostException e) {
+			throw new SRCPHostNotFoundException();
+		} catch (final IOException e) {
+			throw new SRCPIOException(e);
+		}
+		send("SET CONNECTIONMODE SRCP COMMAND");
+		final String output = sendReceive("GO");
+		final String[] outputSplitted = output.split(" ");
 
 		if (outputSplitted.length >= 5) {
 			id = Integer.parseInt(outputSplitted[4]);
