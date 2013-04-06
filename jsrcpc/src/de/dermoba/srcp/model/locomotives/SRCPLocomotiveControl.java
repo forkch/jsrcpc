@@ -107,8 +107,6 @@ public class SRCPLocomotiveControl implements GLInfoListener, Constants {
 			break;
 
 		}
-		setSpeed(locomotive, getCurrentSpeed(locomotive),
-				getFunctions(locomotive));
 	}
 
 	public SRCPLocomotiveDirection getDirection(final SRCPLocomotive locomotive) {

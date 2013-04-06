@@ -47,7 +47,7 @@
 	<!-- Compile: Default                                                    -->
 	<!-- =================================================================== -->
 	<target name="compile" depends="init" description="Compiles all Java sources">
-		<javac destdir="${build.dir}" classpathref="compile.class.path" deprecation="off" debug="true" source="1.5" target="1.5">
+		<javac destdir="${build.dir}" classpathref="compile.class.path" deprecation="off" debug="true" >
 			<src path="${src.dir}" />
 			<include name="**/*.java" />
 		</javac>
