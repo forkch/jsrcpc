@@ -189,7 +189,10 @@ public class SRCPRouteControl {
 		lastRouteState = null;
 	}
 
-	public void setRoutingDelay(final int routingDelay) {
+	public void setRoutingDelay(int routingDelay) {
+		if (routingDelay < 500) {
+			routingDelay = 500;
+		}
 		this.routingDelay = routingDelay;
 	}
 
