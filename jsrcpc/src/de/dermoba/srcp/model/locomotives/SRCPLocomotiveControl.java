@@ -107,6 +107,10 @@ public class SRCPLocomotiveControl implements GLInfoListener, Constants {
 			break;
 
 		}
+		locomotive.setPreventDirectionToggle(true);
+		setSpeed(locomotive, 0, locomotive.getFunctions());
+		setSpeed(locomotive, 0, locomotive.getFunctions());
+		informListeners(locomotive);
 	}
 
 	public SRCPLocomotiveDirection getDirection(final SRCPLocomotive locomotive) {

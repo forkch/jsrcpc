@@ -49,6 +49,8 @@ public abstract class SRCPLocomotive {
 
 	private SRCPLocomotive extendingLocomotive;
 
+	private boolean preventDirectionToggle;
+
 	public SRCPLocomotive() {
 		this(0, 0);
 	}
@@ -174,5 +176,14 @@ public abstract class SRCPLocomotive {
 
 	public SRCPLocomotive getExtendingLocomotive() {
 		return extendingLocomotive;
+	}
+
+	public void setPreventDirectionToggle(final boolean preventDirectionToggle) {
+		this.preventDirectionToggle = preventDirectionToggle;
+
+	}
+
+	public boolean isPreventDirectionToggle() {
+		return this.preventDirectionToggle;
 	}
 }

@@ -23,9 +23,9 @@ import java.util.List;
 
 public class SRCPRoute {
 
-	private SRCPRouteState		routeState = SRCPRouteState.UNDEF;
+	private SRCPRouteState routeState = SRCPRouteState.UNDEF;
 
-	private List<SRCPRouteItem>	routeItems;
+	private List<SRCPRouteItem> routeItems;
 
 	public SRCPRoute() {
 		routeItems = new ArrayList<SRCPRouteItem>();
@@ -35,7 +35,7 @@ public class SRCPRoute {
 		return routeState;
 	}
 
-	protected void setRouteState(SRCPRouteState routeState) {
+	public void setRouteState(final SRCPRouteState routeState) {
 		this.routeState = routeState;
 	}
 
@@ -43,11 +43,11 @@ public class SRCPRoute {
 		return routeItems;
 	}
 
-	public void setRouteItems(List<SRCPRouteItem> routeItems) {
+	public void setRouteItems(final List<SRCPRouteItem> routeItems) {
 		this.routeItems = routeItems;
 	}
-	
-	public void addRouteItem(SRCPRouteItem item) {
+
+	public void addRouteItem(final SRCPRouteItem item) {
 		this.routeItems.add(item);
 	}
 
@@ -61,19 +61,24 @@ public class SRCPRoute {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
+	public boolean equals(final Object obj) {
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (getClass() != obj.getClass()) {
 			return false;
+		}
 		final SRCPRoute other = (SRCPRoute) obj;
 		if (routeItems == null) {
-			if (other.routeItems != null)
+			if (other.routeItems != null) {
 				return false;
-		} else if (!routeItems.equals(other.routeItems))
+			}
+		} else if (!routeItems.equals(other.routeItems)) {
 			return false;
+		}
 		return true;
 	}
 }
