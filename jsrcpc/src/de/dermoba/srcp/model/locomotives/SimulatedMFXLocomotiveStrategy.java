@@ -9,7 +9,6 @@ import de.dermoba.srcp.devices.GL;
 import de.dermoba.srcp.model.Constants;
 import de.dermoba.srcp.model.SRCPAddress;
 import de.dermoba.srcp.model.locking.SRCPLockControl;
-import de.dermoba.srcp.model.turnouts.DoubleMMDigitalLocomotive;
 
 public class SimulatedMFXLocomotiveStrategy extends LocomotiveStrategy {
 
@@ -22,7 +21,7 @@ public class SimulatedMFXLocomotiveStrategy extends LocomotiveStrategy {
 		}
 
 		final boolean[] functions1 = Arrays.copyOfRange(functions, 0, 5);
-		final boolean[] functions2 = Arrays.copyOfRange(functions, 5, 9);
+		final boolean[] functions2 = Arrays.copyOfRange(functions, 5, 10);
 
 		String resp = setSpeedOnGl(doubleMM.getGL(), doubleMM, speed,
 				functions1);
@@ -90,7 +89,7 @@ public class SimulatedMFXLocomotiveStrategy extends LocomotiveStrategy {
 	public boolean[] getEmergencyStopFunctions(final SRCPLocomotive locomotive,
 			final int emergencyStopFunction) {
 		final boolean[] functions = new boolean[] { false, false, false, false,
-				false, false, false, false, false };
+				false, false, false, false, false, false };
 		if (emergencyStopFunction != -1) {
 			functions[emergencyStopFunction] = true;
 		}

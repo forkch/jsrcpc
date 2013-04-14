@@ -37,7 +37,6 @@ import de.dermoba.srcp.model.SRCPAddress;
 import de.dermoba.srcp.model.SRCPModelException;
 import de.dermoba.srcp.model.locking.SRCPLockChangeListener;
 import de.dermoba.srcp.model.locking.SRCPLockControl;
-import de.dermoba.srcp.model.turnouts.DoubleMMDigitalLocomotive;
 
 /**
  * Controls all actions which can be performed on Locomotives.

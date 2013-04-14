@@ -1,7 +1,6 @@
-package de.dermoba.srcp.model.turnouts;
+package de.dermoba.srcp.model.locomotives;
 
 import de.dermoba.srcp.devices.GL;
-import de.dermoba.srcp.model.locomotives.MMLocomotive;
 
 public class DoubleMMDigitalLocomotive extends MMLocomotive {
 
