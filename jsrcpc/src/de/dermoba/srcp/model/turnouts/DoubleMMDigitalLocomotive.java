@@ -7,7 +7,7 @@ public class DoubleMMDigitalLocomotive extends MMLocomotive {
 
 	public final static int DRIVING_STEPS = 14;
 	public final static int FUNCTION_COUNT1 = 5;
-	public final static int FUNCTION_COUNT2 = 4;
+	public final static int FUNCTION_COUNT2 = 5;
 	private int address2;
 	private GL gl2;
 	protected String[] params2;
