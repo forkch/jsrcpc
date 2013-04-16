@@ -388,9 +388,7 @@ public class SRCPTurnoutControl implements GAInfoListener {
 	}
 
 	public SRCPTurnoutState getTurnoutState(final SRCPTurnout turnout) {
-
 		return turnout.getTurnoutState();
-
 	}
 
 	public void GAset(final double timestamp, final int bus, final int address,
@@ -518,15 +516,19 @@ public class SRCPTurnoutControl implements GAInfoListener {
 
 	public void addTurnout(final SRCPTurnout turnout) {
 		srcpTurnouts.add(turnout);
-		addressTurnoutCache.put(
-				new SRCPAddress(turnout.getBus1(), turnout.getAddress1(),
-						turnout.getBus2(), turnout.getAddress2()), turnout);
 		if (turnout.isThreeWay()) {
+			addressTurnoutCache.put(
+					new SRCPAddress(turnout.getBus1(), turnout.getAddress1(),
+							turnout.getBus2(), turnout.getAddress2()), turnout);
 			addressThreewayCache.put(
 					new SRCPAddress(turnout.getBus1(), turnout.getAddress1(),
 							0, 0), turnout);
 			addressThreewayCache.put(new SRCPAddress(0, 0, turnout.getBus2(),
 					turnout.getAddress2()), turnout);
+		} else {
+			addressTurnoutCache.put(
+					new SRCPAddress(turnout.getBus1(), turnout.getAddress1()),
+					turnout);
 		}
 	}
 
