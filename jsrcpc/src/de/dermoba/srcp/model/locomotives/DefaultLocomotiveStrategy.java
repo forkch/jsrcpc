@@ -67,7 +67,10 @@ public class DefaultLocomotiveStrategy extends LocomotiveStrategy {
 		if (locomotive instanceof MMDigitalLocomotive) {
 			final boolean[] functions = new boolean[] { false, false, false,
 					false, false };
-			functions[emergencyStopFunction] = true;
+			if (emergencyStopFunction != -1
+					&& emergencyStopFunction < functions.length) {
+				functions[emergencyStopFunction] = true;
+			}
 			return functions;
 		} else {
 			return new boolean[] { true };

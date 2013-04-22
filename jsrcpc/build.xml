@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="Build file for jsrcpc" default="compile" basedir=".">
+<project name="Build file for jsrcpc" default="jar" basedir=".">
 	<!-- build-specific properties -->
 	<property file="${user.home}/.ant.properties" />
 	<property file="build.properties" />
