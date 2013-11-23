@@ -27,6 +27,7 @@ public class DoubleMMDigitalLocomotive extends MMLocomotive {
 		params2[0] = "2";
 		params2[1] = "" + DRIVING_STEPS;
 		params2[2] = "" + FUNCTION_COUNT2;
+		functionCount = FUNCTION_COUNT1 + FUNCTION_COUNT2;
 		functions = new boolean[FUNCTION_COUNT1 + FUNCTION_COUNT2];
 		drivingSteps = DRIVING_STEPS;
 	}

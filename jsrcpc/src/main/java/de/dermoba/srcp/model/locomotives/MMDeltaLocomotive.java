@@ -15,6 +15,7 @@ public class MMDeltaLocomotive extends MMLocomotive {
 		params[0] = "1";
 		params[1] = "" + DRIVING_STEPS;
 		params[2] = "" + FUNCTION_COUNT;
+		functionCount = FUNCTION_COUNT;
 		functions = new boolean[FUNCTION_COUNT];
 		drivingSteps = DRIVING_STEPS;
 	}

@@ -33,6 +33,8 @@ public abstract class SRCPLocomotive {
 
 	private SRCPSession session;
 
+	protected int functionCount;
+
 	protected boolean[] functions;
 
 	protected String[] params;
@@ -108,6 +110,10 @@ public abstract class SRCPLocomotive {
 	}
 
 	public void setFunctions(final boolean[] functions) {
+		if (functions.length < functionCount) {
+			throw new IllegalArgumentException(
+					"function count must not be smaller than " + functionCount);
+		}
 		this.functions = functions;
 	}
 
@@ -186,4 +192,44 @@ public abstract class SRCPLocomotive {
 	public boolean isPreventDirectionToggle() {
 		return this.preventDirectionToggle;
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + address;
+		result = prime * result + bus;
+		result = prime * result
+				+ ((protocol == null) ? 0 : protocol.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(final Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		final SRCPLocomotive other = (SRCPLocomotive) obj;
+		if (address != other.address) {
+			return false;
+		}
+		if (bus != other.bus) {
+			return false;
+		}
+		if (protocol == null) {
+			if (other.protocol != null) {
+				return false;
+			}
+		} else if (!protocol.equals(other.protocol)) {
+			return false;
+		}
+		return true;
+	}
+
 }
