@@ -94,40 +94,6 @@ public class SRCPTurnoutControl implements GAInfoListener {
 		}
 	}
 
-	public void refresh(final SRCPTurnout turnout) throws SRCPTurnoutException,
-			SRCPModelException {
-		checkTurnout(turnout);
-		if (turnout.isThreeWay()) {
-			refreshThreeWay(turnout);
-			return;
-		}
-
-		switch (turnout.getTurnoutState()) {
-		case STRAIGHT:
-			setStraight(turnout);
-			break;
-		case LEFT:
-			setCurvedLeft(turnout);
-			break;
-		case RIGHT:
-			setCurvedRight(turnout);
-			break;
-		default:
-		}
-		// informListeners(turnout);
-	}
-
-	private void refreshThreeWay(final SRCPTurnout turnout)
-			throws SRCPModelException {
-		checkTurnout(turnout);
-		final SRCPTurnout[] subTurnouts = turnout.getSubTurnouts();
-		for (final SRCPTurnout t : subTurnouts) {
-			checkTurnout(t);
-			// initTurnout(t);
-			refresh(t);
-		}
-	}
-
 	public void toggle(final SRCPTurnout turnout) throws SRCPTurnoutException,
 			SRCPModelException {
 		checkTurnout(turnout);
@@ -391,6 +357,7 @@ public class SRCPTurnoutControl implements GAInfoListener {
 		return turnout.getTurnoutState();
 	}
 
+	@Override
 	public void GAset(final double timestamp, final int bus, final int address,
 			final int port, final int value) {
 		logger.debug("GAset(" + bus + " , " + address + " , " + port + " , "
@@ -456,6 +423,7 @@ public class SRCPTurnoutControl implements GAInfoListener {
 		}
 	}
 
+	@Override
 	public void GAinit(final double timestamp, final int bus,
 			final int address, final String protocol, final String[] params) {
 		logger.debug("GAinit(" + bus + " , " + address + " , " + protocol
@@ -475,6 +443,7 @@ public class SRCPTurnoutControl implements GAInfoListener {
 		}
 	}
 
+	@Override
 	public void GAterm(final double timestamp, final int bus, final int address) {
 		logger.debug("GAterm( " + bus + " , " + address + " )");
 		final SRCPTurnout turnout = getTurnoutByAddressBus(bus, address);
