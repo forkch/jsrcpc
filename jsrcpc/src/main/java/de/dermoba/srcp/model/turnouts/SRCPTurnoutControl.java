@@ -683,4 +683,11 @@ public class SRCPTurnoutControl implements GAInfoListener {
 	public void setCutterActivationTime(final int cutterActivationTime) {
 		this.cutterActivationTime = cutterActivationTime;
 	}
+
+	public void setTurnoutWithAddress(final int address,
+			final SRCPTurnoutState state) throws SRCPException {
+		final GA ga = new GA(session, 1);
+		ga.setAddress(address);
+		ga.set(0, 1, 1000);
+	}
 }

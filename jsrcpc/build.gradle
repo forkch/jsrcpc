@@ -7,7 +7,7 @@ apply plugin: 'maven-publish'
 
 group='de.dermoba'
 archivesBaseName='jsrcpc'
-version = '2.1.1'
+version = '2.2.0'
 
 repositories {
     mavenCentral()
@@ -30,8 +30,10 @@ publishing {
             }
         }
     }
-    repositories {
-        mavenLocal()
+    repositories { 
+    	maven { 
+    		url "/home/fork/Code/forkch-mvn-repo"
+    	}
     }
 }
 
