@@ -370,8 +370,8 @@ public class SRCPTurnoutControl implements GAInfoListener {
 		try {
 			checkTurnout(turnout);
 
-			if (value == 0) {
-				// ignore deactivation
+			if (value == 1) {
+				// wait for deactivation
 				return;
 			}
 			// a port has been activated
