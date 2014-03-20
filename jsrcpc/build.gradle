@@ -37,6 +37,3 @@ publishing {
     }
 }
 
-task wrapper(type: Wrapper) {
-}
-
