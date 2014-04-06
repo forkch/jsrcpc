@@ -51,14 +51,14 @@ public class DefaultLocomotiveStrategy extends LocomotiveStrategy {
 
 	private void initLocomotive(final SRCPLocomotive locomotive)
 			throws SRCPLocomotiveException {
-		/*try {
+		try {
 			final String[] params = locomotive.getParams();
 			locomotive.getGL().init(locomotive.getAddress(),
 					locomotive.getProtocol(), params);
 			locomotive.setInitialized(true);
 		} catch (final SRCPException x) {
 			throw new SRCPLocomotiveException(Constants.ERR_INIT_FAILED, x);
-		}*/
+		}
 	}
 
 	@Override
