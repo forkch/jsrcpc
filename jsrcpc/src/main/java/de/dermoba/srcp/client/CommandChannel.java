@@ -100,7 +100,7 @@ public class CommandChannel {
 				throw new SRCPIOException();
 			}
 		} catch (final IOException e) {
-			throw new SRCPIOException();
+			throw new SRCPIOException(e);
 		}
 		informListenersReceived(s);
 		return s;
