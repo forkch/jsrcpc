@@ -305,6 +305,10 @@ public class SRCPLocomotiveControl implements GLInfoListener, Constants {
 			locomotive.setSession(session);
 		}
 
+        if(!srcpLocomotives.contains(locomotive)) {
+            srcpLocomotives.add(locomotive);
+        }
+
 		final LocomotiveStrategy strategy = locomotiveStrategies.get(locomotive
 				.getClass());
 		strategy.initLocomotive(locomotive, session, lockControl);

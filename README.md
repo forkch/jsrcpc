@@ -1,4 +1,4 @@
 jsrcpc
 ======
 
-Java SRCP Client
+Java SRCP (Simple Railroad Command Protocol) Client 

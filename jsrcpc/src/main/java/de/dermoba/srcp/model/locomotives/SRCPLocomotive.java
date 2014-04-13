@@ -130,10 +130,8 @@ public abstract class SRCPLocomotive {
 	}
 
 	protected void setSession(final SRCPSession session) {
-		if (session != this.session) {
-			setGL(null);
-			setInitialized(false);
-		}
+		this.gl = null;
+        this.initialized = false;
 		this.session = session;
 	}
 
