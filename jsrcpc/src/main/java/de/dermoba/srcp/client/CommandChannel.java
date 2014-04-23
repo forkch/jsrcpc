@@ -33,6 +33,7 @@ public class CommandChannel {
 
 	private final Set<CommandDataListener> listeners;
 
+
 	/**
 	 * creates a new SRCP connection on the command channel to handle all
 	 * command communication.

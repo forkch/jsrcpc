@@ -220,7 +220,6 @@ public class SRCPLocomotiveControl implements GLInfoListener, Constants {
                 + " )");
         final SRCPLocomotive locomotive = addressLocomotiveCache
                 .get(new SRCPAddress(bus, address));
-        System.out.println(locomotive);
         try {
             checkLocomotive(locomotive);
         } catch (final SRCPModelException e1) {
@@ -233,7 +232,6 @@ public class SRCPLocomotiveControl implements GLInfoListener, Constants {
             locomotive.setCurrentSpeed(v);
             locomotive.setFunctions(functions);
             informListeners(locomotive);
-            System.out.println("updated locomotive");
         }
     }
 

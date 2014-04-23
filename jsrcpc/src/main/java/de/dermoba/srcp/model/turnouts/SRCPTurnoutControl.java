@@ -37,7 +37,7 @@ import de.dermoba.srcp.model.SRCPAddress;
 import de.dermoba.srcp.model.SRCPModelException;
 
 public class SRCPTurnoutControl implements GAInfoListener {
-	private static Logger logger = Logger.getLogger(SRCPTurnoutControl.class);
+	private static org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(SRCPTurnoutControl.class);
 	private static SRCPTurnoutControl instance;
 
 	private final List<SRCPTurnoutChangeListener> listeners = new ArrayList<SRCPTurnoutChangeListener>();;
@@ -236,15 +236,13 @@ public class SRCPTurnoutControl implements GAInfoListener {
 				ga.set(getPort(turnout, SRCPTurnout.TURNOUT_STRAIGHT_PORT),
 						SRCPTurnout.TURNOUT_PORT_ACTIVATE, time);
 			}
-			// ga.set(getPort(turnout, SRCPTurnout.TURNOUT_CURVED_PORT),
-			// SRCPTurnout.TURNOUT_PORT_DEACTIVATE, activationTime);
+
 			if (turnout.isCutter()) {
 				turnout.setTurnoutState(SRCPTurnoutState.LEFT);
 			} else {
 				turnout.setTurnoutState(SRCPTurnoutState.STRAIGHT);
 			}
 
-			// informListeners(turnout);
 			lastChangedTurnout = turnout;
 		} catch (final SRCPDeviceLockedException x1) {
 			throw new SRCPTurnoutLockedException(Constants.ERR_LOCKED, x1);
