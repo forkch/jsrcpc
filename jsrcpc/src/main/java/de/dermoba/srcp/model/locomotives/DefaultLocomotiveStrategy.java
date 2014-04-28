@@ -76,4 +76,9 @@ public class DefaultLocomotiveStrategy extends LocomotiveStrategy {
 			return new boolean[] { true };
 		}
 	}
+
+    @Override
+    public void mergeFunctions(SRCPLocomotive locomotive, int address, boolean[] functions) {
+        locomotive.setFunctions(functions);
+    }
 }

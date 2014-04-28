@@ -1,7 +1,5 @@
 package de.dermoba.srcp.model.locomotives;
 
-import java.util.Arrays;
-
 import de.dermoba.srcp.client.SRCPSession;
 import de.dermoba.srcp.common.Response;
 import de.dermoba.srcp.common.exception.SRCPException;
@@ -9,6 +7,8 @@ import de.dermoba.srcp.devices.GL;
 import de.dermoba.srcp.model.Constants;
 import de.dermoba.srcp.model.SRCPAddress;
 import de.dermoba.srcp.model.locking.SRCPLockControl;
+
+import java.util.Arrays;
 
 public class SimulatedMFXLocomotiveStrategy extends LocomotiveStrategy {
 
@@ -95,5 +95,21 @@ public class SimulatedMFXLocomotiveStrategy extends LocomotiveStrategy {
 		}
 		return functions;
 	}
+
+    @Override
+    public void mergeFunctions(SRCPLocomotive locomotive, int address, boolean[] newFunctions) {
+
+        DoubleMMDigitalLocomotive simulatedMfxLocomotive = (DoubleMMDigitalLocomotive) locomotive;
+        int startOffset = 0;
+        if(simulatedMfxLocomotive.getAddress2() == address) {
+            startOffset = 5;
+        }
+
+        boolean[] mergedFunctions = Arrays.copyOf(locomotive.getFunctions(), locomotive.getFunctions().length);
+        for(int i = startOffset; i < startOffset+newFunctions.length; i++) {
+            mergedFunctions[i] = newFunctions[i];
+        }
+        simulatedMfxLocomotive.setFunctions(mergedFunctions);
+    }
 
 }
