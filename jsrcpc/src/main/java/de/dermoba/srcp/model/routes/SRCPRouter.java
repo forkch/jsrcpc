@@ -20,11 +20,14 @@ package de.dermoba.srcp.model.routes;
 
 import de.dermoba.srcp.model.SRCPModelException;
 import de.dermoba.srcp.model.turnouts.*;
+import org.apache.log4j.Logger;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class SRCPRouter extends Thread implements SRCPTurnoutChangeListener {
 
+    private static final Logger LOGGER = Logger.getLogger(SRCPRouter.class);
     private final boolean enableRoute;
     private final int waitTime;
     private final List<SRCPRouteChangeListener> listener;
@@ -61,7 +64,7 @@ public class SRCPRouter extends Thread implements SRCPTurnoutChangeListener {
 
     private void disableRoute() throws SRCPTurnoutException,
             SRCPModelException, InterruptedException {
-        final List<SRCPRouteItem> routeItems = sRoute.getRouteItems();
+        final List<SRCPRouteItem> routeItems = new ArrayList<SRCPRouteItem>(sRoute.getRouteItems());
         final SRCPTurnoutControl sc = SRCPTurnoutControl.getInstance();
         for (final SRCPRouteItem ri : routeItems) {
             final SRCPTurnout turnoutToRoute = ri.getTurnout();
@@ -78,7 +81,7 @@ public class SRCPRouter extends Thread implements SRCPTurnoutChangeListener {
 
     private void enableRoute() throws SRCPTurnoutException, SRCPModelException,
             InterruptedException {
-        final List<SRCPRouteItem> routeItems = sRoute.getRouteItems();
+        final List<SRCPRouteItem> routeItems = new ArrayList<SRCPRouteItem>(sRoute.getRouteItems());
         final SRCPTurnoutControl sc = SRCPTurnoutControl.getInstance();
         for (final SRCPRouteItem ri : routeItems) {
             final SRCPTurnout turnoutToRoute = ri.getTurnout();

@@ -18,18 +18,17 @@
 
 package de.dermoba.srcp.model.routes;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.log4j.Logger;
-
 import de.dermoba.srcp.client.SRCPSession;
 import de.dermoba.srcp.model.Constants;
 import de.dermoba.srcp.model.NoSessionException;
 import de.dermoba.srcp.model.turnouts.SRCPTurnoutException;
+import org.apache.log4j.Logger;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class SRCPRouteControl {
-	private static Logger logger = Logger.getLogger(SRCPRouteControl.class);
+	private static final Logger LOGGER = Logger.getLogger(SRCPRouteControl.class);
 	private static SRCPRouteControl instance;
 
 	private final List<SRCPRouteChangeListener> listeners;
@@ -52,7 +51,7 @@ public class SRCPRouteControl {
 	}
 
 	private SRCPRouteControl() {
-		logger.info("SRCPRouteControl loaded");
+		LOGGER.info("SRCPRouteControl loaded");
 		listeners = new ArrayList<SRCPRouteChangeListener>();
 	}
 
@@ -65,6 +64,11 @@ public class SRCPRouteControl {
 
 	public void toggle(final SRCPRoute route) throws SRCPTurnoutException,
 			SRCPRouteException {
+
+        if(route.getRouteState() == SRCPRouteState.ROUTING) {
+            LOGGER.warn("route is currently routing therefore ignoring this state change!");
+            return;
+        }
 		if (route.getRouteState().equals(SRCPRouteState.ENABLED)) {
 			disableRoute(route);
 		} else {
@@ -81,8 +85,13 @@ public class SRCPRouteControl {
 	 */
 	public void enableRoute(final SRCPRoute route) throws SRCPTurnoutException,
 			SRCPRouteException {
+
+        if(route.getRouteState() == SRCPRouteState.ROUTING) {
+            LOGGER.warn("route is currently routing therefore ignoring this state change!");
+            return;
+        }
 		checkRoute(route);
-		logger.debug("enabling route: " + route);
+		LOGGER.debug("enabling route: " + route);
 
 		final SRCPRouter switchRouter = new SRCPRouter(route, true,
 				routingDelay, listeners);
@@ -100,8 +109,13 @@ public class SRCPRouteControl {
 	 */
 	public void disableRoute(final SRCPRoute route)
 			throws SRCPTurnoutException, SRCPRouteException {
+
+        if(route.getRouteState() == SRCPRouteState.ROUTING) {
+            LOGGER.warn("route is currently routing therefore ignoring this state change!");
+            return;
+        }
 		checkRoute(route);
-		logger.debug("disabling route: " + route);
+		LOGGER.debug("disabling route: " + route);
 
 		final SRCPRouter switchRouter = new SRCPRouter(route, false,
 				routingDelay, listeners);
