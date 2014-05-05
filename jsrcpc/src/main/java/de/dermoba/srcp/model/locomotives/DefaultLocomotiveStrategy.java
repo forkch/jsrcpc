@@ -4,11 +4,13 @@ import de.dermoba.srcp.client.SRCPSession;
 import de.dermoba.srcp.common.Response;
 import de.dermoba.srcp.common.exception.SRCPException;
 import de.dermoba.srcp.devices.GL;
-import de.dermoba.srcp.model.Constants;
 import de.dermoba.srcp.model.SRCPAddress;
 import de.dermoba.srcp.model.locking.SRCPLockControl;
+import org.apache.log4j.Logger;
 
 public class DefaultLocomotiveStrategy extends LocomotiveStrategy {
+
+    private static final Logger LOGGER = org.apache.log4j.Logger.getLogger(DefaultLocomotiveStrategy.class);
 
 	@Override
 	public void setSpeed(final SRCPLocomotive locomotive, final int speed,
@@ -57,7 +59,8 @@ public class DefaultLocomotiveStrategy extends LocomotiveStrategy {
 					locomotive.getProtocol(), params);
 			locomotive.setInitialized(true);
 		} catch (final SRCPException x) {
-			throw new SRCPLocomotiveException(Constants.ERR_INIT_FAILED, x);
+			LOGGER.warn("could not init loco", x);
+			//throw new SRCPLocomotiveException(Constants.ERR_INIT_FAILED, x);
 		}
 	}
 

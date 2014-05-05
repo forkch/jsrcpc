@@ -128,6 +128,8 @@ public class SRCPRouter extends Thread implements SRCPTurnoutChangeListener {
                         l.nextTurnoutDerouted(sRoute);
                     }
                 }
+            } else {
+                LOGGER.warn("turnout which does not belong to this route");
             }
         }
 
