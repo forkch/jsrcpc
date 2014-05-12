@@ -35,7 +35,7 @@ import java.util.*;
  * @author fork
  */
 public class SRCPLocomotiveControl implements GLInfoListener, Constants {
-    private static Logger logger = Logger
+    private static Logger LOGGER = Logger
             .getLogger(SRCPLocomotiveControl.class);
 
     private static SRCPLocomotiveControl instance;
@@ -47,19 +47,19 @@ public class SRCPLocomotiveControl implements GLInfoListener, Constants {
     private SRCPSession session;
 
     @SuppressWarnings("rawtypes")
-    private static final Map<Class, LocomotiveStrategy> locomotiveStrategies = new HashMap<Class, LocomotiveStrategy>();
+    private static final Map<Class, LocomotiveStrategy> LOCOMOTIVE_STRATEGIES = new HashMap<Class, LocomotiveStrategy>();
 
     static {
         final DefaultLocomotiveStrategy defaultStrategy = new DefaultLocomotiveStrategy();
         final SimulatedMFXLocomotiveStrategy simulatedMFXStrategy = new SimulatedMFXLocomotiveStrategy();
-        locomotiveStrategies.put(MMDigitalLocomotive.class, defaultStrategy);
-        locomotiveStrategies.put(MMDeltaLocomotive.class, defaultStrategy);
-        locomotiveStrategies.put(DoubleMMDigitalLocomotive.class,
+        LOCOMOTIVE_STRATEGIES.put(MMDigitalLocomotive.class, defaultStrategy);
+        LOCOMOTIVE_STRATEGIES.put(MMDeltaLocomotive.class, defaultStrategy);
+        LOCOMOTIVE_STRATEGIES.put(DoubleMMDigitalLocomotive.class,
                 simulatedMFXStrategy);
     }
 
     private SRCPLocomotiveControl() {
-        logger.info("SRCPLocomotiveControl loaded");
+        LOGGER.info("SRCPLocomotiveControl loaded");
         listeners = new ArrayList<SRCPLocomotiveChangeListener>();
         srcpLocomotives = new ArrayList<SRCPLocomotive>();
         addressLocomotiveCache = new HashMap<SRCPAddress, SRCPLocomotive>();
@@ -123,7 +123,7 @@ public class SRCPLocomotiveControl implements GLInfoListener, Constants {
 
         checkLocomotive(locomotive);
         try {
-            final LocomotiveStrategy strategy = locomotiveStrategies
+            final LocomotiveStrategy strategy = LOCOMOTIVE_STRATEGIES
                     .get(locomotive.getClass());
             strategy.setSpeed(locomotive, speed, functions);
             //informListeners(locomotive);
@@ -186,7 +186,7 @@ public class SRCPLocomotiveControl implements GLInfoListener, Constants {
                               final int emergencyStopFunction) throws SRCPLocomotiveException,
             SRCPModelException {
         checkLocomotive(locomotive);
-        final LocomotiveStrategy locomotiveStrategy = locomotiveStrategies
+        final LocomotiveStrategy locomotiveStrategy = LOCOMOTIVE_STRATEGIES
                 .get(locomotive.getClass());
         final boolean[] functions = locomotiveStrategy
                 .getEmergencyStopFunctions(locomotive, emergencyStopFunction);
@@ -196,7 +196,7 @@ public class SRCPLocomotiveControl implements GLInfoListener, Constants {
 
     public void GLinit(final double timestamp, final int bus,
                        final int address, final String protocol, final String[] params) {
-        logger.debug("GLinit( " + bus + " , " + address + " , " + protocol
+        LOGGER.debug("GLinit( " + bus + " , " + address + " , " + protocol
                 + " , " + Arrays.toString(params) + " )");
         final SRCPLocomotive locomotive = addressLocomotiveCache
                 .get(new SRCPAddress(bus, address));
@@ -215,7 +215,7 @@ public class SRCPLocomotiveControl implements GLInfoListener, Constants {
                       final SRCPLocomotiveDirection drivemode, final int v,
                       final int vMax, final boolean[] functions) {
 
-        logger.debug("GLset( " + bus + " , " + address + " , " + drivemode
+        LOGGER.debug("GLset( " + bus + " , " + address + " , " + drivemode
                 + " , " + v + " , " + vMax + " , " + Arrays.toString(functions)
                 + " )");
         final SRCPLocomotive locomotive = addressLocomotiveCache
@@ -230,13 +230,14 @@ public class SRCPLocomotiveControl implements GLInfoListener, Constants {
                 ) {
             locomotive.setDirection(drivemode);
             locomotive.setCurrentSpeed(v);
-            locomotive.setFunctions(functions);
+            LOCOMOTIVE_STRATEGIES.get(locomotive.getClass()).mergeFunctions(locomotive, address, functions);
+            LOGGER.info("merged functions:" + locomotive.getFunctions());
             informListeners(locomotive);
         }
     }
 
     public void GLterm(final double timestamp, final int bus, final int address) {
-        logger.debug("GLterm( " + bus + " , " + address + " )");
+        LOGGER.debug("GLterm( " + bus + " , " + address + " )");
 
         final SRCPLocomotive locomotive = addressLocomotiveCache
                 .get(new SRCPAddress(bus, address));
@@ -299,7 +300,7 @@ public class SRCPLocomotiveControl implements GLInfoListener, Constants {
             addressLocomotiveCache.put(new SRCPAddress(locomotive.getBus(), locomotive.getAddress()), locomotive);
         }
 
-        final LocomotiveStrategy strategy = locomotiveStrategies.get(locomotive
+        final LocomotiveStrategy strategy = LOCOMOTIVE_STRATEGIES.get(locomotive
                 .getClass());
         strategy.initLocomotive(locomotive, session, lockControl);
 

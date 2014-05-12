@@ -20,216 +20,218 @@ package de.dermoba.srcp.model.turnouts;
 
 import de.dermoba.srcp.client.SRCPSession;
 import de.dermoba.srcp.devices.GA;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 public abstract class SRCPTurnout {
 
-	protected int				address1;
+    protected int address1;
 
-	protected boolean			address1Switched;
+    protected boolean address1Switched;
 
-	protected int				address2;
+    protected int address2;
 
-	protected boolean			address2Switched;
+    protected boolean address2Switched;
 
-	protected int				bus1;
+    protected int bus1;
 
-	protected int				bus2;
+    protected int bus2;
 
-	protected SRCPTurnoutState	defaultState;
+    protected SRCPTurnoutState defaultState;
 
-	private GA					ga;
+    private GA ga;
 
-	protected boolean			initialized		= false;
+    protected boolean initialized = false;
 
-	protected String			protocol;
+    protected String protocol;
 
-	private SRCPSession			session;
+    private SRCPSession session;
 
-	private SRCPTurnout[]		subTurnouts;
+    private SRCPTurnout[] subTurnouts;
 
-	protected SRCPTurnoutState	turnoutState	= SRCPTurnoutState.UNDEF;
+    protected SRCPTurnoutState turnoutState = SRCPTurnoutState.UNDEF;
 
-	protected SRCPTurnoutTypes	turnoutType;
-	public final static int		TURNOUT_STRAIGHT_PORT		= 0;
+    protected SRCPTurnoutTypes turnoutType;
+    public final static int TURNOUT_STRAIGHT_PORT = 0;
 
-	public final static int		TURNOUT_CURVED_PORT			= 1;
-	public final static int		TURNOUT_PORT_ACTIVATE		= 1;
+    public final static int TURNOUT_CURVED_PORT = 1;
+    public final static int TURNOUT_PORT_ACTIVATE = 1;
 
-	public final static int		TURNOUT_PORT_DEACTIVATE		= 0;
+    public final static int TURNOUT_PORT_DEACTIVATE = 0;
 
-	public SRCPTurnout() {
-	}
+    public SRCPTurnout() {
+    }
 
-	public SRCPTurnout(int address1, boolean address1Switched, int bus1,
-			SRCPTurnoutState defaultState, SRCPTurnoutTypes turnoutType) {
-		super();
-		this.address1 = address1;
-		this.address1Switched = address1Switched;
-		this.bus1 = bus1;
-		this.defaultState = defaultState;
-		this.turnoutType = turnoutType;
-	}
+    public SRCPTurnout(int address1, boolean address1Switched, int bus1,
+                       SRCPTurnoutState defaultState, SRCPTurnoutTypes turnoutType) {
+        super();
+        this.address1 = address1;
+        this.address1Switched = address1Switched;
+        this.bus1 = bus1;
+        this.defaultState = defaultState;
+        this.turnoutType = turnoutType;
+    }
 
-	public SRCPTurnout(int address1, boolean address1Switched, int address2,
-			boolean address2Switched, int bus1, int bus2,
-			SRCPTurnoutState defaultState, SRCPTurnoutTypes turnoutType) {
-		super();
-		this.address1 = address1;
-		this.address1Switched = address1Switched;
-		this.address2 = address2;
-		this.address2Switched = address2Switched;
-		this.bus1 = bus1;
-		this.bus2 = bus2;
-		this.defaultState = defaultState;
-		this.turnoutType = turnoutType;
-	}
+    public SRCPTurnout(int address1, boolean address1Switched, int address2,
+                       boolean address2Switched, int bus1, int bus2,
+                       SRCPTurnoutState defaultState, SRCPTurnoutTypes turnoutType) {
+        super();
+        this.address1 = address1;
+        this.address1Switched = address1Switched;
+        this.address2 = address2;
+        this.address2Switched = address2Switched;
+        this.bus1 = bus1;
+        this.bus2 = bus2;
+        this.defaultState = defaultState;
+        this.turnoutType = turnoutType;
+    }
 
-	public abstract Object clone();
+    public abstract Object clone();
 
-	public abstract boolean checkAddress();
+    public abstract boolean checkAddress();
 
-	public boolean checkBus() {
-		switch (turnoutType) {
-		case DEFAULT:
-		case DOUBLECROSS:
-		case CUTTER:
-			return (bus1 > 0);
-		case THREEWAY:
-			return (bus2 > 0);
-		}
-		return false;
-	}
+    public boolean checkBus() {
+        switch (turnoutType) {
+            case DEFAULT:
+            case DOUBLECROSS:
+            case CUTTER:
+                return (bus1 > 0);
+            case THREEWAY:
+                return (bus2 > 0);
+        }
+        return false;
+    }
 
-	public boolean checkBusAddress() {
-		return (checkBus() && checkAddress());
-	}
+    public boolean checkBusAddress() {
+        return (checkBus() && checkAddress());
+    }
 
-	public int getAddress1() {
-		return address1;
-	}
+    public int getAddress1() {
+        return address1;
+    }
 
-	public int getAddress2() {
-		return address2;
-	}
+    public int getAddress2() {
+        return address2;
+    }
 
-	public int getBus1() {
-		return bus1;
-	}
+    public int getBus1() {
+        return bus1;
+    }
 
-	public int getBus2() {
-		return bus2;
-	}
+    public int getBus2() {
+        return bus2;
+    }
 
-	public SRCPTurnoutState getDefaultState() {
-		return defaultState;
-	}
+    public SRCPTurnoutState getDefaultState() {
+        return defaultState;
+    }
 
-	public GA getGA() {
-		return this.ga;
-	}
+    public GA getGA() {
+        return this.ga;
+    }
 
-	public String getProtocol() {
-		return protocol;
-	}
+    public String getProtocol() {
+        return protocol;
+    }
 
-	public SRCPSession getSession() {
-		return this.session;
-	}
+    public SRCPSession getSession() {
+        return this.session;
+    }
 
-	protected SRCPTurnout[] getSubTurnouts() {
-		return subTurnouts;
-	}
+    protected SRCPTurnout[] getSubTurnouts() {
+        return subTurnouts;
+    }
 
-	public SRCPTurnoutState getTurnoutState() {
-		return turnoutState;
-	}
+    public SRCPTurnoutState getTurnoutState() {
+        return turnoutState;
+    }
 
-	public SRCPTurnoutTypes getTurnoutType() {
-		return turnoutType;
-	}
+    public SRCPTurnoutTypes getTurnoutType() {
+        return turnoutType;
+    }
 
-	public boolean isAddress1Switched() {
-		return address1Switched;
-	}
+    public boolean isAddress1Switched() {
+        return address1Switched;
+    }
 
-	public boolean isAddress2Switched() {
-		return address2Switched;
-	}
+    public boolean isAddress2Switched() {
+        return address2Switched;
+    }
 
-	public boolean isInitialized() {
-		return initialized;
-	}
+    public boolean isInitialized() {
+        return initialized;
+    }
 
-	public boolean isThreeWay() {
-		return turnoutType.equals(SRCPTurnoutTypes.THREEWAY);
-	}
-	
-	public boolean isCutter() {
-		return turnoutType.equals(SRCPTurnoutTypes.CUTTER);
-	}
+    public boolean isThreeWay() {
+        return turnoutType.equals(SRCPTurnoutTypes.THREEWAY);
+    }
 
-	public void setAddress1(int address1) {
-		this.address1 = address1;
-	}
+    public boolean isCutter() {
+        return turnoutType.equals(SRCPTurnoutTypes.CUTTER);
+    }
 
-	public void setAddress1Switched(boolean address1Switched) {
-		this.address1Switched = address1Switched;
-	}
+    public void setAddress1(int address1) {
+        this.address1 = address1;
+    }
 
-	public void setAddress2(int address2) {
-		this.address2 = address2;
-	}
+    public void setAddress1Switched(boolean address1Switched) {
+        this.address1Switched = address1Switched;
+    }
 
-	public void setAddress2Switched(boolean address2Switched) {
-		this.address2Switched = address2Switched;
-	}
+    public void setAddress2(int address2) {
+        this.address2 = address2;
+    }
 
-	public void setBus1(int bus1) {
-		this.bus1 = bus1;
-	}
+    public void setAddress2Switched(boolean address2Switched) {
+        this.address2Switched = address2Switched;
+    }
 
-	public void setBus2(int bus2) {
-		this.bus2 = bus2;
-	}
+    public void setBus1(int bus1) {
+        this.bus1 = bus1;
+    }
 
-	public void setDefaultState(SRCPTurnoutState defaultState) {
-		this.defaultState = defaultState;
-	}
+    public void setBus2(int bus2) {
+        this.bus2 = bus2;
+    }
 
-	public void setGA(GA ga) {
-		this.ga = ga;
-	}
+    public void setDefaultState(SRCPTurnoutState defaultState) {
+        this.defaultState = defaultState;
+    }
 
-	public void setInitialized(boolean init) {
-		initialized = init;
-	}
+    public void setGA(GA ga) {
+        this.ga = ga;
+    }
 
-	public void setProtocol(String protocol) {
-		this.protocol = protocol;
-	}
+    public void setInitialized(boolean init) {
+        initialized = init;
+    }
 
-	protected void setSession(SRCPSession session) {
+    public void setProtocol(String protocol) {
+        this.protocol = protocol;
+    }
+
+    protected void setSession(SRCPSession session) {
         if (session != this.session) {
             setGA(null);
             setInitialized(false);
         }
-		this.session = session;
-	}
+        this.session = session;
+    }
 
-	protected void setSubTurnouts(SRCPTurnout[] subTurnouts) {
-		this.subTurnouts = subTurnouts;
-	}
+    protected void setSubTurnouts(SRCPTurnout[] subTurnouts) {
+        this.subTurnouts = subTurnouts;
+    }
 
-	protected void setTurnoutState(SRCPTurnoutState switchState) {
-		this.turnoutState = switchState;
-	}
+    protected void setTurnoutState(SRCPTurnoutState switchState) {
+        this.turnoutState = switchState;
+    }
 
-	public void setTurnoutType(SRCPTurnoutTypes turnoutType) {
-		this.turnoutType = turnoutType;
-	}
+    public void setTurnoutType(SRCPTurnoutTypes turnoutType) {
+        this.turnoutType = turnoutType;
+    }
 
-	@Override
-	public int hashCode() {
+/*	@Override
+    public int hashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + address1;
@@ -284,10 +286,39 @@ public abstract class SRCPTurnout {
 		} else if (!turnoutType.equals(other.turnoutType))
 			return false;
 		return true;
-	}
+	}*/
 
-	public String toString() {
-		return turnoutType.toString() + " [" + bus1 + "," + address1 + "],["
-				+ bus2 + "," + address2 + "]";
-	}
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder().append(bus1)
+                .append(address1)
+                .append(address1Switched)
+                .append(bus2)
+                .append(address2)
+                .append(address2Switched)
+                .build();
+
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null || !(obj instanceof SRCPTurnout)) {
+            return false;
+        } else {
+            SRCPTurnout rhs = (SRCPTurnout) obj;
+            return new EqualsBuilder().append(bus1, rhs.getBus1())
+                    .append(address1, rhs.getAddress1())
+                    .append(address1Switched, rhs.isAddress1Switched())
+                    .append(bus2, rhs.getBus2())
+                    .append(address2, rhs.getAddress2())
+                    .append(address2Switched, rhs.isAddress2Switched())
+                    .build();
+        }
+    }
+
+    public String toString() {
+        return turnoutType.toString() + " [" + bus1 + "," + address1 + "],["
+                + bus2 + "," + address2 + "]";
+    }
 }
