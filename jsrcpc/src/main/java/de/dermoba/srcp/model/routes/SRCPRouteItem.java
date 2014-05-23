@@ -19,7 +19,6 @@
 package de.dermoba.srcp.model.routes;
 
 import de.dermoba.srcp.model.turnouts.SRCPTurnout;
-import de.dermoba.srcp.model.turnouts.SRCPTurnoutState;
 
 public class SRCPRouteItem {
 
@@ -27,7 +26,7 @@ public class SRCPRouteItem {
 
 	private SRCPRoute			route;
 
-	private SRCPTurnoutState	routedState;
+	private SRCPRouteItemState	routedState;
 
 	@Override
 	public boolean equals(Object obj) {
@@ -73,7 +72,7 @@ public class SRCPRouteItem {
 
 	/** full constructor */
 	public SRCPRouteItem(SRCPTurnout turnout, SRCPRoute route,
-			SRCPTurnoutState routedState) {
+			SRCPRouteItemState routedState) {
 		this.turnout = turnout;
 		this.route = route;
 		this.routedState = routedState;
@@ -95,11 +94,11 @@ public class SRCPRouteItem {
 		this.route = route;
 	}
 
-	public SRCPTurnoutState getRoutedState() {
+	public SRCPRouteItemState getRoutedState() {
 		return routedState;
 	}
 
-	public void setRoutedState(SRCPTurnoutState routedState) {
+	public void setRoutedState(SRCPRouteItemState routedState) {
 		this.routedState = routedState;
 	}
 }

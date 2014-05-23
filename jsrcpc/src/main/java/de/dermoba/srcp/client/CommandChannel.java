@@ -16,9 +16,10 @@ import de.dermoba.srcp.common.SocketWriter;
 import de.dermoba.srcp.common.exception.SRCPException;
 import de.dermoba.srcp.common.exception.SRCPHostNotFoundException;
 import de.dermoba.srcp.common.exception.SRCPIOException;
+import org.apache.log4j.Logger;
 
 public class CommandChannel {
-
+private static final Logger LOGGER = Logger.getLogger(CommandChannel.class);
 	private int id;
 
 	String serverName = null;
@@ -32,6 +33,7 @@ public class CommandChannel {
 	private SocketReader in = null;
 
 	private final Set<CommandDataListener> listeners;
+
 
 	/**
 	 * creates a new SRCP connection on the command channel to handle all
@@ -94,8 +96,10 @@ public class CommandChannel {
 				informListenersSent(output);
 				output += "\n";
 				out.write(output);
+                LOGGER.debug("wrote output: " + output);
 			}
 			s = in.read();
+            LOGGER.debug("received response: " + s);
 			if (s == null) {
 				throw new SRCPIOException();
 			}

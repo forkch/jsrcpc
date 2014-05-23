@@ -23,8 +23,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
-
 import de.dermoba.srcp.client.SRCPSession;
 import de.dermoba.srcp.common.exception.SRCPDeviceLockedException;
 import de.dermoba.srcp.common.exception.SRCPException;
@@ -35,9 +33,10 @@ import de.dermoba.srcp.model.InvalidAddressException;
 import de.dermoba.srcp.model.NoSessionException;
 import de.dermoba.srcp.model.SRCPAddress;
 import de.dermoba.srcp.model.SRCPModelException;
+import org.apache.log4j.Logger;
 
 public class SRCPTurnoutControl implements GAInfoListener {
-	private static Logger logger = Logger.getLogger(SRCPTurnoutControl.class);
+	private static final Logger LOGGER = Logger.getLogger(SRCPTurnoutControl.class);
 	private static SRCPTurnoutControl instance;
 
 	private final List<SRCPTurnoutChangeListener> listeners = new ArrayList<SRCPTurnoutChangeListener>();;
@@ -55,7 +54,7 @@ public class SRCPTurnoutControl implements GAInfoListener {
 	private int cutterActivationTime = Constants.DEFAULT_CUTTER_ACTIVATION_TIME;
 
 	private SRCPTurnoutControl() {
-		logger.info("SRCPTurnoutControl loaded");
+		LOGGER.info("SRCPTurnoutControl loaded");
 	}
 
 	public static SRCPTurnoutControl getInstance() {
@@ -216,6 +215,7 @@ public class SRCPTurnoutControl implements GAInfoListener {
 	public void setStraight(final SRCPTurnout turnout)
 			throws SRCPTurnoutException, SRCPModelException {
 		checkTurnout(turnout);
+        LOGGER.info("checked turnout");
 		previousState = turnout.getTurnoutState();
 		if (turnout.isThreeWay()) {
 			setStraightThreeWay(turnout);
@@ -236,20 +236,18 @@ public class SRCPTurnoutControl implements GAInfoListener {
 				ga.set(getPort(turnout, SRCPTurnout.TURNOUT_STRAIGHT_PORT),
 						SRCPTurnout.TURNOUT_PORT_ACTIVATE, time);
 			}
-			// ga.set(getPort(turnout, SRCPTurnout.TURNOUT_CURVED_PORT),
-			// SRCPTurnout.TURNOUT_PORT_DEACTIVATE, activationTime);
+
 			if (turnout.isCutter()) {
 				turnout.setTurnoutState(SRCPTurnoutState.LEFT);
 			} else {
 				turnout.setTurnoutState(SRCPTurnoutState.STRAIGHT);
 			}
 
-			// informListeners(turnout);
 			lastChangedTurnout = turnout;
 		} catch (final SRCPDeviceLockedException x1) {
 			throw new SRCPTurnoutLockedException(Constants.ERR_LOCKED, x1);
 		} catch (final SRCPException e) {
-			logger.error(e);
+			LOGGER.error(e);
 			throw new SRCPTurnoutException(Constants.ERR_TOGGLE_FAILED, e);
 		}
 	}
@@ -294,15 +292,13 @@ public class SRCPTurnoutControl implements GAInfoListener {
 						SRCPTurnout.TURNOUT_PORT_ACTIVATE, time);
 			}
 
-			// ga.set(getPort(turnout, SRCPTurnout.TURNOUT_STRAIGHT_PORT),
-			// SRCPTurnout.TURNOUT_PORT_DEACTIVATE, activationTime);
 			turnout.setTurnoutState(SRCPTurnoutState.LEFT);
 			// informListeners(turnout);
 			lastChangedTurnout = turnout;
 		} catch (final SRCPDeviceLockedException x1) {
 			throw new SRCPTurnoutLockedException(Constants.ERR_LOCKED, x1);
 		} catch (final SRCPException e) {
-			logger.error(e);
+			LOGGER.error(e);
 			throw new SRCPTurnoutException(Constants.ERR_TOGGLE_FAILED, e);
 		}
 	}
@@ -360,8 +356,8 @@ public class SRCPTurnoutControl implements GAInfoListener {
 	@Override
 	public void GAset(final double timestamp, final int bus, final int address,
 			final int port, final int value) {
-		logger.debug("GAset(" + bus + " , " + address + " , " + port + " , "
-				+ value + " )");
+		LOGGER.debug("GAset(" + bus + " , " + address + " , " + port + " , "
+                + value + " )");
 		final SRCPTurnout turnout = getTurnoutByAddressBus(bus, address);
 		if (turnout == null) {
 			// a turnout which the srcp-server knows but not me
@@ -426,8 +422,8 @@ public class SRCPTurnoutControl implements GAInfoListener {
 	@Override
 	public void GAinit(final double timestamp, final int bus,
 			final int address, final String protocol, final String[] params) {
-		logger.debug("GAinit(" + bus + " , " + address + " , " + protocol
-				+ " , " + params + " )");
+		LOGGER.debug("GAinit(" + bus + " , " + address + " , " + protocol
+                + " , " + params + " )");
 
 		final SRCPTurnout turnout = getTurnoutByAddressBus(bus, address);
 		if (turnout == null) {
@@ -445,7 +441,7 @@ public class SRCPTurnoutControl implements GAInfoListener {
 
 	@Override
 	public void GAterm(final double timestamp, final int bus, final int address) {
-		logger.debug("GAterm( " + bus + " , " + address + " )");
+		LOGGER.debug("GAterm( " + bus + " , " + address + " )");
 		final SRCPTurnout turnout = getTurnoutByAddressBus(bus, address);
 		try {
 			checkTurnout(turnout);
@@ -479,7 +475,7 @@ public class SRCPTurnoutControl implements GAInfoListener {
 		for (final SRCPTurnoutChangeListener scl : listeners) {
 			scl.turnoutChanged(changedTurnout, changedTurnout.getTurnoutState());
 		}
-		logger.debug("turnoutChanged(" + changedTurnout + ")");
+		LOGGER.debug("turnoutChanged(" + changedTurnout + ")");
 
 	}
 
@@ -518,7 +514,7 @@ public class SRCPTurnoutControl implements GAInfoListener {
 	}
 
 	void checkTurnout(final SRCPTurnout turnout) throws SRCPModelException {
-		logger.debug("checkTurnout(" + turnout + ")");
+		LOGGER.debug("checkTurnout(" + turnout + ")");
 		if (turnout == null) {
 			return;
 		}
@@ -569,7 +565,7 @@ public class SRCPTurnoutControl implements GAInfoListener {
 				turnout.setGA(ga);
 				turnout.setInitialized(true);
 			} catch (final SRCPException e) {
-				logger.error(e);
+				LOGGER.error(e);
 				throw new SRCPTurnoutException(Constants.ERR_INIT_FAILED, e);
 			}
 		}

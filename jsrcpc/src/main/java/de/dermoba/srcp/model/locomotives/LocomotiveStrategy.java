@@ -42,4 +42,5 @@ public abstract class LocomotiveStrategy {
 	public abstract boolean[] getEmergencyStopFunctions(
 			final SRCPLocomotive locomotive, int emergencyStopFunction);
 
+    public abstract void mergeFunctions(SRCPLocomotive locomotive, int address, boolean[] functions);
 }
