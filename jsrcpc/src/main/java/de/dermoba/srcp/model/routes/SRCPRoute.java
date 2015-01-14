@@ -18,6 +18,9 @@
 
 package de.dermoba.srcp.model.routes;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,32 +56,20 @@ public class SRCPRoute {
 
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result
-				+ ((routeItems == null) ? 0 : routeItems.hashCode());
-		return result;
+		HashCodeBuilder hashCodeBuilder = new HashCodeBuilder();
+		hashCodeBuilder.append(routeItems);
+		return routeItems.hashCode();
+
 	}
 
 	@Override
 	public boolean equals(final Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
+		if(!(obj instanceof  SRCPRoute)) {
 			return false;
 		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		final SRCPRoute other = (SRCPRoute) obj;
-		if (routeItems == null) {
-			if (other.routeItems != null) {
-				return false;
-			}
-		} else if (!routeItems.equals(other.routeItems)) {
-			return false;
-		}
-		return true;
+		SRCPRoute rhs = (SRCPRoute) obj;
+		EqualsBuilder equalsBuilder = new EqualsBuilder();
+		equalsBuilder.append(routeItems, rhs.getRouteItems());
+		return equalsBuilder.build();
 	}
 }

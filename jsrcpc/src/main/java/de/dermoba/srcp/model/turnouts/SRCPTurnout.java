@@ -230,65 +230,6 @@ public abstract class SRCPTurnout {
         this.turnoutType = turnoutType;
     }
 
-/*	@Override
-    public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + address1;
-		result = prime * result + (address1Switched ? 1231 : 1237);
-		result = prime * result + address2;
-		result = prime * result + (address2Switched ? 1231 : 1237);
-		result = prime * result + bus1;
-		result = prime * result + bus2;
-		result = prime * result
-				+ ((defaultState == null) ? 0 : defaultState.hashCode());
-		result = prime * result
-				+ ((protocol == null) ? 0 : protocol.hashCode());
-		result = prime * result
-				+ ((turnoutType == null) ? 0 : turnoutType.hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		final SRCPTurnout other = (SRCPTurnout) obj;
-		if (address1 != other.address1)
-			return false;
-		if (address1Switched != other.address1Switched)
-			return false;
-		if (address2 != other.address2)
-			return false;
-		if (address2Switched != other.address2Switched)
-			return false;
-		if (bus1 != other.bus1)
-			return false;
-		if (bus2 != other.bus2)
-			return false;
-		if (defaultState == null) {
-			if (other.defaultState != null)
-				return false;
-		} else if (!defaultState.equals(other.defaultState))
-			return false;
-		if (protocol == null) {
-			if (other.protocol != null)
-				return false;
-		} else if (!protocol.equals(other.protocol))
-			return false;
-		if (turnoutType == null) {
-			if (other.turnoutType != null)
-				return false;
-		} else if (!turnoutType.equals(other.turnoutType))
-			return false;
-		return true;
-	}*/
-
-
     @Override
     public int hashCode() {
         return new HashCodeBuilder().append(bus1)
