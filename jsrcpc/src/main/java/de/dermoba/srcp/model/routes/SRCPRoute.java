@@ -23,8 +23,11 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class SRCPRoute {
+
+	private String id =UUID.randomUUID().toString();
 
 	private SRCPRouteState routeState = SRCPRouteState.UNDEF;
 
@@ -57,8 +60,8 @@ public class SRCPRoute {
 	@Override
 	public int hashCode() {
 		HashCodeBuilder hashCodeBuilder = new HashCodeBuilder();
-		hashCodeBuilder.append(routeItems);
-		return routeItems.hashCode();
+		hashCodeBuilder.append(id);
+		return hashCodeBuilder.hashCode();
 
 	}
 
@@ -69,7 +72,7 @@ public class SRCPRoute {
 		}
 		SRCPRoute rhs = (SRCPRoute) obj;
 		EqualsBuilder equalsBuilder = new EqualsBuilder();
-		equalsBuilder.append(routeItems, rhs.getRouteItems());
+		equalsBuilder.append(id, rhs.id);
 		return equalsBuilder.build();
 	}
 }
