@@ -107,7 +107,7 @@ public class SimulatedMFXLocomotiveStrategy extends LocomotiveStrategy {
 
         boolean[] mergedFunctions = Arrays.copyOf(locomotive.getFunctions(), locomotive.getFunctions().length);
         for(int i = startOffset; i < startOffset+newFunctions.length; i++) {
-            mergedFunctions[i] = newFunctions[i];
+            mergedFunctions[i] = newFunctions[i-startOffset];
         }
         simulatedMfxLocomotive.setFunctions(mergedFunctions);
     }

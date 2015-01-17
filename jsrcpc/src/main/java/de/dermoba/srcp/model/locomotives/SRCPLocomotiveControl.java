@@ -42,8 +42,8 @@ public class SRCPLocomotiveControl implements GLInfoListener, Constants {
     private final List<SRCPLocomotiveChangeListener> listeners;
     private final SRCPLockControl lockControl = SRCPLockControl.getInstance();
 
-    private final List<SRCPLocomotive> srcpLocomotives;
-    private final Map<SRCPAddress, SRCPLocomotive> addressLocomotiveCache;
+    private final List<SRCPLocomotive> SRCP_LOCOMOTIVE_CACHE;
+    private final Map<SRCPAddress, SRCPLocomotive> BUS_ADDRESS_TO_SRCP_LOCOMOTIVE_CACHE;
     private SRCPSession session;
 
     @SuppressWarnings("rawtypes")
@@ -61,8 +61,8 @@ public class SRCPLocomotiveControl implements GLInfoListener, Constants {
     private SRCPLocomotiveControl() {
         LOGGER.info("SRCPLocomotiveControl loaded");
         listeners = new ArrayList<SRCPLocomotiveChangeListener>();
-        srcpLocomotives = new ArrayList<SRCPLocomotive>();
-        addressLocomotiveCache = new HashMap<SRCPAddress, SRCPLocomotive>();
+        SRCP_LOCOMOTIVE_CACHE = new ArrayList<SRCPLocomotive>();
+        BUS_ADDRESS_TO_SRCP_LOCOMOTIVE_CACHE = new HashMap<SRCPAddress, SRCPLocomotive>();
     }
 
     public static SRCPLocomotiveControl getInstance() {
@@ -77,7 +77,7 @@ public class SRCPLocomotiveControl implements GLInfoListener, Constants {
         if (session != null) {
             session.getInfoChannel().addGLInfoListener(this);
         }
-        for (final SRCPLocomotive l : srcpLocomotives) {
+        for (final SRCPLocomotive l : SRCP_LOCOMOTIVE_CACHE) {
             l.setSession(session);
         }
 
@@ -198,7 +198,7 @@ public class SRCPLocomotiveControl implements GLInfoListener, Constants {
                        final int address, final String protocol, final String[] params) {
         LOGGER.debug("GLinit( " + bus + " , " + address + " , " + protocol
                 + " , " + Arrays.toString(params) + " )");
-        final SRCPLocomotive locomotive = addressLocomotiveCache
+        final SRCPLocomotive locomotive = BUS_ADDRESS_TO_SRCP_LOCOMOTIVE_CACHE
                 .get(new SRCPAddress(bus, address));
         if (locomotive == null) {
             // ignore unknown locomotive
@@ -218,7 +218,7 @@ public class SRCPLocomotiveControl implements GLInfoListener, Constants {
         LOGGER.debug("GLset( " + bus + " , " + address + " , " + drivemode
                 + " , " + v + " , " + vMax + " , " + Arrays.toString(functions)
                 + " )");
-        final SRCPLocomotive locomotive = addressLocomotiveCache
+        final SRCPLocomotive locomotive = BUS_ADDRESS_TO_SRCP_LOCOMOTIVE_CACHE
                 .get(new SRCPAddress(bus, address));
         try {
             checkLocomotive(locomotive);
@@ -239,7 +239,7 @@ public class SRCPLocomotiveControl implements GLInfoListener, Constants {
     public void GLterm(final double timestamp, final int bus, final int address) {
         LOGGER.debug("GLterm( " + bus + " , " + address + " )");
 
-        final SRCPLocomotive locomotive = addressLocomotiveCache
+        final SRCPLocomotive locomotive = BUS_ADDRESS_TO_SRCP_LOCOMOTIVE_CACHE
                 .get(new SRCPAddress(bus, address));
         try {
             checkLocomotive(locomotive);
@@ -295,9 +295,13 @@ public class SRCPLocomotiveControl implements GLInfoListener, Constants {
             locomotive.setSession(session);
         }
 
-        if (!srcpLocomotives.contains(locomotive)) {
-            srcpLocomotives.add(locomotive);
-            addressLocomotiveCache.put(new SRCPAddress(locomotive.getBus(), locomotive.getAddress()), locomotive);
+        if (!SRCP_LOCOMOTIVE_CACHE.contains(locomotive)) {
+            SRCP_LOCOMOTIVE_CACHE.add(locomotive);
+            BUS_ADDRESS_TO_SRCP_LOCOMOTIVE_CACHE.put(new SRCPAddress(locomotive.getBus(), locomotive.getAddress()), locomotive);
+            if(locomotive instanceof DoubleMMDigitalLocomotive) {
+                final DoubleMMDigitalLocomotive doubleMMDigitalLocomotive = (DoubleMMDigitalLocomotive) locomotive;
+                BUS_ADDRESS_TO_SRCP_LOCOMOTIVE_CACHE.put(new SRCPAddress(doubleMMDigitalLocomotive.getBus(), doubleMMDigitalLocomotive.getAddress2()), locomotive);
+            }
         }
 
         final LocomotiveStrategy strategy = LOCOMOTIVE_STRATEGIES.get(locomotive
