@@ -7,16 +7,13 @@ public class DoubleMMDigitalLocomotive extends MMLocomotive {
 	public final static int DRIVING_STEPS = 14;
 	public final static int FUNCTION_COUNT1 = 5;
 	public final static int FUNCTION_COUNT2 = 5;
-	private int address2;
+	private final int address2;
 	private GL gl2;
 	protected String[] params2;
 
-	public DoubleMMDigitalLocomotive() {
-		this(0, 0);
-	}
-
-	public DoubleMMDigitalLocomotive(final int bus, final int address) {
+	public DoubleMMDigitalLocomotive(final int bus, final int address, int address2) {
 		super(bus, address);
+		this.address2 = address2;
 
 		protocol = "M";
 		params[0] = "2";
@@ -37,10 +34,6 @@ public class DoubleMMDigitalLocomotive extends MMLocomotive {
 		final boolean address1 = super.checkAddress();
 		return address1
 				&& !(address2 < 0 || address2 > MMLocomotive.MAX_MM_LOCOMOTIVE_ADDRESS);
-	}
-
-	public void setAddress2(final int address2) {
-		this.address2 = address2;
 	}
 
 	public int getAddress2() {
