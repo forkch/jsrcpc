@@ -15,7 +15,7 @@ def getVersionName = { ->
 
 group='de.dermoba'
 archivesBaseName='jsrcpc'
-version = getVersionName()
+version = '2.5-SNAPSHOT'
 
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
