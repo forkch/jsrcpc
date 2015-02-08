@@ -51,7 +51,7 @@ public class SRCPTurnoutControl implements GAInfoListener {
 	private SRCPSession session;
 	private boolean interface6051Connected = Constants.INTERFACE_6051_CONNECTED;
 	private int turnoutActivationTime = Constants.DEFAULT_ACTIVATION_TIME;
-	private int cutterActivationTime = Constants.DEFAULT_CUTTER_ACTIVATION_TIME;
+	private int cuttersleepTime = Constants.DEFAULT_CUTTER_REPETITION_SLEEP;
 
 	private SRCPTurnoutControl() {
 		LOGGER.info("SRCPTurnoutControl loaded");
@@ -213,7 +213,7 @@ public class SRCPTurnoutControl implements GAInfoListener {
 	}
 
 	public void setStraight(final SRCPTurnout turnout)
-			throws SRCPTurnoutException, SRCPModelException {
+			throws SRCPModelException {
 		checkTurnout(turnout);
         LOGGER.info("checked turnout");
 		previousState = turnout.getTurnoutState();
@@ -223,18 +223,18 @@ public class SRCPTurnoutControl implements GAInfoListener {
 		}
 		final GA ga = turnout.getGA();
 		try {
-			int time;
-			int reps;
+			int reps = 1;
 			if (turnout.isCutter()) {
-				time = cutterActivationTime;
 				reps = 5;
-			} else {
-				time = turnoutActivationTime;
-				reps = 1;
 			}
 			for (int i = 0; i < reps; i++) {
 				ga.set(getPort(turnout, SRCPTurnout.TURNOUT_STRAIGHT_PORT),
-						SRCPTurnout.TURNOUT_PORT_ACTIVATE, time);
+						SRCPTurnout.TURNOUT_PORT_ACTIVATE, turnoutActivationTime);
+				try {
+					Thread.sleep(cuttersleepTime);
+				} catch (InterruptedException e) {
+					throw new SRCPTurnoutException("failed to sleep");
+				}
 			}
 
 			if (turnout.isCutter()) {
@@ -277,19 +277,14 @@ public class SRCPTurnoutControl implements GAInfoListener {
 		}
 		final GA ga = turnout.getGA();
 		try {
-			int time;
-			int reps;
+			int reps = 1;
 			if (turnout.isCutter()) {
-				time = cutterActivationTime;
 				reps = 5;
-			} else {
-				time = turnoutActivationTime;
-				reps = 1;
 			}
 
 			for (int i = 0; i < reps; i++) {
 				ga.set(getPort(turnout, SRCPTurnout.TURNOUT_CURVED_PORT),
-						SRCPTurnout.TURNOUT_PORT_ACTIVATE, time);
+						SRCPTurnout.TURNOUT_PORT_ACTIVATE, turnoutActivationTime);
 			}
 
 			turnout.setTurnoutState(SRCPTurnoutState.LEFT);
@@ -672,12 +667,12 @@ public class SRCPTurnoutControl implements GAInfoListener {
 		this.turnoutActivationTime = turnoutActivationTime;
 	}
 
-	public int getCutterActivationTime() {
-		return cutterActivationTime;
+	public int getCutterSleepTime() {
+		return cuttersleepTime;
 	}
 
-	public void setCutterActivationTime(final int cutterActivationTime) {
-		this.cutterActivationTime = cutterActivationTime;
+	public void setCutterSleepTime(final int cuttersleepTime) {
+		this.cuttersleepTime = cuttersleepTime;
 	}
 
 	public void setTurnoutWithAddress(final int address,
