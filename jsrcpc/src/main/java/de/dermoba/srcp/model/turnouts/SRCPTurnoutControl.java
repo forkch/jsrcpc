@@ -204,7 +204,6 @@ public class SRCPTurnoutControl implements GAInfoListener {
             default:
                 break;
         }
-        // informListeners(turnout);
         lastChangedTurnout = turnout;
     }
 
@@ -265,7 +264,6 @@ public class SRCPTurnoutControl implements GAInfoListener {
         setStraight(subTurnouts[0]);
         setStraight(subTurnouts[1]);
         turnout.setTurnoutState(SRCPTurnoutState.STRAIGHT);
-        // informListeners(turnout);
         lastChangedTurnout = turnout;
     }
 
@@ -283,9 +281,7 @@ public class SRCPTurnoutControl implements GAInfoListener {
             ga.set(getPort(turnout, SRCPTurnout.TURNOUT_CURVED_PORT),
                     SRCPTurnout.TURNOUT_PORT_ACTIVATE, turnoutActivationTime);
 
-
             turnout.setTurnoutState(SRCPTurnoutState.LEFT);
-            // informListeners(turnout);
             lastChangedTurnout = turnout;
         } catch (final SRCPDeviceLockedException x1) {
             throw new SRCPTurnoutLockedException(Constants.ERR_LOCKED, x1);
