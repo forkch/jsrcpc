@@ -2,7 +2,7 @@ package de.dermoba.srcp.model.turnouts;
 
 public class MMTurnout extends SRCPTurnout {
 
-	public final static int MAX_MM_TURNOUT_ADDRESS = 324;
+	public final static int MAX_MM_TURNOUT_ADDRESS = 968;
 
 	public final static String PROTOCOL = "M";
 
