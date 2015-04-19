@@ -100,19 +100,21 @@ public class SRCPTurnoutControl implements GAInfoListener {
         if (turnout.isThreeWay()) {
             toggleThreeWay(turnout);
             lastChangedTurnout = turnout;
-            return;
-        }
-        previousState = turnout.getTurnoutState();
-        switch (previousState) {
-            case STRAIGHT:
-                setCurvedLeft(turnout);
-                break;
-            case RIGHT:
-            case LEFT:
-                setStraight(turnout);
-                break;
-            case UNDEF:
-                setDefaultState(turnout);
+        } else if (turnout.isCutter()) {
+            enableCutter(turnout);
+        } else {
+            previousState = turnout.getTurnoutState();
+            switch (previousState) {
+                case STRAIGHT:
+                    setCurvedLeft(turnout);
+                    break;
+                case RIGHT:
+                case LEFT:
+                    setStraight(turnout);
+                    break;
+                case UNDEF:
+                    setDefaultState(turnout);
+            }
         }
         lastChangedTurnout = turnout;
     }
@@ -149,20 +151,22 @@ public class SRCPTurnoutControl implements GAInfoListener {
         previousState = turnout.getTurnoutState();
         if (turnout.isThreeWay()) {
             setDefaultStateThreeWay(turnout);
-            return;
-        }
-        switch (turnout.getDefaultState()) {
-            case STRAIGHT:
-                setStraight(turnout);
-                break;
-            case LEFT:
-            case RIGHT:
-                setCurvedLeft(turnout);
-                break;
-            case UNDEF:
-                break;
-            default:
-                break;
+        } else if (turnout.isCutter()) {
+            // noop
+        } else {
+            switch (turnout.getDefaultState()) {
+                case STRAIGHT:
+                    setStraight(turnout);
+                    break;
+                case LEFT:
+                case RIGHT:
+                    setCurvedLeft(turnout);
+                    break;
+                case UNDEF:
+                    break;
+                default:
+                    break;
+            }
         }
         // informListeners(turnout);
         lastChangedTurnout = turnout;
@@ -189,20 +193,22 @@ public class SRCPTurnoutControl implements GAInfoListener {
         previousState = turnout.getTurnoutState();
         if (turnout.isThreeWay()) {
             setNonDefaultStateTheeWay(turnout);
-            return;
-        }
-        switch (turnout.getDefaultState()) {
-            case STRAIGHT:
-                setCurvedLeft(turnout);
-                break;
-            case LEFT:
-            case RIGHT:
-                setStraight(turnout);
-                break;
-            case UNDEF:
-                break;
-            default:
-                break;
+        } else if (turnout.isCutter()) {
+            enableCutter(turnout);
+        } else {
+            switch (turnout.getDefaultState()) {
+                case STRAIGHT:
+                    setCurvedLeft(turnout);
+                    break;
+                case LEFT:
+                case RIGHT:
+                    setStraight(turnout);
+                    break;
+                case UNDEF:
+                    break;
+                default:
+                    break;
+            }
         }
         lastChangedTurnout = turnout;
     }
@@ -222,12 +228,30 @@ public class SRCPTurnoutControl implements GAInfoListener {
         }
         final GA ga = turnout.getGA();
         try {
-            int reps = 1;
-            if (turnout.isCutter()) {
-                reps = 5;
-            }
+            ga.set(getPort(turnout, SRCPTurnout.TURNOUT_STRAIGHT_PORT),
+                    SRCPTurnout.TURNOUT_PORT_ACTIVATE, turnoutActivationTime);
+            turnout.setTurnoutState(SRCPTurnoutState.STRAIGHT);
+
+            lastChangedTurnout = turnout;
+        } catch (final SRCPDeviceLockedException x1) {
+            throw new SRCPTurnoutLockedException(Constants.ERR_LOCKED, x1);
+        } catch (final SRCPException e) {
+            LOGGER.error(e);
+            throw new SRCPTurnoutException(Constants.ERR_TOGGLE_FAILED, e);
+        }
+    }
+
+
+    public void enableCutter(final SRCPTurnout cutter)
+            throws SRCPModelException {
+        checkTurnout(cutter);
+        LOGGER.info("checked cutter");
+        previousState = cutter.getTurnoutState();
+        final GA ga = cutter.getGA();
+        try {
+            int reps = 5;
             for (int i = 0; i < reps; i++) {
-                ga.set(getPort(turnout, SRCPTurnout.TURNOUT_STRAIGHT_PORT),
+                ga.set(getPort(cutter, SRCPTurnout.TURNOUT_CURVED_PORT),
                         SRCPTurnout.TURNOUT_PORT_ACTIVATE, turnoutActivationTime);
                 if (reps > 1) {
                     try {
@@ -238,13 +262,9 @@ public class SRCPTurnoutControl implements GAInfoListener {
                 }
             }
 
-            if (turnout.isCutter()) {
-                turnout.setTurnoutState(SRCPTurnoutState.LEFT);
-            } else {
-                turnout.setTurnoutState(SRCPTurnoutState.STRAIGHT);
-            }
+            cutter.setTurnoutState(SRCPTurnoutState.STRAIGHT);
 
-            lastChangedTurnout = turnout;
+            lastChangedTurnout = cutter;
         } catch (final SRCPDeviceLockedException x1) {
             throw new SRCPTurnoutLockedException(Constants.ERR_LOCKED, x1);
         } catch (final SRCPException e) {
