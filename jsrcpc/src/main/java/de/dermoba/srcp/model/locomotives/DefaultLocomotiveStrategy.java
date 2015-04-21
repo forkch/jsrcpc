@@ -18,7 +18,7 @@ public class DefaultLocomotiveStrategy extends LocomotiveStrategy {
 		if (functions == null) {
 			functions = locomotive.getFunctions();
 		}
-
+locomotive.getGL().setAddress(locomotive.getAddress());
 		final String resp = setSpeedOnGl(locomotive.getGL(), locomotive, speed,
 				functions);
 

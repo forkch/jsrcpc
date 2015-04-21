@@ -23,6 +23,7 @@ public class SimulatedMFXLocomotiveStrategy extends LocomotiveStrategy {
 		final boolean[] functions1 = Arrays.copyOfRange(functions, 0, 5);
 		final boolean[] functions2 = Arrays.copyOfRange(functions, 5, 10);
 
+		doubleMM.getGL().setAddress(doubleMM.getAddress());
 		String resp = setSpeedOnGl(doubleMM.getGL(), doubleMM, speed,
 				functions1);
 
@@ -34,6 +35,7 @@ public class SimulatedMFXLocomotiveStrategy extends LocomotiveStrategy {
 
 		doubleMM.setCurrentSpeed(speed);
 		doubleMM.setFunctions(functions);
+		doubleMM.getGL2().setAddress(doubleMM.getAddress2());
 		resp = setSpeedOnGl(doubleMM.getGL2(), doubleMM, speed, functions2);
 
 		r = new Response(resp);

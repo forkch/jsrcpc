@@ -227,6 +227,7 @@ public class SRCPTurnoutControl implements GAInfoListener {
             return;
         }
         final GA ga = turnout.getGA();
+        ga.setAddress(turnout.getAddress1());
         try {
             ga.set(getPort(turnout, SRCPTurnout.TURNOUT_STRAIGHT_PORT),
                     SRCPTurnout.TURNOUT_PORT_ACTIVATE, turnoutActivationTime);
@@ -248,6 +249,7 @@ public class SRCPTurnoutControl implements GAInfoListener {
         LOGGER.info("checked cutter");
         previousState = cutter.getTurnoutState();
         final GA ga = cutter.getGA();
+        ga.setAddress(cutter.getAddress1());
         try {
             int reps = 5;
             for (int i = 0; i < reps; i++) {
@@ -301,6 +303,7 @@ public class SRCPTurnoutControl implements GAInfoListener {
             return;
         }
         final GA ga = turnout.getGA();
+        ga.setAddress(turnout.getAddress1());
         try {
 
             ga.set(getPort(turnout, SRCPTurnout.TURNOUT_CURVED_PORT),
