@@ -181,6 +181,11 @@ public class SRCPTurnoutControl implements GAInfoListener {
             initTurnout(t);
         }
         setStraight(subTurnouts[0]);
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         setStraight(subTurnouts[1]);
         turnout.setTurnoutState(SRCPTurnoutState.STRAIGHT);
         // informListeners(turnout);
@@ -285,7 +290,7 @@ public class SRCPTurnoutControl implements GAInfoListener {
         }
         setStraight(subTurnouts[0]);
         try {
-            Thread.sleep(250);
+            Thread.sleep(500);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -330,7 +335,7 @@ public class SRCPTurnoutControl implements GAInfoListener {
 
         setCurvedLeft(subTurnouts[0]);
         try {
-            Thread.sleep(250);
+            Thread.sleep(500);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -365,7 +370,7 @@ public class SRCPTurnoutControl implements GAInfoListener {
 
         setStraight(subTurnouts[0]);
         try {
-            Thread.sleep(250);
+            Thread.sleep(500);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
