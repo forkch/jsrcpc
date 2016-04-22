@@ -204,8 +204,8 @@ public class SRCPRouteControl {
 	}
 
 	public void setRoutingDelay(int routingDelay) {
-		if (routingDelay < 500) {
-			routingDelay = 500;
+		if (routingDelay < 150) {
+			routingDelay = 150;
 		}
 		this.routingDelay = routingDelay;
 	}
