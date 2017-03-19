@@ -12,73 +12,73 @@ public class DefaultLocomotiveStrategy extends LocomotiveStrategy {
 
     private static final Logger LOGGER = org.apache.log4j.Logger.getLogger(DefaultLocomotiveStrategy.class);
 
-	@Override
-	public void setSpeed(final SRCPLocomotive locomotive, final int speed,
-			boolean[] functions) throws SRCPException {
-		if (functions == null) {
-			functions = locomotive.getFunctions();
-		}
-locomotive.getGL().setAddress(locomotive.getAddress());
-		final String resp = setSpeedOnGl(locomotive.getGL(), locomotive, speed,
-				functions);
+    @Override
+    public void setSpeed(final SRCPLocomotive locomotive, final int speed,
+                         boolean[] functions) throws SRCPException {
+        if (functions == null) {
+            functions = locomotive.getFunctions();
+        }
+        locomotive.getGL().setAddress(locomotive.getAddress());
+        final String resp = setSpeedOnGl(locomotive.getGL(), locomotive, speed,
+                functions);
 
-		if (resp == null || resp.equals("")) {
-			return;
-		}
-		final Response r = new Response(resp);
-		locomotive.setLastCommandAcknowledge(r.getTimestamp());
+        if (resp == null || resp.equals("")) {
+            return;
+        }
+        final Response r = new Response(resp);
+        locomotive.setLastCommandAcknowledge(r.getTimestamp());
 
-		locomotive.setCurrentSpeed(speed);
-		locomotive.setFunctions(functions);
-	}
+        locomotive.setCurrentSpeed(speed);
+        locomotive.setFunctions(functions);
+    }
 
-	@Override
-	public void initLocomotive(final SRCPLocomotive locomotive,
-			final SRCPSession session, final SRCPLockControl lockControl)
-			throws SRCPLocomotiveException {
+    @Override
+    public void initLocomotive(final SRCPLocomotive locomotive,
+                               final SRCPSession session, final SRCPLockControl lockControl)
+            throws SRCPLocomotiveException {
 
-		if (locomotive.getGL() == null) {
-			final GL gl = new GL(session, locomotive.getBus());
-			gl.setAddress(locomotive.getAddress());
-			locomotive.setGL(gl);
-			lockControl.registerControlObject(
-					"GL",
-					new SRCPAddress(locomotive.getBus(), locomotive
-							.getAddress()), locomotive);
-		}
-		if (!locomotive.isInitialized()) {
-			initLocomotive(locomotive);
-		}
-	}
+        if (locomotive.getGL() == null) {
+            final GL gl = new GL(session, locomotive.getBus());
+            gl.setAddress(locomotive.getAddress());
+            locomotive.setGL(gl);
+            lockControl.registerControlObject(
+                    "GL",
+                    new SRCPAddress(locomotive.getBus(), locomotive
+                            .getAddress()), locomotive);
+        }
+        if (!locomotive.isInitialized()) {
+            initLocomotive(locomotive);
+        }
+    }
 
-	private void initLocomotive(final SRCPLocomotive locomotive)
-			throws SRCPLocomotiveException {
-		try {
-			final String[] params = locomotive.getParams();
-			locomotive.getGL().init(locomotive.getAddress(),
-					locomotive.getProtocol(), params);
-			locomotive.setInitialized(true);
-		} catch (final SRCPException x) {
-			LOGGER.warn("could not init loco", x);
-			//throw new SRCPLocomotiveException(Constants.ERR_INIT_FAILED, x);
-		}
-	}
+    private void initLocomotive(final SRCPLocomotive locomotive)
+            throws SRCPLocomotiveException {
+        try {
+            final String[] params = locomotive.getParams();
+            locomotive.getGL().init(locomotive.getAddress(),
+                    locomotive.getProtocol(), params);
+            locomotive.setInitialized(true);
+        } catch (final SRCPException x) {
+            LOGGER.warn("could not init loco", x);
+            //throw new SRCPLocomotiveException(Constants.ERR_INIT_FAILED, x);
+        }
+    }
 
-	@Override
-	public boolean[] getEmergencyStopFunctions(final SRCPLocomotive locomotive,
-			final int emergencyStopFunction) {
-		if (locomotive instanceof MMDigitalLocomotive) {
-			final boolean[] functions = new boolean[] { false, false, false,
-					false, false };
-			if (emergencyStopFunction != -1
-					&& emergencyStopFunction < functions.length) {
-				functions[emergencyStopFunction] = true;
-			}
-			return functions;
-		} else {
-			return new boolean[] { true };
-		}
-	}
+    @Override
+    public boolean[] getEmergencyStopFunctions(final SRCPLocomotive locomotive,
+                                               final int emergencyStopFunction) {
+        if (locomotive instanceof MMDigitalLocomotive) {
+            final boolean[] functions = new boolean[]{false, false, false,
+                    false, false};
+            if (emergencyStopFunction != -1
+                    && emergencyStopFunction < functions.length) {
+                functions[emergencyStopFunction] = true;
+            }
+            return functions;
+        } else {
+            return new boolean[]{true};
+        }
+    }
 
     @Override
     public void mergeFunctions(SRCPLocomotive locomotive, int address, boolean[] functions) {

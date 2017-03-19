@@ -54,6 +54,8 @@ public class SRCPLocomotiveControl implements GLInfoListener, Constants {
         final SimulatedMFXLocomotiveStrategy simulatedMFXStrategy = new SimulatedMFXLocomotiveStrategy();
         LOCOMOTIVE_STRATEGIES.put(MMDigitalLocomotive.class, defaultStrategy);
         LOCOMOTIVE_STRATEGIES.put(MMDeltaLocomotive.class, defaultStrategy);
+        LOCOMOTIVE_STRATEGIES.put(MfxLocomotive.class, defaultStrategy);
+        LOCOMOTIVE_STRATEGIES.put(DCCLocomotive.class, defaultStrategy);
         LOCOMOTIVE_STRATEGIES.put(DoubleMMDigitalLocomotive.class,
                 simulatedMFXStrategy);
     }
@@ -304,10 +306,11 @@ public class SRCPLocomotiveControl implements GLInfoListener, Constants {
             }
         }
 
-        final LocomotiveStrategy strategy = LOCOMOTIVE_STRATEGIES.get(locomotive
-                .getClass());
-        strategy.initLocomotive(locomotive, session, lockControl);
-
+        if(!locomotive.isInitialized()) {
+            final LocomotiveStrategy strategy = LOCOMOTIVE_STRATEGIES.get(locomotive
+                    .getClass());
+            strategy.initLocomotive(locomotive, session, lockControl);
+        }
     }
 
     public boolean acquireLock(final SRCPLocomotive locomotive)
