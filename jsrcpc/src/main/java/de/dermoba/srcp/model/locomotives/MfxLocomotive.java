@@ -23,6 +23,7 @@ public class MfxLocomotive extends SRCPLocomotive {
         protocol = PROTOCOL;
         functionCount = FUNCTION_COUNT;
         functions = new boolean[FUNCTION_COUNT];
+        this.drivingSteps = drivingSteps;
     }
 
     @Override
