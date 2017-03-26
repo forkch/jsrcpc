@@ -74,17 +74,6 @@ public class SRCPLocomotiveControl implements GLInfoListener, Constants {
         return instance;
     }
 
-    public void setSession(final SRCPSession session) {
-        this.session = session;
-        if (session != null) {
-            session.getInfoChannel().addGLInfoListener(this);
-        }
-        for (final SRCPLocomotive l : SRCP_LOCOMOTIVE_CACHE) {
-            l.setSession(session);
-        }
-
-    }
-
     public void toggleDirection(final SRCPLocomotive locomotive)
             throws SRCPLocomotiveException, SRCPModelException {
         checkLocomotive(locomotive);
@@ -366,6 +355,19 @@ public class SRCPLocomotiveControl implements GLInfoListener, Constants {
 
     public SRCPSession getSession() {
         return session;
+    }
+
+    public void setSession(final SRCPSession session) {
+        this.session = session;
+        SRCP_LOCOMOTIVE_CACHE.clear();
+        BUS_ADDRESS_TO_SRCP_LOCOMOTIVE_CACHE.clear();
+        if (session != null) {
+            session.getInfoChannel().addGLInfoListener(this);
+        }
+        for (final SRCPLocomotive l : SRCP_LOCOMOTIVE_CACHE) {
+            l.setSession(session);
+        }
+
     }
 
 }

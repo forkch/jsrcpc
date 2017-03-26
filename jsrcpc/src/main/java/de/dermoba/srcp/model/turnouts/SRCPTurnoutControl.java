@@ -67,9 +67,13 @@ public class SRCPTurnoutControl implements GAInfoListener {
 
     public void setSession(final SRCPSession session) {
         this.session = session;
+        srcpTurnouts.clear();
+        addressTurnoutCache.clear();
+        addressThreewayCache.clear();
         if (session != null) {
             session.getInfoChannel().addGAInfoListener(this);
         }
+
         for (final SRCPTurnout st : srcpTurnouts) {
             st.setSession(session);
         }
