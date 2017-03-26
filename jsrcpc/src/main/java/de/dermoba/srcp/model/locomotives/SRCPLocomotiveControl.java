@@ -21,6 +21,7 @@ package de.dermoba.srcp.model.locomotives;
 import de.dermoba.srcp.client.SRCPSession;
 import de.dermoba.srcp.common.exception.SRCPDeviceLockedException;
 import de.dermoba.srcp.common.exception.SRCPException;
+import de.dermoba.srcp.devices.GL;
 import de.dermoba.srcp.devices.listener.GLInfoListener;
 import de.dermoba.srcp.model.*;
 import de.dermoba.srcp.model.locking.SRCPLockChangeListener;
@@ -210,6 +211,17 @@ public class SRCPLocomotiveControl implements GLInfoListener, Constants {
     }
 
     private void sendLocoInitIfNeeded(SRCPLocomotive locomotive) throws SRCPLocomotiveException {
+
+        if (locomotive.getGL() == null) {
+            final GL gl = new GL(session, locomotive.getBus());
+            gl.setAddress(locomotive.getAddress());
+            locomotive.setGL(gl);
+            lockControl.registerControlObject(
+                    "GL",
+                    new SRCPAddress(locomotive.getBus(), locomotive
+                            .getAddress()), locomotive);
+        }
+
         if (!locomotive.isInitialized()) {
             final LocomotiveStrategy strategy = LOCOMOTIVE_STRATEGIES.get(locomotive
                     .getClass());

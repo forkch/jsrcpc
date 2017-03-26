@@ -37,15 +37,7 @@ public class DefaultLocomotiveStrategy extends LocomotiveStrategy {
                                final SRCPSession session, final SRCPLockControl lockControl)
             throws SRCPLocomotiveException {
 
-        if (locomotive.getGL() == null) {
-            final GL gl = new GL(session, locomotive.getBus());
-            gl.setAddress(locomotive.getAddress());
-            locomotive.setGL(gl);
-            lockControl.registerControlObject(
-                    "GL",
-                    new SRCPAddress(locomotive.getBus(), locomotive
-                            .getAddress()), locomotive);
-        }
+
         if (!locomotive.isInitialized()) {
             initLocomotive(locomotive);
         }
