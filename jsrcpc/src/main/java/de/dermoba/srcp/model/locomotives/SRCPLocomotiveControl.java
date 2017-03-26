@@ -35,19 +35,11 @@ import java.util.*;
  * @author fork
  */
 public class SRCPLocomotiveControl implements GLInfoListener, Constants {
-    private static Logger LOGGER = Logger
-            .getLogger(SRCPLocomotiveControl.class);
-
-    private static SRCPLocomotiveControl instance;
-    private final List<SRCPLocomotiveChangeListener> listeners;
-    private final SRCPLockControl lockControl = SRCPLockControl.getInstance();
-
-    private final List<SRCPLocomotive> SRCP_LOCOMOTIVE_CACHE;
-    private final Map<SRCPAddress, SRCPLocomotive> BUS_ADDRESS_TO_SRCP_LOCOMOTIVE_CACHE;
-    private SRCPSession session;
-
     @SuppressWarnings("rawtypes")
     private static final Map<Class, LocomotiveStrategy> LOCOMOTIVE_STRATEGIES = new HashMap<Class, LocomotiveStrategy>();
+    private static Logger LOGGER = Logger
+            .getLogger(SRCPLocomotiveControl.class);
+    private static SRCPLocomotiveControl instance;
 
     static {
         final DefaultLocomotiveStrategy defaultStrategy = new DefaultLocomotiveStrategy();
@@ -59,6 +51,12 @@ public class SRCPLocomotiveControl implements GLInfoListener, Constants {
         LOCOMOTIVE_STRATEGIES.put(DoubleMMDigitalLocomotive.class,
                 simulatedMFXStrategy);
     }
+
+    private final List<SRCPLocomotiveChangeListener> listeners;
+    private final SRCPLockControl lockControl = SRCPLockControl.getInstance();
+    private final List<SRCPLocomotive> SRCP_LOCOMOTIVE_CACHE;
+    private final Map<SRCPAddress, SRCPLocomotive> BUS_ADDRESS_TO_SRCP_LOCOMOTIVE_CACHE;
+    private SRCPSession session;
 
     private SRCPLocomotiveControl() {
         LOGGER.info("SRCPLocomotiveControl loaded");
@@ -114,6 +112,13 @@ public class SRCPLocomotiveControl implements GLInfoListener, Constants {
 
         checkLocomotive(locomotive);
         try {
+
+            if (!locomotive.isInitialized()) {
+                final LocomotiveStrategy strategy = LOCOMOTIVE_STRATEGIES.get(locomotive
+                        .getClass());
+                strategy.initLocomotive(locomotive, session, lockControl);
+            }
+
             final LocomotiveStrategy strategy = LOCOMOTIVE_STRATEGIES
                     .get(locomotive.getClass());
             strategy.setSpeed(locomotive, speed, functions);
@@ -177,12 +182,24 @@ public class SRCPLocomotiveControl implements GLInfoListener, Constants {
                               final int emergencyStopFunction) throws SRCPLocomotiveException,
             SRCPModelException {
         checkLocomotive(locomotive);
-        final LocomotiveStrategy locomotiveStrategy = LOCOMOTIVE_STRATEGIES
-                .get(locomotive.getClass());
-        final boolean[] functions = locomotiveStrategy
-                .getEmergencyStopFunctions(locomotive, emergencyStopFunction);
+        locomotive.setDirection(SRCPLocomotiveDirection.EMERGENCY_STOP);
+        setSpeed(locomotive, 0, locomotive.getFunctions());
+    }
 
-        setSpeed(locomotive, 0, functions);
+    public void terminate(final SRCPLocomotive locomotive) throws SRCPModelException {
+        checkLocomotive(locomotive);
+
+        try {
+            final LocomotiveStrategy strategy = LOCOMOTIVE_STRATEGIES
+                    .get(locomotive.getClass());
+            strategy.terminate(locomotive);
+
+        } catch (final SRCPDeviceLockedException x) {
+            throw new SRCPLocomotiveLockedException(ERR_LOCKED);
+        } catch (final SRCPException x) {
+            throw new SRCPLocomotiveException(ERR_FAILED, x);
+        }
+
     }
 
     public void GLinit(final double timestamp, final int bus,
@@ -289,16 +306,10 @@ public class SRCPLocomotiveControl implements GLInfoListener, Constants {
         if (!SRCP_LOCOMOTIVE_CACHE.contains(locomotive)) {
             SRCP_LOCOMOTIVE_CACHE.add(locomotive);
             BUS_ADDRESS_TO_SRCP_LOCOMOTIVE_CACHE.put(new SRCPAddress(locomotive.getBus(), locomotive.getAddress()), locomotive);
-            if(locomotive instanceof DoubleMMDigitalLocomotive) {
+            if (locomotive instanceof DoubleMMDigitalLocomotive) {
                 final DoubleMMDigitalLocomotive doubleMMDigitalLocomotive = (DoubleMMDigitalLocomotive) locomotive;
                 BUS_ADDRESS_TO_SRCP_LOCOMOTIVE_CACHE.put(new SRCPAddress(doubleMMDigitalLocomotive.getBus(), doubleMMDigitalLocomotive.getAddress2()), locomotive);
             }
-        }
-
-        if(!locomotive.isInitialized()) {
-            final LocomotiveStrategy strategy = LOCOMOTIVE_STRATEGIES.get(locomotive
-                    .getClass());
-            strategy.initLocomotive(locomotive, session, lockControl);
         }
     }
 

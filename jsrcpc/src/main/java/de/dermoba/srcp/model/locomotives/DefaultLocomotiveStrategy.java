@@ -84,4 +84,14 @@ public class DefaultLocomotiveStrategy extends LocomotiveStrategy {
     public void mergeFunctions(SRCPLocomotive locomotive, int address, boolean[] functions) {
         locomotive.setFunctions(functions);
     }
+
+    @Override
+    public void terminate(SRCPLocomotive locomotive) throws SRCPException {
+
+        if (locomotive.isInitialized()) {
+            locomotive.getGL().term();
+            locomotive.setInitialized(false);
+        }
+
+    }
 }

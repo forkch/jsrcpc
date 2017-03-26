@@ -41,4 +41,6 @@ public abstract class LocomotiveStrategy {
             final SRCPLocomotive locomotive, int emergencyStopFunction);
 
     public abstract void mergeFunctions(SRCPLocomotive locomotive, int address, boolean[] functions);
+
+    public abstract void terminate(SRCPLocomotive locomotive) throws SRCPException;
 }
