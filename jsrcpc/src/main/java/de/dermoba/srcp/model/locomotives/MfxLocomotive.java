@@ -6,13 +6,13 @@ public class MfxLocomotive extends SRCPLocomotive {
     public final static int FUNCTION_COUNT = 16;
 
     public static final String PROTOCOL = "X";
-    private int mfxUid;
+    private long mfxUid;
 
-    public MfxLocomotive(final int bus, final int address, final int mfxUid) {
+    public MfxLocomotive(final int bus, final int address, final long mfxUid) {
         this(bus, address, mfxUid, 127);
     }
 
-    public MfxLocomotive(final int bus, final int address, final int mfxUid, final int drivingSteps) {
+    public MfxLocomotive(final int bus, final int address, final long mfxUid, final int drivingSteps) {
         super(bus, address);
         this.mfxUid = mfxUid;
         params = new String[4];
