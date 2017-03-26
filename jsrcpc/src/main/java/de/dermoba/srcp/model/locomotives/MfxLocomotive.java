@@ -16,7 +16,7 @@ public class MfxLocomotive extends SRCPLocomotive {
         super(bus, address);
         this.mfxUid = mfxUid;
         params = new String[4];
-        params[0] = "" + mfxUid;
+        params[0] = "" + 1;
         params[1] = "" + drivingSteps;
         params[2] = "" + 16;
         params[3] = "" + mfxUid;
