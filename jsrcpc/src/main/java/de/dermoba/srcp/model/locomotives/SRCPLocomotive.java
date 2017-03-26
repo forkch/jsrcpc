@@ -182,15 +182,6 @@ public abstract class SRCPLocomotive {
 		return extendingLocomotive;
 	}
 
-	public void setPreventDirectionToggle(final boolean preventDirectionToggle) {
-		this.preventDirectionToggle = preventDirectionToggle;
-
-	}
-
-	public boolean isPreventDirectionToggle() {
-		return this.preventDirectionToggle;
-	}
-
 	@Override
 	public int hashCode() {
 		final int prime = 31;

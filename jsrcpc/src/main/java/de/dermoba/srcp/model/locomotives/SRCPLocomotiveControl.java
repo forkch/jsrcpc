@@ -75,6 +75,9 @@ public class SRCPLocomotiveControl implements GLInfoListener, Constants {
     public void toggleDirection(final SRCPLocomotive locomotive)
             throws SRCPModelException {
         checkLocomotive(locomotive);
+        if(locomotive.currentSpeed > 0) {
+            return;
+        }
         switch (locomotive.direction) {
             case REVERSE:
                 locomotive.setDirection(SRCPLocomotiveDirection.FORWARD);
@@ -86,8 +89,6 @@ public class SRCPLocomotiveControl implements GLInfoListener, Constants {
                 break;
 
         }
-        locomotive.setPreventDirectionToggle(true);
-        setSpeed(locomotive, 0, locomotive.getFunctions());
         setSpeed(locomotive, 0, locomotive.getFunctions());
         informListeners(locomotive);
     }
