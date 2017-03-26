@@ -15,15 +15,15 @@ public class MfxLocomotive extends SRCPLocomotive {
     public MfxLocomotive(final int bus, final int address, final long mfxUid, final int drivingSteps) {
         super(bus, address);
         this.mfxUid = mfxUid;
+        this.protocol = PROTOCOL;
+        this.functionCount = FUNCTION_COUNT;
+        this.functions = new boolean[FUNCTION_COUNT];
+        this.drivingSteps = drivingSteps;
         params = new String[4];
         params[0] = "" + 1;
         params[1] = "" + drivingSteps;
         params[2] = "" + 16;
         params[3] = "" + mfxUid;
-        protocol = PROTOCOL;
-        functionCount = FUNCTION_COUNT;
-        functions = new boolean[FUNCTION_COUNT];
-        this.drivingSteps = drivingSteps;
     }
 
     @Override
