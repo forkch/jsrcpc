@@ -8,32 +8,22 @@ import de.dermoba.srcp.model.locking.SRCPLockControl;
 public abstract class LocomotiveStrategy {
 
     public abstract void setSpeed(final SRCPLocomotive locomotive,
-                                  final int speed, boolean[] functions) throws SRCPException;
+                                  SRCPLocomotiveDirection direction, final int speed, boolean[] functions) throws SRCPException;
 
     public abstract void initLocomotive(final SRCPLocomotive locomotive,
                                         final SRCPSession session, final SRCPLockControl lockControl)
             throws SRCPLocomotiveException;
 
     protected String setSpeedOnGl(final GL gl, final SRCPLocomotive locomotive,
-                                  final int speed, final boolean[] functions) throws SRCPException {
+                                  SRCPLocomotiveDirection direction, final int speed, final boolean[] functions) throws SRCPException {
         final int drivingSteps = locomotive.getDrivingSteps();
         if (speed < 0 || speed > drivingSteps) {
             return "";
         }
-        String resp = null;
-        switch (locomotive.direction) {
-            case FORWARD:
-            case REVERSE:
-            case EMERGENCY_STOP:
-                resp = gl.set(locomotive.direction, speed, drivingSteps,
-                        functions);
-                break;
-            case UNDEF:
-                resp = gl.set(SRCPLocomotiveDirection.FORWARD, speed, drivingSteps,
-                        functions);
-                locomotive.setDirection(SRCPLocomotiveDirection.FORWARD);
-                break;
-        }
+        String resp = gl.set(direction, speed, drivingSteps,
+                functions);
+
+
         return resp;
     }
 

@@ -13,7 +13,7 @@ import java.util.Arrays;
 public class SimulatedMFXLocomotiveStrategy extends LocomotiveStrategy {
 
     @Override
-    public void setSpeed(final SRCPLocomotive locomotive, final int speed,
+    public void setSpeed(final SRCPLocomotive locomotive, SRCPLocomotiveDirection direction, final int speed,
                          boolean[] functions) throws SRCPException {
 
 
@@ -26,7 +26,7 @@ public class SimulatedMFXLocomotiveStrategy extends LocomotiveStrategy {
         final boolean[] functions2 = Arrays.copyOfRange(functions, 5, 10);
 
         doubleMM.getGL().setAddress(doubleMM.getAddress());
-        String resp = setSpeedOnGl(doubleMM.getGL(), doubleMM, speed,
+        String resp = setSpeedOnGl(doubleMM.getGL(), doubleMM, doubleMM.direction, speed,
                 functions1);
 
         if (resp == null || resp.equals("")) {
@@ -38,7 +38,7 @@ public class SimulatedMFXLocomotiveStrategy extends LocomotiveStrategy {
         doubleMM.setCurrentSpeed(speed);
         doubleMM.setFunctions(functions);
         doubleMM.getGL2().setAddress(doubleMM.getAddress2());
-        resp = setSpeedOnGl(doubleMM.getGL2(), doubleMM, speed, functions2);
+        resp = setSpeedOnGl(doubleMM.getGL2(), doubleMM, doubleMM.direction, speed, functions2);
 
         r = new Response(resp);
         locomotive.setLastCommandAcknowledge(r.getTimestamp());

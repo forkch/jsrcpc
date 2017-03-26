@@ -73,7 +73,7 @@ public class SRCPLocomotiveControl implements GLInfoListener, Constants {
     }
 
     public void toggleDirection(final SRCPLocomotive locomotive)
-            throws SRCPLocomotiveException, SRCPModelException {
+            throws SRCPModelException {
         checkLocomotive(locomotive);
         switch (locomotive.direction) {
             case REVERSE:
@@ -107,21 +107,30 @@ public class SRCPLocomotiveControl implements GLInfoListener, Constants {
     }
 
     public void setSpeed(final SRCPLocomotive locomotive, final int speed,
-                         final boolean[] functions) throws SRCPLocomotiveException,
+                         final boolean[] functions) throws
             SRCPModelException {
 
         checkLocomotive(locomotive);
         try {
 
-            if (!locomotive.isInitialized()) {
-                final LocomotiveStrategy strategy = LOCOMOTIVE_STRATEGIES.get(locomotive
-                        .getClass());
-                strategy.initLocomotive(locomotive, session, lockControl);
-            }
+            sendLocoInitIfNeeded(locomotive);
 
             final LocomotiveStrategy strategy = LOCOMOTIVE_STRATEGIES
                     .get(locomotive.getClass());
-            strategy.setSpeed(locomotive, speed, functions);
+
+            switch (locomotive.direction) {
+                case FORWARD:
+                case REVERSE:
+                    break;
+                case EMERGENCY_STOP:
+                    locomotive.setDirection(SRCPLocomotiveDirection.FORWARD);
+                    break;
+                case UNDEF:
+                    locomotive.setDirection(SRCPLocomotiveDirection.FORWARD);
+                    break;
+            }
+
+            strategy.setSpeed(locomotive, locomotive.direction, speed, functions);
             //informListeners(locomotive);
         } catch (final SRCPDeviceLockedException x) {
             throw new SRCPLocomotiveLockedException(ERR_LOCKED);
@@ -132,7 +141,7 @@ public class SRCPLocomotiveControl implements GLInfoListener, Constants {
     }
 
     public void increaseSpeed(final SRCPLocomotive locomotive)
-            throws SRCPLocomotiveException, SRCPModelException {
+            throws SRCPModelException {
         checkLocomotive(locomotive);
         final int newSpeed = locomotive.getCurrentSpeed() + 1;
 
@@ -141,7 +150,7 @@ public class SRCPLocomotiveControl implements GLInfoListener, Constants {
     }
 
     public void decreaseSpeed(final SRCPLocomotive locomotive)
-            throws SRCPLocomotiveException, SRCPModelException {
+            throws SRCPModelException {
         checkLocomotive(locomotive);
         final int newSpeed = locomotive.getCurrentSpeed() - 1;
 
@@ -149,7 +158,7 @@ public class SRCPLocomotiveControl implements GLInfoListener, Constants {
     }
 
     public void increaseSpeedStep(final SRCPLocomotive locomotive)
-            throws SRCPLocomotiveException, SRCPModelException {
+            throws SRCPModelException {
         checkLocomotive(locomotive);
         final int newSpeed = locomotive.getCurrentSpeed() + 1;
 
@@ -157,14 +166,14 @@ public class SRCPLocomotiveControl implements GLInfoListener, Constants {
     }
 
     public void decreaseSpeedStep(final SRCPLocomotive locomotive)
-            throws SRCPLocomotiveException, SRCPModelException {
+            throws SRCPModelException {
         checkLocomotive(locomotive);
         final int newSpeed = locomotive.getCurrentSpeed() - 1;
         setSpeed(locomotive, newSpeed, locomotive.getFunctions());
     }
 
     public void setFunctions(final SRCPLocomotive locomotive,
-                             final boolean[] functions) throws SRCPLocomotiveException,
+                             final boolean[] functions) throws
             SRCPModelException {
         checkLocomotive(locomotive);
         setSpeed(locomotive, locomotive.getCurrentSpeed(), functions);
@@ -179,11 +188,32 @@ public class SRCPLocomotiveControl implements GLInfoListener, Constants {
     }
 
     public void emergencyStop(final SRCPLocomotive locomotive,
-                              final int emergencyStopFunction) throws SRCPLocomotiveException,
+                              final int emergencyStopFunction) throws
             SRCPModelException {
+
         checkLocomotive(locomotive);
-        locomotive.setDirection(SRCPLocomotiveDirection.EMERGENCY_STOP);
-        setSpeed(locomotive, 0, locomotive.getFunctions());
+        try {
+
+            sendLocoInitIfNeeded(locomotive);
+
+            final LocomotiveStrategy strategy = LOCOMOTIVE_STRATEGIES
+                    .get(locomotive.getClass());
+
+            strategy.setSpeed(locomotive, SRCPLocomotiveDirection.EMERGENCY_STOP, 0, locomotive.getFunctions());
+            //informListeners(locomotive);
+        } catch (final SRCPDeviceLockedException x) {
+            throw new SRCPLocomotiveLockedException(ERR_LOCKED);
+        } catch (final SRCPException x) {
+            throw new SRCPLocomotiveException(ERR_FAILED, x);
+        }
+    }
+
+    private void sendLocoInitIfNeeded(SRCPLocomotive locomotive) throws SRCPLocomotiveException {
+        if (!locomotive.isInitialized()) {
+            final LocomotiveStrategy strategy = LOCOMOTIVE_STRATEGIES.get(locomotive
+                    .getClass());
+            strategy.initLocomotive(locomotive, session, lockControl);
+        }
     }
 
     public void terminate(final SRCPLocomotive locomotive) throws SRCPModelException {
@@ -288,7 +318,7 @@ public class SRCPLocomotiveControl implements GLInfoListener, Constants {
     }
 
     private void checkLocomotive(final SRCPLocomotive locomotive)
-            throws SRCPLocomotiveException, SRCPModelException {
+            throws SRCPModelException {
         if (locomotive == null) {
             return;
         }
@@ -314,7 +344,7 @@ public class SRCPLocomotiveControl implements GLInfoListener, Constants {
     }
 
     public boolean acquireLock(final SRCPLocomotive locomotive)
-            throws SRCPLocomotiveLockedException, SRCPModelException {
+            throws SRCPModelException {
         checkLocomotive(locomotive);
 
         try {
@@ -329,7 +359,7 @@ public class SRCPLocomotiveControl implements GLInfoListener, Constants {
     }
 
     public boolean releaseLock(final SRCPLocomotive locomotive)
-            throws SRCPLocomotiveLockedException, SRCPModelException {
+            throws SRCPModelException {
 
         checkLocomotive(locomotive);
         try {
@@ -357,11 +387,7 @@ public class SRCPLocomotiveControl implements GLInfoListener, Constants {
 
         final int sessionID = lockControl.getLockingSessionID("GL",
                 new SRCPAddress(locomotive.getBus(), locomotive.getAddress()));
-        if (sessionID == session.getCommandChannelID()) {
-            return true;
-        } else {
-            return false;
-        }
+        return sessionID == session.getCommandChannelID();
     }
 
     public SRCPSession getSession() {

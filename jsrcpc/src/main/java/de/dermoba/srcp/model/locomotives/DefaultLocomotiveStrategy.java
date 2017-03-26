@@ -13,13 +13,13 @@ public class DefaultLocomotiveStrategy extends LocomotiveStrategy {
     private static final Logger LOGGER = org.apache.log4j.Logger.getLogger(DefaultLocomotiveStrategy.class);
 
     @Override
-    public void setSpeed(final SRCPLocomotive locomotive, final int speed,
+    public void setSpeed(final SRCPLocomotive locomotive, SRCPLocomotiveDirection direction, final int speed,
                          boolean[] functions) throws SRCPException {
         if (functions == null) {
             functions = locomotive.getFunctions();
         }
         locomotive.getGL().setAddress(locomotive.getAddress());
-        final String resp = setSpeedOnGl(locomotive.getGL(), locomotive, speed,
+        final String resp = setSpeedOnGl(locomotive.getGL(), locomotive, direction, speed,
                 functions);
 
         if (resp == null || resp.equals("")) {
