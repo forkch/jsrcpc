@@ -40,7 +40,6 @@ public class SRCPTurnoutControl implements GAInfoListener {
     private static SRCPTurnoutControl instance;
 
     private final List<SRCPTurnoutChangeListener> listeners = new ArrayList<SRCPTurnoutChangeListener>();
-    ;
 
     private final List<SRCPTurnout> srcpTurnouts = new ArrayList<SRCPTurnout>();
 
@@ -97,10 +96,11 @@ public class SRCPTurnoutControl implements GAInfoListener {
         }
     }
 
-    public void toggle(final SRCPTurnout turnout) throws SRCPTurnoutException,
+    public void toggle(final SRCPTurnout turnout) throws
             SRCPModelException {
         checkTurnout(turnout);
 
+        initTurnout(turnout);
         if (turnout.isThreeWay()) {
             toggleThreeWay(turnout);
             lastChangedTurnout = turnout;
@@ -124,7 +124,7 @@ public class SRCPTurnoutControl implements GAInfoListener {
     }
 
     private void toggleThreeWay(final SRCPTurnout turnout)
-            throws SRCPTurnoutException, SRCPModelException {
+            throws SRCPModelException {
         checkTurnout(turnout);
         final SRCPTurnout[] subTurnouts = turnout.getSubTurnouts();
         for (final SRCPTurnout t : subTurnouts) {
@@ -150,7 +150,7 @@ public class SRCPTurnoutControl implements GAInfoListener {
     }
 
     public void setDefaultState(final SRCPTurnout turnout)
-            throws SRCPTurnoutException, SRCPModelException {
+            throws SRCPModelException {
         checkTurnout(turnout);
         previousState = turnout.getTurnoutState();
         if (turnout.isThreeWay()) {
@@ -177,7 +177,7 @@ public class SRCPTurnoutControl implements GAInfoListener {
     }
 
     private void setDefaultStateThreeWay(final SRCPTurnout turnout)
-            throws SRCPTurnoutException, SRCPModelException {
+            throws SRCPModelException {
         checkTurnout(turnout);
         final SRCPTurnout[] subTurnouts = turnout.getSubTurnouts();
         for (final SRCPTurnout t : subTurnouts) {
@@ -197,7 +197,7 @@ public class SRCPTurnoutControl implements GAInfoListener {
     }
 
     public void setNonDefaultState(final SRCPTurnout turnout)
-            throws SRCPTurnoutException, SRCPModelException {
+            throws SRCPModelException {
         checkTurnout(turnout);
         previousState = turnout.getTurnoutState();
         if (turnout.isThreeWay()) {
@@ -229,6 +229,8 @@ public class SRCPTurnoutControl implements GAInfoListener {
     public void setStraight(final SRCPTurnout turnout)
             throws SRCPModelException {
         checkTurnout(turnout);
+
+        initTurnout(turnout);
         LOGGER.info("checked turnout");
         previousState = turnout.getTurnoutState();
         if (turnout.isThreeWay()) {
@@ -260,7 +262,7 @@ public class SRCPTurnoutControl implements GAInfoListener {
         final GA ga = cutter.getGA();
         ga.setAddress(cutter.getAddress1());
         try {
-            int reps = 5;
+            int reps = 1;
             for (int i = 0; i < reps; i++) {
                 ga.set(getPort(cutter, SRCPTurnout.TURNOUT_CURVED_PORT),
                         SRCPTurnout.TURNOUT_PORT_ACTIVATE, turnoutActivationTime);
@@ -285,7 +287,7 @@ public class SRCPTurnoutControl implements GAInfoListener {
     }
 
     private void setStraightThreeWay(final SRCPTurnout turnout)
-            throws SRCPTurnoutException, SRCPModelException {
+            throws SRCPModelException {
         checkTurnout(turnout);
         final SRCPTurnout[] subTurnouts = turnout.getSubTurnouts();
         for (final SRCPTurnout t : subTurnouts) {
@@ -304,8 +306,10 @@ public class SRCPTurnoutControl implements GAInfoListener {
     }
 
     public void setCurvedLeft(final SRCPTurnout turnout)
-            throws SRCPTurnoutException, SRCPModelException {
+            throws SRCPModelException {
         checkTurnout(turnout);
+
+        initTurnout(turnout);
         previousState = turnout.getTurnoutState();
         if (turnout.isThreeWay()) {
             setCurvedLeftThreeWay(turnout);
@@ -329,7 +333,7 @@ public class SRCPTurnoutControl implements GAInfoListener {
     }
 
     private void setCurvedLeftThreeWay(final SRCPTurnout turnout)
-            throws SRCPTurnoutException, SRCPModelException {
+            throws SRCPModelException {
         checkTurnout(turnout);
         final SRCPTurnout[] subTurnouts = turnout.getSubTurnouts();
         for (final SRCPTurnout t : subTurnouts) {
@@ -350,8 +354,10 @@ public class SRCPTurnoutControl implements GAInfoListener {
     }
 
     public void setCurvedRight(final SRCPTurnout turnout)
-            throws SRCPTurnoutException, SRCPModelException {
+            throws SRCPModelException {
         checkTurnout(turnout);
+
+        initTurnout(turnout);
         previousState = turnout.getTurnoutState();
         if (turnout.isThreeWay()) {
             setCurvedRightThreeWay(turnout);
@@ -364,7 +370,7 @@ public class SRCPTurnoutControl implements GAInfoListener {
     }
 
     private void setCurvedRightThreeWay(final SRCPTurnout turnout)
-            throws SRCPTurnoutException, SRCPModelException {
+            throws SRCPModelException {
         checkTurnout(turnout);
         final SRCPTurnout[] subTurnouts = turnout.getSubTurnouts();
         for (final SRCPTurnout t : subTurnouts) {
@@ -578,8 +584,6 @@ public class SRCPTurnoutControl implements GAInfoListener {
         if (turnout.getSession() == null && session != null) {
             turnout.setSession(session);
         }
-
-        initTurnout(turnout);
     }
 
     private void initTurnout(final SRCPTurnout turnout)
@@ -594,6 +598,19 @@ public class SRCPTurnoutControl implements GAInfoListener {
                 if (interface6051Connected) {
                     ga.init(turnout.getAddress1(), turnout.getProtocol());
                 } else {
+                    String[] params = new String[1];
+                    switch (turnout.getTurnoutType()) {
+
+                        case DEFAULT:
+                        case DOUBLECROSS:
+                        case THREEWAY:
+                            params[0]= "1";
+                            break;
+                        case CUTTER:
+                            params[0]= "2";
+                            break;
+                    }
+                    ga.init(turnout.getAddress1(), turnout.getProtocol(), params);
                     ga.setAddress(turnout.getAddress1());
                 }
 
@@ -633,7 +650,7 @@ public class SRCPTurnoutControl implements GAInfoListener {
 
     }
 
-    public void undoLastChange() throws SRCPTurnoutException,
+    public void undoLastChange() throws
             SRCPModelException {
         if (lastChangedTurnout == null) {
             return;
@@ -659,7 +676,7 @@ public class SRCPTurnoutControl implements GAInfoListener {
         previousState = null;
     }
 
-    public void previousDeviceToDefault() throws SRCPTurnoutException,
+    public void previousDeviceToDefault() throws
             SRCPModelException {
         if (lastChangedTurnout == null) {
             return;
