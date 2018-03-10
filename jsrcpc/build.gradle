@@ -44,7 +44,7 @@ publishing {
     }
     repositories { 
     	maven { 
-    		url "/home/fork/Code/forkch-mvn-repo"
+    		url "/home/ben/Code/forkch-mvn-repo"
     	}
     }
 }
