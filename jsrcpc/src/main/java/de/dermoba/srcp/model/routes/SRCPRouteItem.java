@@ -19,7 +19,8 @@
 package de.dermoba.srcp.model.routes;
 
 import de.dermoba.srcp.model.turnouts.SRCPTurnout;
-import de.dermoba.srcp.model.turnouts.SRCPTurnoutState;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 public class SRCPRouteItem {
 
@@ -27,44 +28,16 @@ public class SRCPRouteItem {
 
 	private SRCPRoute			route;
 
-	private SRCPTurnoutState	routedState;
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		final SRCPRouteItem other = (SRCPRouteItem) obj;
-		if (route == null) {
-			if (other.route != null)
-				return false;
-		} else if (!route.equals(other.route))
-			return false;
-		if (routedState == null) {
-			if (other.routedState != null)
-				return false;
-		} else if (!routedState.equals(other.routedState))
-			return false;
-		if (turnout == null) {
-			if (other.turnout != null)
-				return false;
-		} else if (!turnout.equals(other.turnout))
-			return false;
-		return true;
-	}
+	private SRCPRouteItemState	routedState;
 
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((route == null) ? 0 : route.hashCode());
-		result = prime * result
-				+ ((routedState == null) ? 0 : routedState.hashCode());
-		result = prime * result + ((turnout == null) ? 0 : turnout.hashCode());
-		return result;
+		return HashCodeBuilder.reflectionHashCode(this);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		return EqualsBuilder.reflectionEquals(this, obj);
 	}
 
 	/** default constructor */
@@ -73,7 +46,7 @@ public class SRCPRouteItem {
 
 	/** full constructor */
 	public SRCPRouteItem(SRCPTurnout turnout, SRCPRoute route,
-			SRCPTurnoutState routedState) {
+			SRCPRouteItemState routedState) {
 		this.turnout = turnout;
 		this.route = route;
 		this.routedState = routedState;
@@ -95,11 +68,11 @@ public class SRCPRouteItem {
 		this.route = route;
 	}
 
-	public SRCPTurnoutState getRoutedState() {
+	public SRCPRouteItemState getRoutedState() {
 		return routedState;
 	}
 
-	public void setRoutedState(SRCPTurnoutState routedState) {
+	public void setRoutedState(SRCPRouteItemState routedState) {
 		this.routedState = routedState;
 	}
 }

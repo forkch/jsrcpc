@@ -4,17 +4,29 @@ apply plugin: 'idea'
 apply plugin: 'maven'
 apply plugin: 'maven-publish'
 
+def getVersionName = { ->
+    def stdout = new ByteArrayOutputStream()
+    exec {
+        commandLine 'git', 'describe', '--tags', '--always'
+        standardOutput = stdout
+    }
+    return stdout.toString().trim()
+}
 
 group='de.dermoba'
 archivesBaseName='jsrcpc'
-version = '2.2.1'
+version = '2.6.0'
+
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
 
 repositories {
     mavenCentral()
 }
-	
 dependencies {
-    compile group: 'log4j', name: 'log4j', version: '1.2.17'
+    testCompile 'junit:junit:4.12'
+    compile 'log4j:log4j:1.2.17'
+    compile 'org.apache.commons:commons-lang3:3.1'
 }
 task sourceJar(type: Jar) {
     from sourceSets.main.allJava
@@ -32,7 +44,7 @@ publishing {
     }
     repositories { 
     	maven { 
-    		url "/home/fork/Code/forkch-mvn-repo"
+    		url "/home/ben/Code/forkch-mvn-repo"
     	}
     }
 }

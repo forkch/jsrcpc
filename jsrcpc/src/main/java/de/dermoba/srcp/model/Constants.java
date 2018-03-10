@@ -42,7 +42,7 @@ public interface Constants {
 	public static final String	ERR_TOGGLE_FAILED			= "Toggle of switch failed";
 
 	public static final int		DEFAULT_ACTIVATION_TIME		= 50;
-	public static final int		DEFAULT_CUTTER_ACTIVATION_TIME		= 5000;
+	public static final int DEFAULT_CUTTER_REPETITION_SLEEP = 500;
 
 	public static final boolean	INTERFACE_6051_CONNECTED	= false;
 

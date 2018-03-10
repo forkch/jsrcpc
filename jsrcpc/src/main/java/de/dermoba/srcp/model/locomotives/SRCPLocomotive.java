@@ -130,10 +130,8 @@ public abstract class SRCPLocomotive {
 	}
 
 	protected void setSession(final SRCPSession session) {
-		if (session != this.session) {
-			setGL(null);
-			setInitialized(false);
-		}
+		this.gl = null;
+        this.initialized = false;
 		this.session = session;
 	}
 
@@ -182,15 +180,6 @@ public abstract class SRCPLocomotive {
 
 	public SRCPLocomotive getExtendingLocomotive() {
 		return extendingLocomotive;
-	}
-
-	public void setPreventDirectionToggle(final boolean preventDirectionToggle) {
-		this.preventDirectionToggle = preventDirectionToggle;
-
-	}
-
-	public boolean isPreventDirectionToggle() {
-		return this.preventDirectionToggle;
 	}
 
 	@Override

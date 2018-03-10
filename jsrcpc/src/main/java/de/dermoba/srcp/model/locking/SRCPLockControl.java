@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import de.dermoba.srcp.model.locomotives.SRCPLocomotive;
 import org.apache.log4j.Logger;
 
 import de.dermoba.srcp.client.SRCPSession;
@@ -87,7 +88,7 @@ public class SRCPLockControl implements LOCKInfoListener, Constants {
 		if (session != null) {
 			session.getInfoChannel().addLOCKInfoListener(this);
 		}
-	}
+    }
 
 	public boolean acquireLock(final String deviceGroup,
 			final SRCPAddress address) throws SRCPLockingException,

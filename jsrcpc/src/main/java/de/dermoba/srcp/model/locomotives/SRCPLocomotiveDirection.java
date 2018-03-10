@@ -1,7 +1,7 @@
 package de.dermoba.srcp.model.locomotives;
 
 public enum SRCPLocomotiveDirection {
-    FORWARD(1), REVERSE(0), UNDEF(-1);
+    FORWARD(1), REVERSE(0), EMERGENCY_STOP(2), UNDEF(-1);
 
     private final int direction;
 
