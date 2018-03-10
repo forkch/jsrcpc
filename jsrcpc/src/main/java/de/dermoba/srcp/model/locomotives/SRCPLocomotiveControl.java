@@ -1,14 +1,14 @@
 /*------------------------------------------------------------------------
- * 
- * copyright : (C) 2008 by Benjamin Mueller 
+ *
+ * copyright : (C) 2008 by Benjamin Mueller
  * email     : news@fork.ch
  * website   : http://sourceforge.net/projects/adhocrailway
  * version   : $Id: SRCPLocomotiveControl.java,v 1.9 2012-03-15 06:22:50 fork_ch Exp $
- * 
+ *
  *----------------------------------------------------------------------*/
 
 /*------------------------------------------------------------------------
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * Free Software Foundation; either version 2 of the License, or
@@ -76,7 +76,7 @@ public class SRCPLocomotiveControl implements GLInfoListener, Constants {
     public void toggleDirection(final SRCPLocomotive locomotive)
             throws SRCPModelException {
         checkLocomotive(locomotive);
-        if(locomotive.currentSpeed > 0) {
+        if (locomotive.currentSpeed > 0) {
             return;
         }
         switch (locomotive.direction) {
@@ -279,7 +279,11 @@ public class SRCPLocomotiveControl implements GLInfoListener, Constants {
         // Update locomotive if known and if info is newer than our own.
         if (locomotive != null //&& timestamp > locomotive.getLastCommandAcknowledge()
                 ) {
-            locomotive.setDirection(drivemode);
+            if (drivemode != SRCPLocomotiveDirection.EMERGENCY_STOP) {
+            // only store non EMERGENCY_STOP states
+                locomotive.setDirection(drivemode);
+
+            }
             locomotive.setCurrentSpeed(v);
             LOCOMOTIVE_STRATEGIES.get(locomotive.getClass()).mergeFunctions(locomotive, address, functions);
             LOGGER.info("merged functions:" + locomotive.getFunctions());
