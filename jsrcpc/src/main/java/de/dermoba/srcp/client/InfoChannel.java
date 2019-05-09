@@ -32,8 +32,10 @@ import de.dermoba.srcp.devices.listener.POWERInfoListener;
 import de.dermoba.srcp.devices.listener.SERVERInfoListener;
 import de.dermoba.srcp.devices.listener.SMInfoListener;
 import de.dermoba.srcp.model.locomotives.SRCPLocomotiveDirection;
+import org.apache.log4j.Logger;
 
 public class InfoChannel implements Runnable {
+	private static final Logger LOGGER = Logger.getLogger(InfoChannel.class);
 
 	private static final int INFO_SET = 100;
 
@@ -220,6 +222,7 @@ public class InfoChannel implements Runnable {
 			e.printStackTrace();
 		}
 
+		LOGGER.debug("received data: " + s.trim());
 		for (final InfoDataListener listener : listeners) {
 			listener.infoDataReceived(s);
 		}

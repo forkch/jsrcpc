@@ -1,14 +1,14 @@
 /*------------------------------------------------------------------------
- * 
- * copyright : (C) 2008 by Benjamin Mueller 
+ *
+ * copyright : (C) 2008 by Benjamin Mueller
  * email     : news@fork.ch
  * website   : http://sourceforge.net/projects/adhocrailway
  * version   : $Id: SRCPTurnoutControl.java,v 1.8 2011-12-18 09:43:06 andre_schenk Exp $
- * 
+ *
  *----------------------------------------------------------------------*/
 
 /*------------------------------------------------------------------------
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * Free Software Foundation; either version 2 of the License, or
@@ -18,22 +18,18 @@
 
 package de.dermoba.srcp.model.turnouts;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import de.dermoba.srcp.client.SRCPSession;
 import de.dermoba.srcp.common.exception.SRCPDeviceLockedException;
 import de.dermoba.srcp.common.exception.SRCPException;
 import de.dermoba.srcp.devices.GA;
 import de.dermoba.srcp.devices.listener.GAInfoListener;
-import de.dermoba.srcp.model.Constants;
-import de.dermoba.srcp.model.InvalidAddressException;
-import de.dermoba.srcp.model.NoSessionException;
-import de.dermoba.srcp.model.SRCPAddress;
-import de.dermoba.srcp.model.SRCPModelException;
+import de.dermoba.srcp.model.*;
 import org.apache.log4j.Logger;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class SRCPTurnoutControl implements GAInfoListener {
     private static final Logger LOGGER = Logger.getLogger(SRCPTurnoutControl.class);
@@ -99,7 +95,6 @@ public class SRCPTurnoutControl implements GAInfoListener {
     public void toggle(final SRCPTurnout turnout) throws
             SRCPModelException {
         checkTurnout(turnout);
-
         initTurnout(turnout);
         if (turnout.isThreeWay()) {
             toggleThreeWay(turnout);
@@ -125,11 +120,10 @@ public class SRCPTurnoutControl implements GAInfoListener {
 
     private void toggleThreeWay(final SRCPTurnout turnout)
             throws SRCPModelException {
-        checkTurnout(turnout);
+        // turnout has already been initialized
         final SRCPTurnout[] subTurnouts = turnout.getSubTurnouts();
         for (final SRCPTurnout t : subTurnouts) {
             checkTurnout(t);
-            initTurnout(t);
         }
         switch (turnout.getTurnoutState()) {
             case LEFT:
@@ -152,6 +146,7 @@ public class SRCPTurnoutControl implements GAInfoListener {
     public void setDefaultState(final SRCPTurnout turnout)
             throws SRCPModelException {
         checkTurnout(turnout);
+        initTurnout(turnout);
         previousState = turnout.getTurnoutState();
         if (turnout.isThreeWay()) {
             setDefaultStateThreeWay(turnout);
@@ -178,22 +173,7 @@ public class SRCPTurnoutControl implements GAInfoListener {
 
     private void setDefaultStateThreeWay(final SRCPTurnout turnout)
             throws SRCPModelException {
-        checkTurnout(turnout);
-        final SRCPTurnout[] subTurnouts = turnout.getSubTurnouts();
-        for (final SRCPTurnout t : subTurnouts) {
-            checkTurnout(t);
-            initTurnout(t);
-        }
-        setStraight(subTurnouts[0]);
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        setStraight(subTurnouts[1]);
-        turnout.setTurnoutState(SRCPTurnoutState.STRAIGHT);
-        // informListeners(turnout);
-        lastChangedTurnout = turnout;
+        setStraightThreeWay(turnout);
     }
 
     public void setNonDefaultState(final SRCPTurnout turnout)
@@ -229,7 +209,6 @@ public class SRCPTurnoutControl implements GAInfoListener {
     public void setStraight(final SRCPTurnout turnout)
             throws SRCPModelException {
         checkTurnout(turnout);
-
         initTurnout(turnout);
         LOGGER.info("checked turnout");
         previousState = turnout.getTurnoutState();
@@ -288,11 +267,10 @@ public class SRCPTurnoutControl implements GAInfoListener {
 
     private void setStraightThreeWay(final SRCPTurnout turnout)
             throws SRCPModelException {
-        checkTurnout(turnout);
+        // turnout has already been initialized
         final SRCPTurnout[] subTurnouts = turnout.getSubTurnouts();
         for (final SRCPTurnout t : subTurnouts) {
             checkTurnout(t);
-            initTurnout(t);
         }
         setStraight(subTurnouts[0]);
         try {
@@ -308,7 +286,6 @@ public class SRCPTurnoutControl implements GAInfoListener {
     public void setCurvedLeft(final SRCPTurnout turnout)
             throws SRCPModelException {
         checkTurnout(turnout);
-
         initTurnout(turnout);
         previousState = turnout.getTurnoutState();
         if (turnout.isThreeWay()) {
@@ -334,11 +311,10 @@ public class SRCPTurnoutControl implements GAInfoListener {
 
     private void setCurvedLeftThreeWay(final SRCPTurnout turnout)
             throws SRCPModelException {
-        checkTurnout(turnout);
+        // turnout has already been initialized
         final SRCPTurnout[] subTurnouts = turnout.getSubTurnouts();
         for (final SRCPTurnout t : subTurnouts) {
             checkTurnout(t);
-            initTurnout(t);
         }
 
         setCurvedLeft(subTurnouts[0]);
@@ -356,7 +332,6 @@ public class SRCPTurnoutControl implements GAInfoListener {
     public void setCurvedRight(final SRCPTurnout turnout)
             throws SRCPModelException {
         checkTurnout(turnout);
-
         initTurnout(turnout);
         previousState = turnout.getTurnoutState();
         if (turnout.isThreeWay()) {
@@ -371,11 +346,10 @@ public class SRCPTurnoutControl implements GAInfoListener {
 
     private void setCurvedRightThreeWay(final SRCPTurnout turnout)
             throws SRCPModelException {
-        checkTurnout(turnout);
+        // turnout has already been initialized
         final SRCPTurnout[] subTurnouts = turnout.getSubTurnouts();
         for (final SRCPTurnout t : subTurnouts) {
             checkTurnout(t);
-            initTurnout(t);
         }
 
         setStraight(subTurnouts[0]);
@@ -401,10 +375,14 @@ public class SRCPTurnoutControl implements GAInfoListener {
                 + value + " )");
         final SRCPTurnout turnout = getTurnoutByAddressBus(bus, address);
         if (turnout == null) {
-            // a turnout which the srcp-server knows but not me
+            LOGGER.warn("GAset for a turnout which the srcp-server knows but not me");
             return;
         }
         try {
+            if (!turnout.isInitialized()) {
+                LOGGER.warn("GAset for a for me not initialized turnout");
+                initTurnout(turnout);
+            }
             checkTurnout(turnout);
 
             if (value == 0) {
@@ -592,33 +570,34 @@ public class SRCPTurnoutControl implements GAInfoListener {
         if (!turnout.isInitialized()) {
             if (turnout.isThreeWay()) {
                 initTurnoutThreeWay(turnout);
-            }
-            try {
-                final GA ga = new GA(session, turnout.getBus1());
-                if (interface6051Connected) {
-                    ga.init(turnout.getAddress1(), turnout.getProtocol());
-                } else {
-                    String[] params = new String[1];
-                    switch (turnout.getTurnoutType()) {
+            } else {
+                try {
+                    final GA ga = new GA(session, turnout.getBus1());
+                    if (interface6051Connected) {
+                        ga.init(turnout.getAddress1(), turnout.getProtocol());
+                    } else {
+                        String[] params = new String[1];
+                        switch (turnout.getTurnoutType()) {
 
-                        case DEFAULT:
-                        case DOUBLECROSS:
-                        case THREEWAY:
-                            params[0]= "1";
-                            break;
-                        case CUTTER:
-                            params[0]= "2";
-                            break;
+                            case DEFAULT:
+                            case DOUBLECROSS:
+                            case THREEWAY:
+                                params[0] = "1";
+                                break;
+                            case CUTTER:
+                                params[0] = "2";
+                                break;
+                        }
+                        ga.init(turnout.getAddress1(), turnout.getProtocol(), params);
+                        ga.setAddress(turnout.getAddress1());
                     }
-                    ga.init(turnout.getAddress1(), turnout.getProtocol(), params);
-                    ga.setAddress(turnout.getAddress1());
-                }
 
-                turnout.setGA(ga);
-                turnout.setInitialized(true);
-            } catch (final SRCPException e) {
-                LOGGER.error(e);
-                throw new SRCPTurnoutException(Constants.ERR_INIT_FAILED, e);
+                    turnout.setGA(ga);
+                    turnout.setInitialized(true);
+                } catch (final SRCPException e) {
+                    LOGGER.error(e);
+                    throw new SRCPTurnoutException(Constants.ERR_INIT_FAILED, e);
+                }
             }
         }
     }

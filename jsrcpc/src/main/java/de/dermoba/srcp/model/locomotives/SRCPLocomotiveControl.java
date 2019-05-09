@@ -112,6 +112,7 @@ public class SRCPLocomotiveControl implements GLInfoListener, Constants {
                          final boolean[] functions) throws
             SRCPModelException {
 
+        System.out.println(locomotive.getDirection());
         checkLocomotive(locomotive);
         try {
 
